@@ -1,2 +1,104 @@
-﻿"package ychatapp.Servlet;\n\nimport java.io.IOException;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\n\nimport jakarta.servlet.ServletException;\nimport jakarta.servlet.annotation.WebServlet;\nimport jakarta.servlet.http.HttpServlet;\nimport jakarta.servlet.http.HttpServletRequest;\nimport jakarta.servlet.http.HttpServletResponse;\nimport jakarta.servlet.http.HttpSession;\n\nimport ychatapp.model.beans.UsersBeans;\nimport ychatapp.model.dao.UsersDAO;\nimport ychatapp.model.dao.NotificationDAO;\nimport ychatapp.model.LiveManager;\nimport ychatapp.websocket.UserWebSocket;\n\n@WebServlet(\"/LiveServlet\")\npublic class LiveServlet extends HttpServlet {\n\n    @Override\n    protected void doPost(HttpServletRequest req, HttpServletResponse res)\n            throws ServletException, IOException {\n        doGet(req, res);\n    }\n\n    @Override\n    protected void doGet(HttpServletRequest req, HttpServletResponse res)\n            throws ServletException, IOException {\n\n        res.setContentType(\"application/json;charset=UTF-8\");\n        req.setCharacterEncoding(\"UTF-8\");\n\n        HttpSession session = req.getSession(false);\n        UsersBeans ub = (session != null) ? (UsersBeans) session.getAttribute(\"ub\") : null;\n\n        if (ub == null) {\n            res.getWriter().write(\"{\\\"success\\\":false,\\\"error\\\":\\\"Not logged in\\\"}\");\n            return;\n        }\n\n        String action = req.getParameter(\"action\");\n        if (action == null) action = \"\";\n\n        switch (action.toLowerCase()) {\n\n            /* ======================================================\n               START - User goes live 竊・notify all friends via WS + DB\n            ====================================================== */\n            case \"start\": {\n                String title = req.getParameter(\"title\");\n                if (title == null || title.isEmpty()) title = \"Live Broadcast\";\n\n                // Register in memory\n                LiveManager.st
-<truncated 4498 bytes>
+﻿package ychatapp.Servlet;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import ychatapp.model.LiveManager;
+import ychatapp.model.beans.UsersBeans;
+import ychatapp.model.dao.NotificationDAO;
+import ychatapp.model.dao.UsersDAO;
+
+@WebServlet("/LiveServlet")
+public class LiveServlet extends HttpServlet {
+
+    protected void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        doPost(req, res);
+    }
+
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        
+        req.setCharacterEncoding("UTF-8");
+        res.setCharacterEncoding("UTF-8");
+        res.setContentType("application/json");
+
+        HttpSession session = req.getSession(false);
+        UsersBeans ub = (session != null) ? (UsersBeans) session.getAttribute("ub") : null;
+
+        if (ub == null) {
+            res.getWriter().write("{\"success\": false, \"error\": \"Unauthorized\"}");
+            return;
+        }
+
+        String action = req.getParameter("action");
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+            for (UsersBeans friend : friends) {
+                try {
+                    notifDao.addNotification(friend.getId(), notifMsg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            res.getWriter().write("{\"success\": true}");
+
+        } else if ("end".equalsIgnoreCase(action)) {
+            LiveManager.endStream(ub.getName());
+            res.getWriter().write("{\"success\": true}");
+
+        } else if ("getLiveFriends".equalsIgnoreCase(action)) {
+            List<UsersBeans> friends = usersDao.getFriends(ub.getId());
+            List<String> liveFriendListJson = new ArrayList<>();
+
+            for (UsersBeans friend : friends) {
+                LiveManager.LiveStreamInfo info = LiveManager.getStream(friend.getName());
+                if (info != null) {
+                    String pic = friend.getProfile_pic();
+                    if (pic == null || pic.trim().isEmpty()) {
+                        pic = "default-avatar.png";
+                    }
+                    String escapedTitle = info.getTitle().replace("\"", "\\\"");
+                    liveFriendListJson.add("{" +
+                        "\"username\": \"" + friend.getName() + "\"," +
+                        "\"profilePic\": \"" + pic + "\"," +
+                        "\"title\": \"" + escapedTitle + "\"" +
+                    "}");
+                }
+            }
+
+            String jsonResponse = "{\"success\": true, \"liveFriends\": [" + String.join(",", liveFriendListJson) + "]}";
+            res.getWriter().write(jsonResponse);
+        } else {
+            res.getWriter().write("{\"success\": false, \"error\": \"Unknown action\"}");
+        }
+    }
+}

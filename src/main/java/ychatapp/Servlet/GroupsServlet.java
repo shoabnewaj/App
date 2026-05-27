@@ -1,4 +1,4 @@
-package ychatapp.Servlet;
+﻿package ychatapp.Servlet;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,108 +39,108 @@ public class GroupsServlet extends HttpServlet {
             return;
         }
 
-        UsersBeans ub = (UsersBeans) session.getAttribute("ub");
-        String groupIdStr = req.getParameter("groupId");
+       
 
-        if (groupIdStr != null && !groupIdStr.trim().isEmpty()) {
-            try {
-                int groupId = Integer.parseInt(groupIdStr);
-                Group group = groupDAO.getGroupById(groupId, ub.getId());
-                if (group != null) {
-                    List<UsersPost> posts = groupDAO.getGroupPosts(groupId);
-                    req.setAttribute("group", group);
-                    req.setAttribute("posts", posts);
-                    req.getRequestDispatcher("/WEB-INF/jsp/groupDetail.jsp").forward(req, res);
-                    return;
-                }
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
 
-        // Show all groups list
-        List<Group> groups = groupDAO.getAllGroups(ub.getId());
-        req.setAttribute("groups", groups);
-        req.getRequestDispatcher("/WEB-INF/jsp/groups.jsp").forward(req, res);
-    }
 
-    protected void doPost(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("ub") == null) {
-            res.sendRedirect("login.jsp");
-            return;
-        }
 
-        UsersBeans ub = (UsersBeans) session.getAttribute("ub");
-        String action = req.getParameter("action");
 
-        if ("CREATE".equalsIgnoreCase(action)) {
-            String name = req.getParameter("name");
-            String description = req.getParameter("description");
-            String coverPic = null;
 
-            try {
-                Part filePart = req.getPart("coverPic");
-                if (filePart != null && filePart.getSize() > 0) {
-                    String originalFile = filePart.getSubmittedFileName();
-                    if (originalFile != null && !originalFile.isEmpty()) {
-                        coverPic = System.currentTimeMillis() + "_" + originalFile;
-                        String uploadPath = getServletContext().getRealPath("") + "img" + File.separator;
-                        File uploadDir = new File(uploadPath);
-                        if (!uploadDir.exists()) {
-                            uploadDir.mkdirs();
-                        }
-                        filePart.write(uploadPath + coverPic);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
-            if (name != null && !name.trim().isEmpty()) {
-                int newGroupId = groupDAO.createGroup(name, description, ub.getId(), coverPic);
-                if (newGroupId > 0) {
-                    res.sendRedirect("GroupsServlet?groupId=" + newGroupId);
-                    return;
-                }
-            }
-            res.sendRedirect("GroupsServlet");
 
-        } else if ("JOIN".equalsIgnoreCase(action)) {
-            String groupIdStr = req.getParameter("groupId");
-            if (groupIdStr != null) {
-                int groupId = Integer.parseInt(groupIdStr);
-                groupDAO.joinGroup(groupId, ub.getId());
-                res.sendRedirect("GroupsServlet?groupId=" + groupId);
-            } else {
-                res.sendRedirect("GroupsServlet");
-            }
 
-        } else if ("LEAVE".equalsIgnoreCase(action)) {
-            String groupIdStr = req.getParameter("groupId");
-            if (groupIdStr != null) {
-                int groupId = Integer.parseInt(groupIdStr);
-                groupDAO.leaveGroup(groupId, ub.getId());
-            }
-            res.sendRedirect("GroupsServlet");
 
-        } else if ("ADD_POST".equalsIgnoreCase(action)) {
-            String groupIdStr = req.getParameter("groupId");
-            String content = req.getParameter("content");
-            String file_name = null;
-            String postType = "text";
 
-            try {
-                Part filePart = req.getPart("image");
-                if (filePart != null && filePart.getSize() > 0) {
-                    String originalFile = filePart.getSubmittedFileName();
-                    if (originalFile != null && !originalFile.isEmpty()) {
-                        file_name = System.currentTimeMillis() + "_" + originalFile;
-                        String uploadPath = getServletContext().getRealPath("") + "img" + File.separator;
-                        File uploadDir = new File(uploadPath);
-                        if (!uploadDir.exists()) {
-                            uploadDir.mkdirs();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                         }
                         filePart.write(uploadPath + file_name);
 

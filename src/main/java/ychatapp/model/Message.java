@@ -1,4 +1,4 @@
-package ychatapp.model;
+﻿package ychatapp.model;
 
 public class Message {
     private String sender;

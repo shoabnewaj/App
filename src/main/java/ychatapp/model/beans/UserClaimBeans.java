@@ -1,1 +1,72 @@
-﻿"package ychatapp.model.beans;\n\nimport java.sql.Timestamp;\n\npublic class UserClaimBeans {\n    private int id;\n    private Integer userId;\n    private String email;\n    private String claimType;\n    private String description;\n    private String status;\n    private Timestamp createdAt;\n    private String userName; // Join from users table\n\n    public UserClaimBeans() {}\n\n    public int getId() {\n        return id;\n    }\n    public void setId(int id) {\n        this.id = id;\n    }\n\n    public Integer getUserId() {\n        return userId;\n    }\n    public void setUserId(Integer userId) {\n        this.userId = userId;\n    }\n\n    public String getEmail() {\n        return email;\n    }\n    public void setEmail(String email) {\n        this.email = email;\n    }\n\n    public String getClaimType() {\n        return claimType;\n    }\n    public void setClaimType(String claimType) {\n        this.claimType = claimType;\n    }\n\n    public String getDescription() {\n        return description;\n    }\n    public void setDescription(String description) {\n        this.description = description;\n    }\n\n    public String getStatus() {\n        return status;\n    }\n    public void setStatus(String status) {\n        this.status = status;\n    }\n\n    public Timestamp getCreatedAt() {\n        return createdAt;\n    }\n    public void setCreatedAt(Timestamp createdAt) {\n        this.createdAt = createdAt;\n    }\n\n    public String getUserName() {\n        return userName;\n    }\n    public void setUserName(String userName) {\n        this.userName = userName;\n    }\n}\n"
+﻿package ychatapp.model.beans;
+
+import java.sql.Timestamp;
+
+public class UserClaimBeans {
+    private int id;
+    private Integer userId;
+    private String email;
+    private String claimType;
+    private String description;
+    private String status;
+    private Timestamp createdAt;
+    private String userName; // Join from users table
+
+    public UserClaimBeans() {}
+
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getClaimType() {
+        return claimType;
+    }
+    public void setClaimType(String claimType) {
+        this.claimType = claimType;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+}

@@ -1,4 +1,4 @@
-package ychatapp.model.dao;
+﻿package ychatapp.model.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

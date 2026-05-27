@@ -1,4 +1,4 @@
-package ychatapp.Servlet;
+﻿package ychatapp.Servlet;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,7 +41,7 @@ public class UsersProfileServlet extends HttpServlet {
             // 👤 profile user load
             String paramId = req.getParameter("userId");
             int targetId;
-            if (paramId == null || paramId.trim().isEmpty()) {
+            if (paramId == null || paramId.trim().
                 targetId = ub.getId();
             } else {
                 try {
@@ -58,8 +58,8 @@ public class UsersProfileServlet extends HttpServlet {
 
             // 📊 counts
             int friendsCount = userDAO.getProfileCount(profileUser.getId(), "FRIENDS");
-            int followerCount = userDAO.getProfileCount(profileUser.getId(), "FOLLOWERS");
-            int followingCount = userDAO.getProfileCount(profileUser.getId(), "FOLLOWING");
+
+
 
             // 📝 user posts
             List<UsersPost> userPosts = postDAO.getPostsByUserId(profileUser.getId());
@@ -93,6 +93,17 @@ public class UsersProfileServlet extends HttpServlet {
 
         // 🔁 forward
         req.getRequestDispatcher("/WEB-INF/jsp/profile.jsp").forward(req, res);
+    }
+
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        doGet(req, res);
+    }
+}
+            throws ServletException, IOException {
+        doGet(req, res);
+    }
+}
     }
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res)

@@ -1,4 +1,4 @@
-package ychatapp.model.beans;
+﻿package ychatapp.model.beans;
 
 public class StoryBeans {
     private int id;
@@ -38,6 +38,10 @@ public class StoryBeans {
 
     public String getText() { return text; }
     public void setText(String text) { this.text = text; }
+
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+}
 
     public String getCreatedAt() { return createdAt; }
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }

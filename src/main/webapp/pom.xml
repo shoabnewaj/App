@@ -1,4 +1,4 @@
-<project xmlns="http://apache.org" xmlns:xsi="http://w3.org"
+﻿<project xmlns="http://apache.org" xmlns:xsi="http://w3.org"
   xsi:schemaLocation="http://apache.org http://apache.org">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.ychat</groupId>

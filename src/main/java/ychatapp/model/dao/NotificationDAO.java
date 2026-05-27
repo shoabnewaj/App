@@ -1,4 +1,4 @@
-package ychatapp.model.dao;
+﻿package ychatapp.model.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -41,43 +41,66 @@ public class NotificationDAO {
      */
     public int getUnreadMessageCount(int receiverId) {
         int count = 0;
-        String sql = "SELECT COUNT(*) FROM messages WHERE receiver_id=? AND is_read=0";
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, receiverId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) count = rs.getInt(1);
-        } catch (SQLException e) {
-            System.err.println("Error counting messages: " + e.getMessage());
-        }
-        return count;
-    }
+        String 
 
-    /**
-     * ৩. নতুন নোটিফিকেশন অ্যাড করা (যেমন: কেউ কমেন্ট বা ফ্রেন্ড রিকোয়েস্ট দিলে)
-     */
-    public void addNotification(int userId, String message) {
-        String sql = "INSERT INTO notifications(user_id, message, is_read) VALUES (?, ?, 0)";
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            ps.setString(2, message);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
-    /**
-     * ৩.১. ইউজারনেম দিয়ে নোটিফিকেশন অ্যাড করা (মেসেজ নোটিফিকেশনের জন্য)
-     */
-    public void addNotificationByUsername(String username, String message) {
-        String sql = "INSERT INTO notifications(user_id, message, is_read) SELECT id, ?, 0 FROM users WHERE name = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             ps.setString(1, message);
             ps.setString(2, username);
             ps.executeUpdate();
+            
+            // Send WebSocket notification
+            try {
+                ychatapp.websocket.UserWebSocket.sendNotification(username, message);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

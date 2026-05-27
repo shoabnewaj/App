@@ -1,4 +1,4 @@
-package ychatapp.model.dao;
+﻿package ychatapp.model.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,10 +22,10 @@ public class DBConnection {
 
         String url;
         if (host != null && !host.trim().isEmpty()) {
-            url = "jdbc:mysql://" + host + ":" + (port != null ? port : "3306") + "/" + (database != null ? database : "ychatapp") + "?useSSL=false&allowPublicKeyRetrieval=true";
+            url = "jdbc:mysql://" + host + ":" + (port != null ? port : "3306") + "/" + (database != null ? database : "ychatapp") + "?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&useUnicode=true";
         } else {
             // Local fallback
-            url = "jdbc:mysql://127.0.0.1:3306/ychatapp?useSSL=false&allowPublicKeyRetrieval=true";
+            url = "jdbc:mysql://127.0.0.1:3306/ychatapp?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&useUnicode=true";
             user = "root";
             password = "1234";
         }

@@ -1,4 +1,4 @@
-package ychatapp.model.beans;
+﻿package ychatapp.model.beans;
 
 import java.util.List;
 
@@ -41,29 +41,29 @@ public class UsersPost {
         this.feeling = feeling;
     }
 
-    // ডিফল্ট কনস্ট্রাক্টর
-    public UsersPost() {}
 
-    // ✅ GETTERS
-    public int getId() { return id; }
-    public String getName() { return name; }
-    public int getUserId() { return userId; }
-    public String getContent() { return content; }
-    public String getFile_name() { return file_name; }
-    public String getPost_type() { return post_type; }
-    public String getProfile_pic() { return profile_pic; }
-    public int getCommentCount() {
-		return commentCount;
-	}
 
-	public void setCommentCount(int commentCount) {
-		this.commentCount = commentCount;
-	}
 
-	public String getTime() { return time; }
-    public String getFeeling() { return feeling; } // JSP এর জন্য অত্যন্ত জরুরি
 
-    public int getLikeCount() { return likeCount; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public int getLoveCount() { return loveCount; }
     public int getHahaCount() { return hahaCount; }
     public int getWowCount() { return wowCount; }

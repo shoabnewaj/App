@@ -1,4 +1,4 @@
-package ychatapp.Servlet;
+﻿package ychatapp.Servlet;
 
 import java.io.IOException;
 
@@ -34,13 +34,13 @@ public class FriendServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        UsersBeans ub = (UsersBeans) session.getAttribute("ub");
-        if (ub == null) { response.sendRedirect("UsersLoginServlet"); return; }
+     
 
-        boolean success = false;
-        String errorMsg = "Unknown error";
-        try {
-            String targetIdStr = request.getParameter("targetId");
+
+
+
+
+
             String action = request.getParameter("action"); 
             
             if(targetIdStr != null && action != null) {

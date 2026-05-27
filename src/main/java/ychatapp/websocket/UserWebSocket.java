@@ -1,4 +1,4 @@
-package ychatapp.websocket;
+﻿package ychatapp.websocket;
 
 import java.io.IOException;
 import java.util.Set;
@@ -44,7 +44,7 @@ public class UserWebSocket {
     /* =========================
        MESSAGE HANDLING
        FORMAT: TYPE|RECEIVER|CONTENT
-    ========================== */
+    =
     @OnMessage
     public void onMessage(String message,
                           Session session,
@@ -83,21 +83,21 @@ public class UserWebSocket {
                     if (s.isOpen()) {
                         s.getBasicRemote()
                          .sendText(type + "|" + sender + "|" + content);
-                    }
+                    String cleanContent = content != null && content.length() > 30 ? content.substring(0, 30) + "..." : content;
+                    new ychatapp.model.dao.NotificationDAO().addNotificationByUsername(
+                        receiver,
+                        sender + " sent you a message: \"" + cleanContent + "\""
+                    );
                 }
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+            Set<Session> sessions = clients.get(receiver);
 
-    /* =========================
-       CLOSE CONNECTION
-    ========================== */
-    @OnClose
-    public void onClose(Session session,
-                        @PathParam("username") String encodedUsername) {
+            if (sessions != null) {
+                for (Session s : sessions) {
+                    if (s.isOpen()) {
+                        s.getBasicRemote()
+                         .sendText(type + "|" + sender + "|" + content);
 
         String username = "";
         try {
@@ -153,6 +153,36 @@ public class UserWebSocket {
                         s.getBasicRemote().sendText("NOTIF|" + message);
                     }
                 } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}
+    public static void sendMessage(String sender, String receiver, String content) {
+        Set<Session> sessions = clients.get(receiver);
+        if (sessions != null) {
+            for (Session s : sessions) {
+                try {
+                    if (s.isOpen()) {
+                        s.getBasicRemote().sendText("CHAT|" + sender + "|" + content);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}
+    public static void sendMessage(String sender, String receiver, String content) {
+        Set<Session> sessions = clients.get(receiver);
+        if (sessions != null) {
+            for (Session s : sessions) {
+                try {
+                    if (s.isOpen()) {
+                        s.getBasicRemote().sendText("CHAT|" + sender + "|" + content);
+                    }
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
