@@ -1,191 +1,152 @@
-﻿package ychatapp.websocket;
-
+package ychatapp.websocket;
+ 
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+ 
 import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
+import ychatapp.model.LiveManager;
 
 @ServerEndpoint("/ws/user/{username}")
 public class UserWebSocket {
-
-    // MULTI SESSION SUPPORT (important fix)
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(UserWebSocket.class);
+ 
     private static final ConcurrentHashMap<String, Set<Session>> clients = new ConcurrentHashMap<>();
-
-    /* =========================
-       OPEN CONNECTION
-    ========================== */
+ 
     @OnOpen
-    public void onOpen(Session session,
-                       @PathParam("username") String encodedUsername) {
-
-        String username = "";
-        try {
-            username = URLDecoder.decode(encodedUsername, "UTF-8");
-        } catch (Exception e) {
-            username = encodedUsername;
-        }
-
-        clients.computeIfAbsent(username, k -> ConcurrentHashMap.newKeySet())
-               .add(session);
-
-        System.out.println("User Online: " + username);
-
+    public void onOpen(Session session, @PathParam("username") String encodedUsername) {
+        String username = decodeUsername(encodedUsername);
+        clients.computeIfAbsent(username, k -> ConcurrentHashMap.newKeySet()).add(session);
+        System.out.println("User Online: " + username + " (sessions: " + clients.get(username).size() + ")");
         broadcastOnlineUsers();
     }
-
-    /* =========================
-       MESSAGE HANDLING
-       FORMAT: TYPE|RECEIVER|CONTENT
-    =
+ 
     @OnMessage
-    public void onMessage(String message,
-                          Session session,
-                          @PathParam("username") String encodedSender) {
-
+    public void onMessage(String message, Session session, @PathParam("username") String encodedSender) {
+        String sender = decodeUsername(encodedSender);
         try {
-            String sender = "";
-            try {
-                sender = URLDecoder.decode(encodedSender, "UTF-8");
-            } catch (Exception e) {
-                sender = encodedSender;
-            }
             String[] parts = message.split("\\|", 3);
-
-            if (parts.length < 3) return;
-
+            if (parts.length < 2) {
+                return;
+            }
             String type = parts[0];
             String receiver = parts[1];
-            String content = parts[2];
+            String content = parts.length > 2 ? parts[2] : "";
 
             if ("CHAT".equalsIgnoreCase(type)) {
-                new ychatapp.model.dao.MessageDAO().saveMessage(sender, receiver, content);
-                
-                // Add message notification to database
-                String cleanContent = content != null && content.length() > 30 ? content.substring(0, 30) + "..." : content;
-                new ychatapp.model.dao.NotificationDAO().addNotificationByUsername(
-                    receiver,
-                    sender + " sent you a message: \"" + cleanContent + "\""
-                );
+                sendMessageToUser(receiver, "CHAT|" + sender + "|" + content);
+            } else if ("CALL_SDP".equalsIgnoreCase(type) || 
+                       "CALL_CANDIDATE".equalsIgnoreCase(type) || 
+                       "CALL_BUSY".equalsIgnoreCase(type) || 
+                       "CALL_REJECT".equalsIgnoreCase(type) || 
+                       "CALL_ACCEPT".equalsIgnoreCase(type) ||
+                       "LIVE_SIGNAL".equalsIgnoreCase(type)) {
+                sendMessageToUser(receiver, type + "|" + sender + "|" + content);
+            } else if ("LIVE_CHAT".equalsIgnoreCase(type)) {
+                broadcastToLiveStream(receiver, "LIVE_CHAT|" + sender + "|" + content);
+            } else if ("LIVE_REACTION".equalsIgnoreCase(type)) {
+                broadcastToLiveStream(receiver, "LIVE_REACTION|" + sender + "|" + content);
             }
-
-            Set<Session> sessions = clients.get(receiver);
-
-            if (sessions != null) {
-                for (Session s : sessions) {
-                    if (s.isOpen()) {
-                        s.getBasicRemote()
-                         .sendText(type + "|" + sender + "|" + content);
-                    String cleanContent = content != null && content.length() > 30 ? content.substring(0, 30) + "..." : content;
-                    new ychatapp.model.dao.NotificationDAO().addNotificationByUsername(
-                        receiver,
-                        sender + " sent you a message: \"" + cleanContent + "\""
-                    );
-                }
-            }
-
-            Set<Session> sessions = clients.get(receiver);
-
-            if (sessions != null) {
-                for (Session s : sessions) {
-                    if (s.isOpen()) {
-                        s.getBasicRemote()
-                         .sendText(type + "|" + sender + "|" + content);
-
-        String username = "";
-        try {
-            username = URLDecoder.decode(encodedUsername, "UTF-8");
         } catch (Exception e) {
-            username = encodedUsername;
+            e.printStackTrace();
         }
-
-        Set<Session> set = clients.get(username);
-
-        if (set != null) {
-            set.remove(session);
-            if (set.isEmpty()) {
+    }
+ 
+    @OnClose
+    public void onClose(Session session, @PathParam("username") String encodedUsername) {
+        String username = decodeUsername(encodedUsername);
+        Set<Session> userSessions = clients.get(username);
+        if (userSessions != null) {
+            userSessions.remove(session);
+            if (userSessions.isEmpty()) {
                 clients.remove(username);
-            }
-        }
-
-        broadcastOnlineUsers();
-    }
-
-    /* =========================
-       ONLINE USERS BROADCAST
-    ========================== */
-    private void broadcastOnlineUsers() {
-
-        String users = String.join(",", clients.keySet());
-        String msg = "ONLINE_USERS|" + users;
-
-        for (Set<Session> sessions : clients.values()) {
-            for (Session s : sessions) {
-                try {
-                    if (s.isOpen()) {
-                        s.getBasicRemote().sendText(msg);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                System.out.println("User Offline: " + username);
+                
+                LiveManager.endStream(username);
+                for (LiveManager.LiveStreamInfo info : LiveManager.getActiveStreams()) {
+                    LiveManager.removeViewer(info.getStreamerUsername(), username);
                 }
+                
+                broadcastOnlineUsers();
             }
         }
     }
 
-    /* =========================
-       NOTIFICATION API
-    ========================== */
+    @OnError
+    public void onError(Session session, Throwable throwable, @PathParam("username") String encodedUsername) {
+        String username = decodeUsername(encodedUsername);
+        System.err.println("WebSocket Error for " + username + ": " + throwable.getMessage());
+    }
+ 
+    private String decodeUsername(String encoded) {
+        try {
+            return URLDecoder.decode(encoded, StandardCharsets.UTF_8.name());
+        } catch (Exception e) {
+            return encoded;
+        }
+    }
+
     public static void sendNotification(String username, String message) {
-
-        Set<Session> sessions = clients.get(username);
-
-        if (sessions != null) {
-            for (Session s : sessions) {
-                try {
-                    if (s.isOpen()) {
-                        s.getBasicRemote().sendText("NOTIF|" + message);
+        Set<Session> userSessions = clients.get(username);
+        if (userSessions != null) {
+            for (Session s : userSessions) {
+                if (s.isOpen()) {
+                    try {
+                        s.getBasicRemote().sendText("NOTIFICATION|" + message);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         }
     }
-}
-    public static void sendMessage(String sender, String receiver, String content) {
-        Set<Session> sessions = clients.get(receiver);
-        if (sessions != null) {
-            for (Session s : sessions) {
-                try {
-                    if (s.isOpen()) {
-                        s.getBasicRemote().sendText("CHAT|" + sender + "|" + content);
+
+    private void sendMessageToUser(String username, String message) {
+        Set<Session> userSessions = clients.get(username);
+        if (userSessions != null) {
+            for (Session s : userSessions) {
+                if (s.isOpen()) {
+                    try {
+                        s.getBasicRemote().sendText(message);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         }
     }
-}
-    public static void sendMessage(String sender, String receiver, String content) {
-        Set<Session> sessions = clients.get(receiver);
-        if (sessions != null) {
-            for (Session s : sessions) {
-                try {
-                    if (s.isOpen()) {
-                        s.getBasicRemote().sendText("CHAT|" + sender + "|" + content);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+
+    private void broadcastToLiveStream(String streamer, String message) {
+        LiveManager.LiveStreamInfo stream = LiveManager.getStream(streamer);
+        if (stream != null) {
+            sendMessageToUser(streamer, message);
+            for (String viewer : stream.getViewers()) {
+                sendMessageToUser(viewer, message);
             }
+        }
+    }
+
+    private void broadcastOnlineUsers() {
+        StringBuilder sb = new StringBuilder("ONLINE_LIST|");
+        int count = 0;
+        for (String user : clients.keySet()) {
+            if (count > 0) {
+                sb.append(",");
+            }
+            sb.append(user);
+            count++;
+        }
+        String listMsg = sb.toString();
+        for (String user : clients.keySet()) {
+            sendMessageToUser(user, listMsg);
         }
     }
 }

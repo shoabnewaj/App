@@ -1,4 +1,4 @@
-﻿package ychatapp.model.beans;
+package ychatapp.model.beans;
 
 public class StoryBeans {
     private int id;
@@ -8,8 +8,12 @@ public class StoryBeans {
     private String mediaUrl;
     private String text;
     private String createdAt;
+    private int viewCount;
 
     public StoryBeans() {}
+
+    public int getViewCount() { return viewCount; }
+    public void setViewCount(int viewCount) { this.viewCount = viewCount; }
 
     public StoryBeans(int id, int userId, String name, String profilePic, String mediaUrl, String text, String createdAt) {
         this.id = id;
@@ -38,10 +42,6 @@ public class StoryBeans {
 
     public String getText() { return text; }
     public void setText(String text) { this.text = text; }
-
-    public String getCreatedAt() { return createdAt; }
-    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
-}
 
     public String getCreatedAt() { return createdAt; }
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }

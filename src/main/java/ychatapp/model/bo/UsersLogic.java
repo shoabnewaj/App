@@ -1,4 +1,4 @@
-﻿package ychatapp.model.bo;
+package ychatapp.model.bo;
 
 import java.security.MessageDigest;
 import java.util.Base64;

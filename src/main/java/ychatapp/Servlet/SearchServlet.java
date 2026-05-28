@@ -1,4 +1,4 @@
-﻿package ychatapp.Servlet;
+package ychatapp.Servlet;
 import java.io.IOException;
 
 import jakarta.servlet.ServletException;

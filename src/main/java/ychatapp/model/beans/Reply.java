@@ -1,4 +1,4 @@
-﻿package ychatapp.model.beans;
+package ychatapp.model.beans;
 
 public class Reply {
 

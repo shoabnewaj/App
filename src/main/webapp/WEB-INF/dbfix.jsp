@@ -1,6 +1,7 @@
-﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
+<%@ page import="ychatapp.model.dao.DBConnection" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,80 +19,75 @@
     <hr>
 
     <%
-        String url = "jdbc:mysql://127.0.0.1:3306/ychatapp";
-        String user = "root";
-        String pass = "1234";
-        
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn = DriverManager.getConnection(url, user, pass);
-            out.println("<p class='success'>[1] Connection to Database 'ychatapp' SUCCESSFUL!</p>");
+            Connection conn = DBConnection.getConnection();
+            out.println("<p class='success'>[1] Connection to Database SUCCESSFUL!</p>");
 
             Statement stmt = conn.createStatement();
             
             // 1. Existing Tables
             out.println("<h3>Existing Tables:</h3><ul>");
-            ResultSet rsTables = conn.getMetaData().getTables("ychatapp", null, "%", new String[]{"TABLE"});
+            ResultSet rsTables = conn.getMetaData().getTables(null, null, "%", new String[]{"TABLE"});
             Set<String> tableNames = new HashSet<>();
             while(rsTables.next()) {
-                String tableName = rsTables.getString("TABLE_N
+                String tableName = rsTables.getString("TABLE_NAME").toLowerCase();
+                out.println("<li>" + tableName + "</li>");
+                tableNames.add(tableName);
+            }
+            out.println("</ul>");
 
+            // 2. Create friendships table if not exists
+            if(!tableNames.contains("friendships")) {
+                out.println("<p class='info'>Table 'friendships' NOT found. Creating it now...</p>");
+                String sql = "CREATE TABLE friendships (" +
+                             "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                             "user_id1 INT NOT NULL, " +
+                             "user_id2 INT NOT NULL, " +
+                             "status VARCHAR(20) DEFAULT 'PENDING', " +
+                             "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                             "UNIQUE KEY unique_pair (user_id1, user_id2)" +
+                             ") ENGINE=InnoDB;";
+                stmt.executeUpdate(sql);
+                out.println("<p class='success'>SUCCESS: Table 'friendships' created successfully!</p>");
+            }
 
+            // 3. Create marketplace_items table if not exists
+            if(!tableNames.contains("marketplace_items")) {
+                out.println("<p class='info'>Table 'marketplace_items' NOT found. Creating it now...</p>");
+                String sql = "CREATE TABLE marketplace_items (" +
+                             "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                             "title VARCHAR(255) NOT NULL, " +
+                             "description TEXT, " +
+                             "price DECIMAL(10,2) NOT NULL, " +
+                             "image_url VARCHAR(255), " +
+                             "seller_id INT NOT NULL, " +
+                             "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                             ") ENGINE=InnoDB;";
+                stmt.executeUpdate(sql);
+                out.println("<p class='success'>SUCCESS: Table 'marketplace_items' created successfully!</p>");
+            }
 
+            // 4. Create groups table if not exists
+            if(!tableNames.contains("groups")) {
+                out.println("<p class='info'>Table 'groups' NOT found. Creating it now...</p>");
+                String sql = "CREATE TABLE `groups` (" +
+                             "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                             "name VARCHAR(255) NOT NULL, " +
+                             "description TEXT, " +
+                             "creator_id INT NOT NULL, " +
+                             "cover_pic VARCHAR(255), " +
+                             "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                             ") ENGINE=InnoDB;";
+                stmt.executeUpdate(sql);
+                out.println("<p class='success'>SUCCESS: Table 'groups' created successfully!</p>");
+            }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            // 5. Create group_members table if not exists
+            if(!tableNames.contains("group_members")) {
+                out.println("<p class='info'>Table 'group_members' NOT found. Creating it now...</p>");
+                String sql = "CREATE TABLE group_members (" +
+                             "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                             "group_id INT NOT NULL, " +
                              "user_id INT NOT NULL, " +
                              "joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                              "UNIQUE KEY unique_member (group_id, user_id)" +
@@ -100,9 +96,41 @@
                 out.println("<p class='success'>SUCCESS: Table 'group_members' created successfully!</p>");
             }
 
-            // 6. Check if group_id column exists in posts table, otherwise add it
+            // 6. Create hidden_content table if not exists
+            if(!tableNames.contains("hidden_content")) {
+                out.println("<p class='info'>Table 'hidden_content' NOT found. Creating it now...</p>");
+                String sql = "CREATE TABLE hidden_content (" +
+                             "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                             "user_id INT NOT NULL, " +
+                             "item_type VARCHAR(50) NOT NULL, " +
+                             "item_id INT NOT NULL, " +
+                             "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                             "UNIQUE KEY unique_user_item (user_id, item_type, item_id), " +
+                             "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE" +
+                             ") ENGINE=InnoDB;";
+                stmt.executeUpdate(sql);
+                out.println("<p class='success'>SUCCESS: Table 'hidden_content' created successfully!</p>");
+            }
+
+            // 7. Create user_claims table if not exists
+            if(!tableNames.contains("user_claims")) {
+                out.println("<p class='info'>Table 'user_claims' NOT found. Creating it now...</p>");
+                String sql = "CREATE TABLE user_claims (" +
+                             "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                             "user_id INT DEFAULT NULL, " +
+                             "email VARCHAR(255) NOT NULL, " +
+                             "claim_type VARCHAR(100) NOT NULL, " +
+                             "description TEXT NOT NULL, " +
+                             "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                             "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL" +
+                             ") ENGINE=InnoDB;";
+                stmt.executeUpdate(sql);
+                out.println("<p class='success'>SUCCESS: Table 'user_claims' created successfully!</p>");
+            }
+
+            // 8. Check if group_id column exists in posts table, otherwise add it
             boolean hasGroupId = false;
-            ResultSet rsCols = conn.getMetaData().getColumns("ychatapp", null, "posts", "%");
+            ResultSet rsCols = conn.getMetaData().getColumns(null, null, "posts", "%");
             while(rsCols.next()) {
                 if("group_id".equalsIgnoreCase(rsCols.getString("COLUMN_NAME"))) {
                     hasGroupId = true;

@@ -1,2 +1,63 @@
-﻿"package ychatapp.Servlet;\n\nimport java.io.File;\nimport java.io.IOException;\nimport java.io.PrintWriter;\n\nimport jakarta.servlet.ServletException;\nimport jakarta.servlet.annotation.MultipartConfig;\nimport jakarta.servlet.annotation.WebServlet;\nimport jakarta.servlet.http.HttpServlet;\nimport jakarta.servlet.http.HttpServletRequest;\nimport jakarta.servlet.http.HttpServletResponse;\nimport jakarta.servlet.http.HttpSession;\nimport jakarta.servlet.http.Part;\n\nimport ychatapp.model.beans.UsersBeans;\n\n@WebServlet(\"/ChatFileUploadServlet\")\n@MultipartConfig\npublic class ChatFileUploadServlet extends HttpServlet {\n\n    protected void doPost(HttpServletRequest req, HttpServletResponse resp)\n            throws ServletException, IOException {\n\n        resp.setContentType(\"application/json\");\n        resp.setCharacterEncoding(\"UTF-8\");\n        PrintWriter out = resp.getWriter();\n\n        HttpSession session = req.getSession();\n        UsersBeans ub = (UsersBeans) session.getAttribute(\"ub\");\n\n        if (ub == null) {\n            out.print(\"{\\\"success\\\": false, \\\"message\\\": \\\"Not authenticated\\\"}\");\n            return;\n        }\n\n        try {\n            Part filePart = req.getPart(\"chatFile\");\n\n            if (filePart != null && filePart.getSize() > 0) {\n                String submittedName = filePart.getSubmittedFileName();\n                // Replace characters to make file names safe\n                String safeName = submittedName.replaceAll(\"[^a-zA-Z0-9\\\\.\\\\-_]\", \"_\");\n                String fileName = System.currentTimeMillis() + \"_\" + safeName;\n\n                String uploadPath = getServletContext().getRealPath(\"/img\");\n                File dir = new File(uploadPath);\n                if (!dir.exists()) {\n                    dir.mkdirs();\n                }\n\n                filePart.write(uploadPath + File.separator + fileName);\n\n                // Return the filename/path\n                String relativePath = \"img/\" + fileName;\n 
-<truncated 548 bytes>
+package ychatapp.Servlet;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
+
+import ychatapp.model.beans.UsersBeans;
+
+@WebServlet("/ChatFileUploadServlet")
+@MultipartConfig
+public class ChatFileUploadServlet extends HttpServlet {
+
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        PrintWriter out = resp.getWriter();
+
+        HttpSession session = req.getSession();
+        UsersBeans ub = (UsersBeans) session.getAttribute("ub");
+
+        if (ub == null) {
+            out.print("{\"success\": false, \"message\": \"Not authenticated\"}");
+            return;
+        }
+
+        try {
+            Part filePart = req.getPart("chatFile");
+
+            if (filePart != null && filePart.getSize() > 0) {
+                String submittedName = filePart.getSubmittedFileName();
+                String safeName = submittedName.replaceAll("[^a-zA-Z0-9\\.\\-_]", "_");
+                String fileName = System.currentTimeMillis() + "_" + safeName;
+
+                String uploadPath = getServletContext().getRealPath("/img");
+                File dir = new File(uploadPath);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+
+                filePart.write(uploadPath + File.separator + fileName);
+
+                String relativePath = "img/" + fileName;
+                out.print("{\"success\": true, \"filePath\": \"" + relativePath + "\"}");
+            } else {
+                out.print("{\"success\": false, \"message\": \"No file uploaded\"}");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            out.print("{\"success\": false, \"message\": \"Error: " + e.getMessage() + "\"}");
+        }
+    }
+}

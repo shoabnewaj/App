@@ -1,4 +1,4 @@
-﻿package ychatapp.Servlet;
+package ychatapp.Servlet;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,7 +40,7 @@ public class CommentServlet extends HttpServlet {
     }
 
     // Helper method to safely read form text field data under Multipart configs
-    private String getFieldValue(HttpS
+    private String getFieldValue(HttpServletRequest req, String fieldName) {
         try {
             Part part = req.getPart(fieldName);
             if (part != null && part.getSize() > 0) {
@@ -142,7 +142,7 @@ public class CommentServlet extends HttpServlet {
                         String shortText = (text != null && text.length() > 25) ? text.substring(0, 25) + "..." : text;
                         new ychatapp.model.dao.NotificationDAO().addNotification(
                             post.getUserId(),
-                            ub.getName() + " commented on your post: \"" + shortText + "\" [LINK:UsersPostServlet#post-card-" + postId + "]"
+                            ub.getName() + " commented on your post: \"" + shortText + "\""
                         );
                     }
                 } catch (Exception e) {
@@ -168,104 +168,104 @@ public class CommentServlet extends HttpServlet {
             }
 
             /*
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+             ======================================================
+             COMMENT / REPLY REACTION
+             ======================================================
+            */
+            else if (action.equalsIgnoreCase("LIKE")    || action.equalsIgnoreCase("LOVE")  ||
+                     action.equalsIgnoreCase("CARE")    || action.equalsIgnoreCase("HAHA")  ||
+                     action.equalsIgnoreCase("WOW")     || action.equalsIgnoreCase("SAD")   ||
+                     action.equalsIgnoreCase("ANGRY")   || action.equalsIgnoreCase("DISLIKES") ||
+                     action.equalsIgnoreCase("DISLIKE")) {
+
+                String targetIdStr = getFieldValue(req, "commentId");
+                String level = getFieldValue(req, "level"); // "comment" or "reply"
+                if (targetIdStr == null) {
+                    out.write("{\"error\":\"missing_id\"}");
+                    return;
+                }
+
+                int targetId = Integer.parseInt(targetIdStr);
+
+                if ("reply".equalsIgnoreCase(level)) {
+                    dao.handleReplyInteraction(targetId, ub.getId(), action);
+                    // Get updated total count
+                    int c_like = dao.getReplyCount(targetId, "LIKE");
+                    int c_love = dao.getReplyCount(targetId, "LOVE");
+                    int c_care = dao.getReplyCount(targetId, "CARE");
+                    int c_haha = dao.getReplyCount(targetId, "HAHA");
+                    int c_wow = dao.getReplyCount(targetId, "WOW");
+                    int c_sad = dao.getReplyCount(targetId, "SAD");
+                    int c_angry = dao.getReplyCount(targetId, "ANGRY");
+                    int c_dislike = dao.getReplyCount(targetId, "DISLIKES");
+                    int count = c_like + c_love + c_care + c_haha + c_wow + c_sad + c_angry + c_dislike;
+                    
+                    out.write("{\"success\":true,\"type\":\"REPLY_REACT\",\"replyId\":" + targetId + ",\"newCount\":" + count + ", \"counts\":{" +
+                              "\"Like\":" + c_like + "," +
+                              "\"Love\":" + c_love + "," +
+                              "\"Care\":" + c_care + "," +
+                              "\"Haha\":" + c_haha + "," +
+                              "\"Wow\":" + c_wow + "," +
+                              "\"Sad\":" + c_sad + "," +
+                              "\"Angry\":" + c_angry + "," +
+                              "\"Dislike\":" + c_dislike + "}}");
+                } else {
+                    dao.handleInteraction(targetId, ub.getId(), action);
+                    // Get updated total count
+                    int c_like = dao.getCount(targetId, "LIKE");
+                    int c_love = dao.getCount(targetId, "LOVE");
+                    int c_care = dao.getCount(targetId, "CARE");
+                    int c_haha = dao.getCount(targetId, "HAHA");
+                    int c_wow = dao.getCount(targetId, "WOW");
+                    int c_sad = dao.getCount(targetId, "SAD");
+                    int c_angry = dao.getCount(targetId, "ANGRY");
+                    int c_dislike = dao.getCount(targetId, "DISLIKES");
+                    int count = c_like + c_love + c_care + c_haha + c_wow + c_sad + c_angry + c_dislike;
+                    
+                    out.write("{\"success\":true,\"type\":\"COMMENT_REACT\",\"commentId\":" + targetId + ",\"newCount\":" + count + ", \"counts\":{" +
+                              "\"Like\":" + c_like + "," +
+                              "\"Love\":" + c_love + "," +
+                              "\"Care\":" + c_care + "," +
+                              "\"Haha\":" + c_haha + "," +
+                              "\"Wow\":" + c_wow + "," +
+                              "\"Sad\":" + c_sad + "," +
+                              "\"Angry\":" + c_angry + "," +
+                              "\"Dislike\":" + c_dislike + "}}");
+                }
+            }
+
+            /*
+             ======================================================
+             ADD REPLY
+             ======================================================
+            */
+            else if (action.equalsIgnoreCase("REPLY")) {
+
+                String commentIdStr = getFieldValue(req, "commentId");
+                String text = getFieldValue(req, "replyText");
+                if (text == null || text.isEmpty()) {
+                    text = getFieldValue(req, "reply_text");
+                }
+
+                String file_name = null;
+
+                try {
+                    Part filePart = req.getPart("media");
+                    if (filePart != null && filePart.getSize() > 0) {
+                        String originalFile = filePart.getSubmittedFileName();
+                        if (originalFile != null && !originalFile.isEmpty()) {
+                            file_name = System.currentTimeMillis() + "_" + originalFile;
+                            String uploadPath = getServletContext().getRealPath("") + "img" + File.separator;
+                            File uploadDir = new File(uploadPath);
+                            if (!uploadDir.exists()) {
+                                uploadDir.mkdirs();
+                            }
+                            filePart.write(uploadPath + file_name);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 if (commentIdStr == null || ((text == null || text.isEmpty()) && file_name == null)) {
                     out.write("{\"error\":\"empty_reply\"}");
@@ -279,7 +279,7 @@ public class CommentServlet extends HttpServlet {
                 try {
                     int commentAuthorId = dao.getCommentAuthorId(commentId);
                     if (commentAuthorId != -1 && commentAuthorId != ub.getId()) {
-                        int postId = dao.getPostIdByCommentId(commentId);
+                        String shortText = (text != null && text.length() > 25) ? text.substring(0, 25) + "..." : text;
                         new ychatapp.model.dao.NotificationDAO().addNotification(
                             commentAuthorId,
                             ub.getName() + " replied to your comment: \"" + shortText + "\""

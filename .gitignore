@@ -1,0 +1,5 @@
+tomcat.8080/
+target/
+build/
+.settings/
+*.log

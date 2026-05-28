@@ -36,11 +36,9 @@
         
         <!-- Left Side: Branding -->
         <div class="hidden lg:block space-y-6">
-            <div class="inline-flex items-center gap-2 text-blue-600 mb-2">
-                <div class="bg-blue-600 p-1 rounded-xl">
-                    <img src="<%=request.getContextPath()%>/icons/icon-192.png" alt="Logo" class="w-10 h-10 object-contain">
-                </div>
-                <span class="text-3xl font-bold tracking-tight text-slate-900">Y-ChatApp</span>
+            <div class="inline-flex items-center gap-3 mb-2 group cursor-pointer">
+                <img src="<%=request.getContextPath()%>/icons/icon-192.png?v=2" alt="Logo" class="w-10 h-10 object-contain group-hover:rotate-12 transition-transform duration-300">
+                <span class="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 group-hover:from-purple-600 group-hover:to-blue-600 transition-all duration-500">YchatApp</span>
             </div>
             <h1 class="text-6xl font-extrabold text-slate-900 leading-[1.1]">
                 Connect with the <br> 

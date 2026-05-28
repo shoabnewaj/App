@@ -1,4 +1,4 @@
-﻿package ychatapp.Servlet;
+package ychatapp.Servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -36,49 +36,49 @@ public class FeaturesServlet extends HttpServlet {
 
         if ("GET_SAVED".equalsIgnoreCase(action)) {
             List<UsersPost> list = postDAO.getSavedPosts(ub.getId());
-  
+            out.print(toJsonString(list));
+        } else if ("GET_MEMORIES".equalsIgnoreCase(action)) {
+            List<UsersPost> list = postDAO.getMemoriesPosts(ub.getId());
+            out.print(toJsonString(list));
+        } else {
+            out.print("{\"success\": false, \"message\": \"Invalid action\"}");
+        }
+    }
 
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        res.setContentType("application/json; charset=UTF-8");
+        PrintWriter out = res.getWriter();
 
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("ub") == null) {
+            out.print("{\"success\": false, \"message\": \"Not authenticated\"}");
+            return;
+        }
 
+        UsersBeans ub = (UsersBeans) session.getAttribute("ub");
+        String action = req.getParameter("action");
+        String postIdStr = req.getParameter("postId");
 
+        if (postIdStr == null || postIdStr.trim().isEmpty()) {
+            out.print("{\"success\": false, \"message\": \"Missing postId\"}");
+            return;
+        }
 
+        try {
+            int postId = Integer.parseInt(postIdStr);
+            boolean success = false;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            if ("SAVE".equalsIgnoreCase(action)) {
+                success = postDAO.savePost(ub.getId(), postId);
+                out.print("{\"success\": " + success + ", \"saved\": true}");
+            } else if ("UNSAVE".equalsIgnoreCase(action)) {
+                success = postDAO.unsavePost(ub.getId(), postId);
+                out.print("{\"success\": " + success + ", \"saved\": false}");
+            } else {
+                out.print("{\"success\": false, \"message\": \"Invalid action\"}");
+            }
+        } catch (NumberFormatException e) {
             out.print("{\"success\": false, \"message\": \"Invalid postId format\"}");
         }
     }

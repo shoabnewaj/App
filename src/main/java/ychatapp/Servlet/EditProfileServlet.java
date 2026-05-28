@@ -1,4 +1,4 @@
-﻿package ychatapp.Servlet;
+package ychatapp.Servlet;
 
 import java.io.IOException;
 
@@ -62,26 +62,6 @@ public class EditProfileServlet extends HttpServlet {
 
         if (UsersLogic.updateProfile(ub)) {
             session.setAttribute("ub", ub); // Update session with new bean info
-            res.sendRedirect("UsersProfileServlet?update=success");
-        } else {
-            res.sendRedirect("UsersProfileServlet?update=fail");
-        }
-    }
-}
-        // Set Bio & About
-        ub.setBio(bio);
-        ub.setPhone(phone);
-        ub.setBirthday((birthday != null && !birthday.isEmpty()) ? birthday : null);
-        ub.setGender(gender);
-        ub.setHometown(hometown);
-        ub.setCurrent_city(current_city);
-        ub.setWorkplace(workplace);
-        ub.setEducation(education);
-        ub.setRelationship_status(relationship_status);
-        ub.setWebsite(website);
-
-        if (UsersLogic.updateProfile(ub)) {
-            session.setAttribute("ub", ub);
             res.sendRedirect("UsersProfileServlet?update=success");
         } else {
             res.sendRedirect("UsersProfileServlet?update=fail");

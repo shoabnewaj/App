@@ -1,4 +1,4 @@
-﻿package ychatapp.model.dao;
+package ychatapp.model.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -81,20 +81,3 @@ public class StoryDAO {
         return list;
     }
 }
-
-    // ================= INCREMENT STORY VIEW COUNT =================
-    public boolean incrementStoryViewCount(int storyId) {
-        String sql = "UPDATE stories SET view_count = view_count + 1 WHERE id = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, storyId);
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-}
-
-        String sql = "SELECT u.name FROM stories s JOIN users u ON s.user_id = u.id WHERE s.id = ?";
-        try (Connection conn = getConnection();

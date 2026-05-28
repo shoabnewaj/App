@@ -1,4 +1,4 @@
-﻿package ychatapp.Servlet;
+package ychatapp.Servlet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class InteractionServlet extends HttpServlet {
                         new InputStreamReader(part.getInputStream(), "UTF-8"))) {
                     StringBuilder sb = new StringBuilder();
                     String line;
-                    while ((line = reader.readLine()) != null) sb.append(
+                    while ((line = reader.readLine()) != null) sb.append(line);
                     return sb.toString().trim();
                 }
             }
@@ -87,30 +87,30 @@ public class InteractionServlet extends HttpServlet {
                 action.equalsIgnoreCase("DISLIKE") ||
                 action.equalsIgnoreCase("DISLIKES")) {
 
-              
+                dao.handleInteraction(postId, userId, action.toUpperCase());
+                
+                // Get updated count to return
+                UsersPost updatedPost = dao.getPostById(postId);
+                
+                // Add reaction notification
+                if (updatedPost != null && userId != updatedPost.getUserId()) {
+                    new ychatapp.model.dao.NotificationDAO().addNotification(
+                        updatedPost.getUserId(),
+                        ub.getName() + " reacted with " + action.toUpperCase() + " to your post: \"" + 
+                        (updatedPost.getContent() != null && updatedPost.getContent().length() > 20 ? 
+                         updatedPost.getContent().substring(0, 20) + "..." : updatedPost.getContent()) + "\""
+                    );
+                }
 
+                int total = updatedPost.getLikeCount() + updatedPost.getLoveCount() + updatedPost.getCareCount() + 
+                            updatedPost.getHahaCount() + updatedPost.getWowCount() + updatedPost.getSadCount() + 
+                            updatedPost.getAngryCount() + updatedPost.getDislikes();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                out.write("{\"status\":\"ok\", \"newCount\":" + total + ", \"counts\":{" +
+                          "\"Like\":" + updatedPost.getLikeCount() + "," +
+                          "\"Love\":" + updatedPost.getLoveCount() + "," +
+                          "\"Care\":" + updatedPost.getCareCount() + "," +
+                          "\"Haha\":" + updatedPost.getHahaCount() + "," +
                           "\"Wow\":" + updatedPost.getWowCount() + "," +
                           "\"Sad\":" + updatedPost.getSadCount() + "," +
                           "\"Angry\":" + updatedPost.getAngryCount() + "," +
@@ -148,19 +148,6 @@ public class InteractionServlet extends HttpServlet {
                 }
 
                 out.write("{\"status\":\"shared\"}");
-                return;
-            }
-
-            out.write("{\"error\":\"unknown\"}");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            out.write("{\"error\":\"server\"}");
-        }
-    }
-}
-                new ychatapp.model.dao.StoryDAO().incrementStoryViewCount(postId);
-                out.write("{\"status\":\"ok\"}");
                 return;
             }
 

@@ -1,4 +1,4 @@
-﻿package ychatapp.Servlet;
+package ychatapp.Servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -32,25 +32,25 @@ public class ReportHideServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         HttpSession session = request.getSession();
-        UsersBeans ub = (UsersBeans) session.getAtt
+        UsersBeans ub = (UsersBeans) session.getAttribute("ub");
+        if (ub == null) {
+            response.getWriter().write("{\"success\":false,\"message\":\"Not logged in\"}");
+            return;
+        }
 
+        int userId = ub.getId();
+        String action = request.getParameter("action");
+        String type = request.getParameter("type"); // POST, COMMENT, REPLY
+        String idStr = request.getParameter("id");
 
+        if (action == null || type == null || idStr == null) {
+            response.getWriter().write("{\"success\":false,\"message\":\"Missing parameters\"}");
+            return;
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        int itemId;
+        try {
+            itemId = Integer.parseInt(idStr);
         } catch (NumberFormatException e) {
             response.getWriter().write("{\"success\":false,\"message\":\"Invalid ID\"}");
             return;
