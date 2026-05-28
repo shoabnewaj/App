@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%-- <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> --%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 
@@ -9,16 +9,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Y-ChatApp | Newsfeed</title>
 <link rel="icon" type="image/png" href="<%=request.getContextPath()%>/icons/icon-192.png">
-<link rel="manifest" href="<%=request.getContextPath()%>/manifest.json">
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('<%=request.getContextPath()%>/sw.js')
-                .then(reg => console.log('Service Worker registered', reg))
-                .catch(err => console.error('Service Worker registration failed', err));
-        });
-    }
-</script>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet"
@@ -34,7 +24,7 @@
 
 /* --- আপনার আসল বডি স্টাইল (শুধু width এবং overflow-x যোগ করা হয়েছে) --- */
 body {
-	background: l
+	background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
 	background-size: 400% 400%;
 	animation: gradient 15s ease infinite;
 	font-family: 'Outfit', sans-serif;
@@ -44,24 +34,24 @@ body {
 	overflow-x: hidden;
 }
 
+@keyframes gradient {
+	0% { background-position: 0% 50%; }
+	50% { background-position: 100% 50%; }
+	100% { background-position: 0% 50%; }
+}
 
+.glass-card {
+	background: rgba(255, 255, 255, 0.7) !important;
+	backdrop-filter: blur(12px) !important;
+	border: 1px solid rgba(255, 255, 255, 0.3) !important;
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15) !important;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.glass-nav {
+	background: rgba(255, 255, 255, 0.8) !important;
+	backdrop-filter: blur(10px) !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
 
 /* --- ২. এই নতুন ফিক্সটি যোগ করা হয়েছে (ইমেজ স্ক্রিনে ফিক্স করার জন্য) --- */
 img {
@@ -178,80 +168,80 @@ to {
 	padding: 8px;
 	border-radius: 50%;
 	transition: 0.2s;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
+
+.media-icon:hover {
+	background: #e4e6eb;
+}
+
+/* === ৩-কলামের লেআউট এবং পোস্ট ফিক্স করার সঠিক কোড === */
+/* টপ নেভারকে স্ক্রিনের সাথে ফিট করা */
+header, .navbar {
+	width: 100% !important;
+	max-width: 100% !important;
+}
+
+/* পোস্টের ভেতরের ইমেজের অতিরিক্ত স্পেস কমানো */
+	object-fit: cover !important;
+}
+
+/* --- REELS STYLES --- */
+.reels-container {
+	display: flex;
+	gap: 12px;
+	overflow-x: auto;
+	padding: 10px 0;
+	scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+.reels-container::-webkit-scrollbar {
+	display: none; /* Hide scrollbar for Chrome/Safari */
+}
+.reel-card {
+	min-width: 140px;
+	height: 230px;
+	border-radius: 15px;
+	position: relative;
+	overflow: hidden;
+	background: #000;
+	cursor: pointer;
+	flex-shrink: 0;
+	transition: 0.3s;
+	box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.reel-card:hover {
+	transform: scale(1.02);
+}
+.reel-video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	opacity: 0.8;
+}
+.reel-user {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	z-index: 10;
+}
+.reel-user img {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	border: 2px solid #0866FF;
+}
+.reel-info {
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	color: white;
+	font-size: 13px;
+	font-weight: 600;
+	z-index: 10;
+}
+
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 .animate-slide-in {
     animation: slideInUp 0.4s ease-out forwards;
@@ -294,9 +284,7 @@ to {
 				title="Groups" class="text-gray-500 hover:text-blue-500 transition"><i
 				class="fa fa-user-group clickable"></i></a> <a href="VideosServlet"
 				title="Videos" class="text-gray-500 hover:text-blue-500 transition"><i
-				class="fa fa-video clickable"></i></a> <a href="#" onclick="openReelsFeed(); return false;"
-				title="Reels" class="text-gray-500 hover:text-blue-500 transition"><i
-				class="fa fa-clapperboard clickable"></i></a> <a href="MarketServlet"
+				class="fa fa-video clickable"></i></a> <a href="MarketServlet"
 				title="Market" class="text-gray-500 hover:text-blue-500 transition"><i
 				class="fa fa-shop clickable"></i></a>
 		</div>
@@ -306,17 +294,15 @@ to {
 			<!-- Notification Link -->
 			<a href="NotificationServlet"
 				class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center relative clickable hover:bg-gray-300 transition">
-				<i class="fa fa-bell text-black"></i>
-				<c:if test="${not empty unreadCount && unreadCount > 0}">
-					<span class="absolute -top-1 -right-1 bg-red-600 text-white text-[11px] px-1.5 rounded-full border-2 border-white font-bold">${unreadCount}</span>
-				</c:if>
+				<i class="fa fa-bell text-black"></i> <span
+				class="absolute -top-1 -right-1 bg-red-600 text-white text-[11px] px-1.5 rounded-full border-2 border-white font-bold"></span>
 			</a>
 
 			<!-- Profile Link -->
 			<a href="UsersProfileServlet?userId=${sessionScope.userId}"
 				class="flex items-center gap-2 p-1 hover:bg-gray-100 rounded-full clickable border border-transparent hover:border-gray-200 transition">
-				<img src="img/${ub.profile_pic}" class="w-9 h-9 rounded-full border"
-				width="45Px"> <span>${ub.name}</span>
+				<img src="img/${ub.getProfile_pic()}" class="w-9 h-9 rounded-full border"
+				width="45Px"> <span>${ub.getName()}</span>
 			</a>
 
 			<!-- Logout Link -->
@@ -336,14 +322,16 @@ to {
 				<div onclick="location.href='UsersProfileServlet?userId=${sessionScope.userId}'"
 					class="flex items-center gap-3 p-3 rounded-xl hover:bg-white hover:shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300 cursor-pointer group">
 					<div class="relative">
-						<img src="img/${ub.profile_pic}" alt="${ub.name}" class="w-10 h-10 rounded-full border-2 border-blue-500 shadow-md">
+						<img src="img/${ub.getProfile_pic()}" alt="${ub.getName()}" class="w-10 h-10 rounded-full border-2 border-blue-500 shadow-md">
 						<div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
 					</div>
-					<span class="font-bold text-gray-700 group-hover:text-blue-600">${ub.name}</span>
+					<span class="font-bold text-gray-700 group-hover:text-blue-600">${ub.getName()}</span>
 				</div>
 
 				<a href="FriendServlet" class="flex items-center gap-4 p-3 rounded-xl hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-					<div class="w-10 h-10 flex items-center justify-center 
+					<div class="w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg shadow-blue-200">
+						<i class="fa fa-user-group text-white"></i>
+					</div> <span class="font-bold text-gray-600 group-hover:text-blue-600">Friends</span>
 				</a>
 
 				<a href="messages.jsp" class="flex items-center gap-4 p-3 rounded-xl hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
@@ -357,8 +345,6 @@ to {
 						<i class="fa fa-clock text-white"></i>
 					</div>
 					<span class="font-bold text-gray-600 group-hover:text-cyan-600">Memories</span>
-					</div>
-					<span class="font-bold text-gray-600 group-hover:text-cyan-600">Memories</span>
 				</div>
 
 				<div onclick="showSavedPostsModal()" class="flex items-center gap-4 p-3 rounded-xl hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
@@ -368,28 +354,12 @@ to {
 					<span class="font-bold text-gray-600 group-hover:text-pink-600">Saved</span>
 				</div>
 
-				<div onclick="openReelsFeed()" class="flex items-center gap-4 p-3 rounded-xl bg-blue-50/50 border border-blue-100 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
-					<div class="w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-200">
-						<i class="fa fa-clapperboard text-white"></i>
-					</div>
-					<span class="font-bold text-gray-700 group-hover:text-blue-600">Watch Reels</span>
-				</div>
-
 				<div onclick="openReelModal()" class="flex items-center gap-4 p-3 rounded-xl bg-orange-50/50 border border-orange-100 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
 					<div class="w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 shadow-lg shadow-orange-200">
-						<i class="fa fa-plus text-white"></i>
+						<i class="fa fa-clapperboard text-white"></i>
 					</div>
 					<span class="font-bold text-gray-700 group-hover:text-orange-600">Create Reel</span>
 				</div>
-
-				<c:if test="${ub.email == 'admin@gmail.com' || ub.email == 'shoabnewaj81@gmail.com' || ub.email == 'newaj@xxx.jp'}">
-					<a href="AdminServlet" class="flex items-center gap-4 p-3 rounded-xl bg-purple-50/50 border border-purple-100 hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
-						<div class="w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-700 shadow-lg shadow-purple-200">
-							<i class="fa fa-gauge-high text-white"></i>
-						</div>
-						<span class="font-bold text-gray-700 group-hover:text-purple-700">Admin Panel</span>
-					</a>
-				</c:if>
 
 				<hr class="my-4 border-white/20">
 				<p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Shortcuts</p>
@@ -398,61 +368,48 @@ to {
 
 		<!-- MAIN FEED -->
 		<main class="space-y-6">
-			<!-- STORIES SECTION (Facebook-style horizontal strip) -->
-		<div class="glass-card rounded-3xl p-4">
-			<div class="flex gap-3 overflow-x-auto pb-1 scroll-smooth" style="scrollbar-width: thin; scrollbar-color: #D1D5DB transparent;">
-
+			<!-- STORIES SECTION -->
+			<div class="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
 				<!-- Create Story Card -->
-				<div onclick="openStoryModal()" class="flex-none w-[115px] h-[200px] rounded-2xl relative overflow-hidden cursor-pointer group shadow-md border border-white/30 select-none">
-					<!-- Top: Profile pic -->
-					<div class="h-[140px] overflow-hidden bg-gray-200">
-						<img src="img/${ub.profile_pic}" alt="${ub.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+				<div onclick="openStoryModal()" class="w-[120px] h-[190px] min-w-[120px] rounded-2xl glass-card relative overflow-hidden flex flex-col group cursor-pointer border border-white/30 shadow-md">
+					<div class="h-[130px] overflow-hidden bg-gray-200">
+						<img src="img/${ub.getProfile_pic()}" alt="${ub.getName()}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
 					</div>
-					<!-- Bottom: Create button -->
-					<div class="absolute bottom-0 left-0 right-0 bg-white flex flex-col items-center pt-5 pb-3 gap-1">
-						<div class="absolute -top-5 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-blue-600 border-[3px] border-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+					<div class="flex-1 bg-white relative flex flex-col items-center justify-end pb-3 pt-4">
+						<div class="absolute -top-5 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-blue-600 border-4 border-white flex items-center justify-center shadow-md">
 							<i class="fa fa-plus text-white text-sm"></i>
 						</div>
-						<span class="text-[11px] font-bold text-gray-800 mt-1">Create Story</span>
+						<span class="text-[11px] font-bold text-gray-700">Create Story</span>
 					</div>
 				</div>
 
-				<!-- Story Cards from DB -->
+				<!-- Story Cards -->
 				<c:forEach var="story" items="${storyList}">
-					<div onclick="openStoryViewer('${story.name}', '${story.profilePic}', '${story.mediaUrl}', '${story.text}')"
-					     class="flex-none w-[115px] h-[200px] rounded-2xl relative overflow-hidden cursor-pointer group shadow-md border border-white/20 select-none">
-
-						<!-- Background: image or gradient -->
+					<div onclick="openStoryViewer('${story.getName()}', '${story.getProfilePic()}', '${story.getMediaUrl()}', '${story.getText()}')" 
+					     class="w-[120px] h-[190px] min-w-[120px] rounded-2xl relative overflow-hidden cursor-pointer shadow-md group border border-white/20">
 						<c:choose>
-							<c:when test="${not empty story.mediaUrl}">
-								<img src="img/${story.mediaUrl}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+							<c:when test="${not empty story.getMediaUrl()}">
+								<img src="img/${story.getMediaUrl()}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+								<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
 							</c:when>
 							<c:otherwise>
-								<div class="w-full h-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-start justify-center pt-16 p-3 text-center">
-									<p class="text-white text-xs font-bold leading-tight line-clamp-5">${story.text}</p>
+								<!-- Text Story default gradient background -->
+								<div class="w-full h-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-3 text-center">
+									<p class="text-white text-xs font-bold leading-tight line-clamp-4">${story.getText()}</p>
 								</div>
 							</c:otherwise>
 						</c:choose>
-
-						<!-- Dark gradient overlay bottom -->
-						<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-
-						<!-- User avatar - top left with blue ring -->
-						<div class="absolute top-2 left-2 w-9 h-9 rounded-full border-[3px] border-blue-500 overflow-hidden shadow-lg">
-							<img src="img/${story.profilePic}" class="w-full h-full object-cover">
+						<!-- User avatar top left -->
+						<div class="absolute top-2 left-2 w-8 h-8 rounded-full border-2 border-blue-500 overflow-hidden shadow-md">
+							<img src="img/${story.getProfilePic()}" class="w-full h-full object-cover">
 						</div>
-
-						<!-- User name - bottom -->
+						<!-- User Name bottom left -->
 						<div class="absolute bottom-2 left-2 right-2">
-							<p class="text-[11px] font-bold text-white truncate drop-shadow">${story.name}</p>
+							<p class="text-[11px] font-bold text-white truncate shadow-sm">${story.getName()}</p>
 						</div>
 					</div>
 				</c:forEach>
-
 			</div>
-		</div>
-
-	
 
 			<!-- REELS SECTION -->
 			<div class="reels-container py-2">
@@ -464,14 +421,14 @@ to {
 				</div>
 
 				<c:forEach var="reel" items="${reelsList}">
-					<div onclick="openReelViewer(${reel.id})" class="reel-card">
+					<div onclick="openReelViewer(${reel.getId()})" class="reel-card">
 						<video class="reel-video">
-							<source src="img/${reel.file_name}" type="video/mp4">
+							<source src="img/${reel.getFile_name()}" type="video/mp4">
 						</video>
 						<div class="reel-user">
-							<img src="img/${reel.profile_pic}" alt="user">
+							<img src="img/${reel.getProfile_pic()}" alt="user">
 						</div>
-						<div class="reel-info">${reel.name}</div>
+						<div class="reel-info">${reel.getName()}</div>
 					</div>
 				</c:forEach>
 			</div>
@@ -480,44 +437,54 @@ to {
 			<div class="glass-card p-5 rounded-3xl">
 				<div class="flex gap-4">
 					<a href="UsersProfileServlet?userId=${sessionScope.userId}" class="group relative"> 
-                        <img src="img/${ub.profile_pic}" alt="${ub.name}" class="w-12 h-12 rounded-2xl object-cover ring-2 ring-white shadow-md group-hover:scale-105 transition-transform">
+                        <img src="img/${ub.getProfile_pic()}" alt="${ub.getName()}" class="w-12 h-12 rounded-2xl object-cover ring-2 ring-white shadow-md group-hover:scale-105 transition-transform">
                         <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
 					</a>
 					<button onclick="openModal()"
 						class="flex-1 bg-white/40 hover:bg-white/60 backdrop-blur-md rounded-2xl text-left px-6 text-gray-600 text-[16px] font-medium transition-all border border-white/20">
-						What's on your mind, ${ub.name}?</button>
+						What's on your mind, ${ub.getName()}?</button>
 				</div>
-				<div class="border-t border-white/20 mt-4 pt-3 flex flex-wrap justify-around gap-2">
+				<div class="border-t border-white/20 mt-4 pt-3 flex justify-around">
 					<div onclick="openLiveModal()"
-						class="flex items-center gap-2 py-2 px-4 hover:bg-red-500/10 rounded-xl transition-all clickable text-red-500 font-semibold text-sm">
+						class="flex items-center gap-2 py-2 px-6 hover:bg-red-500/10 rounded-xl transition-all clickable text-red-500 font-semibold">
 						<i class="fa fa-video text-lg"></i> Live
 					</div>
 					<div onclick="openModal(); document.getElementById('modalFileInput').click();"
-						class="flex items-center gap-2 py-2 px-4 hover:bg-green-500/10 rounded-xl transition-all clickable text-green-500 font-semibold text-sm">
+						class="flex items-center gap-2 py-2 px-6 hover:bg-green-500/10 rounded-xl transition-all clickable text-green-500 font-semibold">
 						<i class="fa fa-image text-lg"></i> Photo
 					</div>
-					<div onclick="openReelModal()"
-						class="flex items-center gap-2 py-2 px-4 hover:bg-orange-500/10 rounded-xl transition-all clickable text-orange-500 font-semibold text-sm">
-							<img onclick="location.href='UsersProfileServlet?userId=${post.userId}'"
-								src="img/${post.profile_pic}" class="w-10 h-10 rounded-full clickable" width="30Px">
+					<div onclick="openModal()"
+						class="flex items-center gap-2 py-2 px-6 hover:bg-yellow-500/10 rounded-xl transition-all clickable text-yellow-500 font-semibold">
+						<i class="fa fa-face-smile text-lg"></i> Feeling
+					</div>
+				</div>
+			</div>
+
+			<!-- POSTS LIST -->
+			<c:forEach var="post" items="${postList}">
+				<div class="glass-card rounded-3xl p-6 mb-6 hover:shadow-2xl transition-all duration-500 group/post">
+					<div class="flex justify-between">
+						<div class="flex gap-3">
+							<img onclick="location.href='UsersProfileServlet?userId=${post.getUserId()}'"
+								src="img/${post.getProfile_pic()}" class="w-10 h-10 rounded-full clickable" width="30Px">
 							<div>
-								<a href="UsersProfileServlet?userId=${post.userId}" class="font-bold clickable group-hover/post:text-blue-600 transition-colors">${post.name}</a>
-								<c:if test="${not empty post.feeling}">
-									<span class="text-gray-500 text-[14px]"> is feeling <span class="font-bold text-gray-700">${post.feeling}</span></span>
+								<a href="UsersProfileServlet?userId=${post.getUserId()}" class="font-bold clickable group-hover/post:text-blue-600 transition-colors">${post.getName()}</a>
+								<c:if test="${not empty post.getFeeling()}">
+									<span class="text-gray-500 text-[14px]"> is feeling <span class="font-bold text-gray-700">${post.getFeeling()}</span></span>
 								</c:if>
 								<div class="text-[12px] text-gray-500 flex items-center gap-1">
-									<span class="time-ago" data-time="${post.time}">${post.time}</span> • <i class="fa fa-earth-americas"></i>
+									<span class="time-ago" data-time="${post.getTime()}">${post.getTime()}</span> • <i class="fa fa-earth-americas"></i>
 								</div>
 							</div>
 						</div>
-						<div class="relative">
-							<div onclick="togglePostMenu(event, ${post.id})" class="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"><i class="fa fa-ellipsis-h text-gray-500"></i></div>
-							<div id="post-menu-${post.id}" class="hidden absolute right-0 top-8 bg-white border shadow-lg rounded-xl z-50 min-w-[150px] overflow-hidden">
-								<div onclick="toggleSavePost(${post.id}, this)" class="px-4 py-3 hover:bg-blue-50 text-
-
-
-
-
+						<div class="relative group/menu">
+							<div class="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"><i class="fa fa-ellipsis-h text-gray-500"></i></div>
+							<div class="hidden group-hover/menu:block absolute right-0 top-8 bg-white border shadow-lg rounded-xl z-50 min-w-[150px] overflow-hidden">
+								<div onclick="toggleSavePost(${post.getId()}, this)" class="px-4 py-3 hover:bg-blue-50 text-blue-600 cursor-pointer font-bold transition flex items-center gap-2">
+									<i class="fa fa-bookmark"></i> Save Post
+								</div>
+								<c:if test="${post.getUserId() == sessionScope.ub.getId()}">
+									<div onclick="deletePost(${post.getId()})" class="px-4 py-3 hover:bg-red-50 text-red-600 cursor-pointer font-bold transition flex items-center gap-2">
 										<i class="fa fa-trash"></i> Delete Post
 									</div>
 								</c:if>
@@ -527,15 +494,15 @@ to {
 
 					<!-- Post Content -->
 					<div class="mt-4">
-						<p class="text-gray-800 leading-relaxed">${post.content}</p>
-						<c:if test="${not empty post.file_name}">
+						<p class="text-gray-800 leading-relaxed">${post.getContent()}</p>
+						<c:if test="${not empty post.getFile_name()}">
 							<div class="mt-4 rounded-2xl overflow-hidden border border-white/20 shadow-lg bg-gray-100/30">
 								<c:choose>
-									<c:when test="${post.post_type == 'video' || post.file_name.toLowerCase().endsWith('.webm') || post.file_name.toLowerCase().endsWith('.mp4') || post.file_name.toLowerCase().endsWith('.mov') || post.file_name.toLowerCase().endsWith('.ogg') || post.file_name.toLowerCase().endsWith('.avi') || post.file_name.toLowerCase().endsWith('.mkv')}">
-										<video src="img/${post.file_name}" controls class="w-full max-h-[500px] object-contain bg-black"></video>
+									<c:when test="${post.getPost_type() == 'video' || post.getFile_name().toLowerCase().endsWith('.webm') || post.getFile_name().toLowerCase().endsWith('.mp4')}">
+										<video src="img/${post.getFile_name()}" controls class="w-full max-h-[500px] object-contain bg-black"></video>
 									</c:when>
 									<c:otherwise>
-										<img src="img/${post.file_name}" class="w-full max-h-[500px] object-cover hover:scale-[1.01] transition-transform duration-700">
+										<img src="img/${post.getFile_name()}" class="w-full max-h-[500px] object-cover hover:scale-[1.01] transition-transform duration-700">
 									</c:otherwise>
 								</c:choose>
 							</div>
@@ -545,225 +512,211 @@ to {
 					<!-- Stats Section -->
 					<div class="flex items-center justify-between mt-4 py-3 border-y border-white/10">
 						<div class="flex items-center gap-1.5 text-gray-500 text-sm">
-							<span id="react-count-${post.id}" class="font-bold ml-1">
-								<c:set var="tc" value="${post.likeCount + post.loveCount + post.careCount + post.hahaCount + post.wowCount + post.sadCount + post.angryCount + post.dislikes}"/>
+							<span id="react-count-${post.getId()}" class="font-bold ml-1">
+								<c:set var="tc" value="${post.getLikeCount() + post.getLoveCount() + post.getCareCount() + post.getHahaCount() + post.getWowCount() + post.getSadCount() + post.getAngryCount() + post.getDislikes()}"/>
 								<c:choose>
+									<c:when test="${tc > 0}">
+										<c:if test="${post.getLikeCount() > 0}">👍 <span class="text-gray-600">${post.getLikeCount()}</span>&nbsp;&nbsp;</c:if>
+										<c:if test="${post.getLoveCount() > 0}">❤️ <span class="text-gray-600">${post.getLoveCount()}</span>&nbsp;&nbsp;</c:if>
+										<c:if test="${post.getCareCount() > 0}">🥰 <span class="text-gray-600">${post.getCareCount()}</span>&nbsp;&nbsp;</c:if>
+										<c:if test="${post.getHahaCount() > 0}">😆 <span class="text-gray-600">${post.getHahaCount()}</span>&nbsp;&nbsp;</c:if>
+										<c:if test="${post.getWowCount() > 0}">😮 <span class="text-gray-600">${post.getWowCount()}</span>&nbsp;&nbsp;</c:if>
+										<c:if test="${post.getSadCount() > 0}">😢 <span class="text-gray-600">${post.getSadCount()}</span>&nbsp;&nbsp;</c:if>
+										<c:if test="${post.getAngryCount() > 0}">😡 <span class="text-gray-600">${post.getAngryCount()}</span>&nbsp;&nbsp;</c:if>
+										<c:if test="${post.getDislikes() > 0}">👎 <span class="text-gray-600">${post.getDislikes()}</span>&nbsp;&nbsp;</c:if>
+									</c:when>
+									<c:otherwise>0</c:otherwise>
+								</c:choose>
+							</span>
+						</div>
+						<div class="flex gap-4 text-gray-500 text-sm font-bold">
+							<span id="post-comment-count-text-${post.getId()}" class="hover:underline cursor-pointer" onclick="focusCmt(${post.getId()})">${post.getCommentCount()} Comments</span>
+							<span id="post-share-count-text-${post.getId()}" class="hover:underline cursor-pointer" onclick="shareAJAX(${post.getId()})">${post.getShareCount()} Shares</span>
+						</div>
+					</div>
 
+					<!-- Action Buttons -->
+					<div class="flex justify-around py-1.5">
+						<div class="react-container flex-1">
+							<div id="post-action-btn-${post.getId()}" onclick="handleAJAXReact(${post.getId()}, 'Like', 'post', event)" class="flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 transition-all cursor-pointer font-bold text-gray-600">
+								<span id="post-action-btn-content-${post.getId()}" class="flex items-center justify-center gap-2">
+									<i class="fa-regular fa-thumbs-up"></i> Like
+								</span>
+							</div>
+							<div class="react-box glass-card !p-2 !rounded-full">
+								<span title="Like" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Like', 'post', event)">👍</span>
+								<span title="Love" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Love', 'post', event)">❤️</span>
+								<span title="Care" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Care', 'post', event)">🥰</span>
+								<span title="Haha" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Haha', 'post', event)">😆</span>
+								<span title="Wow" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Wow', 'post', event)">😮</span>
+								<span title="Sad" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Sad', 'post', event)">😢</span>
+								<span title="Angry" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Angry', 'post', event)">😡</span>
+								<span title="Dislike" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Dislike', 'post', event)">👎</span>
+							</div>
+						</div>
+						<div onclick="focusCmt(${post.getId()})" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 transition-all cursor-pointer font-bold text-gray-600">
+							<i class="fa-regular fa-comment"></i> Comment
+						</div>
+						<div onclick="shareAJAX(${post.getId()})" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 transition-all cursor-pointer font-bold text-gray-600">
+							<i class="fa-solid fa-share"></i> Share
+						</div>
+					</div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-						<div id="comment-list-${post.id}" class="space-y-4 mb-4">
-							<c:forEach var="cmt" items="${post.comments}">
+					<!-- Comment Section -->
+					<div id="comment-section-${post.getId()}" class="mt-4 pt-4 border-t border-white/10">
+						<div id="comment-list-${post.getId()}" class="space-y-4 mb-4">
+							<c:forEach var="cmt" items="${post.getComments()}">
 								<div class="flex flex-col gap-2 group/cmt mb-4">
 									<div class="flex gap-2">
-										<img src="img/${cmt.profilePic}" class="w-8 h-8 rounded-full border shadow-sm cursor-pointer" onclick="location.href='UsersProfileServlet?userId=${cmt.userId}'">
+										<img src="img/${cmt.getProfilePic()}" class="w-8 h-8 rounded-full border shadow-sm cursor-pointer" onclick="location.href='UsersProfileServlet?userId=${cmt.getUserId()}'">
 										<div class="flex flex-col flex-1">
 											<div class="bg-white/50 px-4 py-2 rounded-2xl shadow-sm inline-block max-w-fit">
-												<p class="font-bold text-[13px] hover:underline cursor-pointer" onclick="location.href='UsersProfileServlet?userId=${cmt.userId}'">${cmt.name}</p>
-												<p class="text-[14px] text-gray-700">${cmt.comment_text}</p>
-												<c:if test="${not empty cmt.file_name}">
-													<img src="img/${cmt.file_name}" class="mt-2 rounded-xl max-h-40 border shadow-sm">
+												<p class="font-bold text-[13px] hover:underline cursor-pointer" onclick="location.href='UsersProfileServlet?userId=${cmt.getUserId()}'">${cmt.getName()}</p>
+												<p class="text-[14px] text-gray-700">${cmt.getComment_text()}</p>
+												<c:if test="${not empty cmt.getFile_name()}">
+													<img src="img/${cmt.getFile_name()}" class="mt-2 rounded-xl max-h-40 border shadow-sm">
 												</c:if>
 											</div>
 											<div class="flex gap-4 ml-4 mt-1 text-[11px] font-bold text-gray-500 items-center">
 												<div class="react-container clickable">
-													<span class="hover:text-blue-600 transition" onclick="handleAJAXReact(${cmt.id}, 'Like', 'comment', event)">Like</span>
+													<span class="hover:text-blue-600 transition" onclick="handleAJAXReact(${cmt.getId()}, 'Like', 'comment', event)">Like</span>
 													<div class="react-box !p-1 !rounded-full">
-														<span title="Like" onclick="handleAJAXReact(${cmt.id}, 'Like', 'comment', event)">👍</span>
-														<span title="Love" onclick="handleAJAXReact(${cmt.id}, '
-
-
-
-
-
-
-
-
-
-
-
-													<c:set var="tc" value="${cmt.likeCount + cmt.loveCount + cmt.careCount + cmt.hahaCount + cmt.wowCount + cmt.sadCount + cmt.angryCount + cmt.dislikes}"/>
+														<span title="Like" onclick="handleAJAXReact(${cmt.getId()}, 'Like', 'comment', event)">👍</span>
+														<span title="Love" onclick="handleAJAXReact(${cmt.getId()}, 'Love', 'comment', event)">❤️</span>
+														<span title="Care" onclick="handleAJAXReact(${cmt.getId()}, 'Care', 'comment', event)">🥰</span>
+														<span title="Haha" onclick="handleAJAXReact(${cmt.getId()}, 'Haha', 'comment', event)">😆</span>
+														<span title="Wow" onclick="handleAJAXReact(${cmt.getId()}, 'Wow', 'comment', event)">😮</span>
+														<span title="Sad" onclick="handleAJAXReact(${cmt.getId()}, 'Sad', 'comment', event)">😢</span>
+														<span title="Angry" onclick="handleAJAXReact(${cmt.getId()}, 'Angry', 'comment', event)">😡</span>
+														<span title="Dislike" onclick="handleAJAXReact(${cmt.getId()}, 'Dislike', 'comment', event)">👎</span>
+													</div>
+												</div>
+												<span class="clickable hover:text-blue-600 transition" onclick="showReplyBox(${cmt.getId()}, '${cmt.getName()}')">Reply</span>
+												<span class="clickable hover:text-blue-600 transition" onclick="shareCommentOrReply(this)">Share</span>
+												<div id="comment-react-container-${cmt.getId()}" class="text-[10px] font-normal text-gray-400">
+													<c:set var="tc" value="${cmt.getLikeCount() + cmt.getLoveCount() + cmt.getCareCount() + cmt.getHahaCount() + cmt.getWowCount() + cmt.getSadCount() + cmt.getAngryCount() + cmt.getDislikes()}"/>
 													<c:if test="${tc > 0}">
-														<c:if test="${cmt.likeCount > 0}">👍 <span class="text-gray-600">${cmt.likeCount}</span>&nbsp;&nbsp;</c:if>
-														<c:if test="${cmt.loveCount > 0}">❤️ <span class="text-gray-600">${cmt.loveCount}</span>&nbsp;&nbsp;</c:if>
-														<c:if test="${cmt.careCount > 0}">🥰 <span class="text-gray-600">${cmt.careCount}</span>&nbsp;&nbsp;</c:if>
-														<c:if test="${cmt.hahaCount > 0}">😆 <span class="text-gray-600">${cmt.hahaCount}</span>&nbsp;&nbsp;</c:if>
-														<c:if test="${cmt.wowCount > 0}">😮 <span class="text-gray-600">${cmt.wowCount}</span>&nbsp;&nbsp;</c:if>
-														<c:if test="${cmt.sadCount > 0}">😢 <span class="text-gray-600">${cmt.sadCount}</span>&nbsp;&nbsp;</c:if>
-														<c:if test="${cmt.angryCount > 0}">😡 <span class="text-gray-600">${cmt.angryCount}</span>&nbsp;&nbsp;</c:if>
-														<c:if test="${cmt.dislikes > 0}">👎 <span class="text-gray-600">${cmt.dislikes}</span>&nbsp;&nbsp;</c:if>
+														<c:if test="${cmt.getLikeCount() > 0}">👍 <span class="text-gray-600">${cmt.getLikeCount()}</span>&nbsp;&nbsp;</c:if>
+														<c:if test="${cmt.getLoveCount() > 0}">❤️ <span class="text-gray-600">${cmt.getLoveCount()}</span>&nbsp;&nbsp;</c:if>
+														<c:if test="${cmt.getCareCount() > 0}">🥰 <span class="text-gray-600">${cmt.getCareCount()}</span>&nbsp;&nbsp;</c:if>
+														<c:if test="${cmt.getHahaCount() > 0}">😆 <span class="text-gray-600">${cmt.getHahaCount()}</span>&nbsp;&nbsp;</c:if>
+														<c:if test="${cmt.getWowCount() > 0}">😮 <span class="text-gray-600">${cmt.getWowCount()}</span>&nbsp;&nbsp;</c:if>
+														<c:if test="${cmt.getSadCount() > 0}">😢 <span class="text-gray-600">${cmt.getSadCount()}</span>&nbsp;&nbsp;</c:if>
+														<c:if test="${cmt.getAngryCount() > 0}">😡 <span class="text-gray-600">${cmt.getAngryCount()}</span>&nbsp;&nbsp;</c:if>
+														<c:if test="${cmt.getDislikes() > 0}">👎 <span class="text-gray-600">${cmt.getDislikes()}</span>&nbsp;&nbsp;</c:if>
 													</c:if>
 												</div>
 											</div>
 
 											<!-- Reply List -->
-											<div id="reply-list-${cmt.id}" class="mt-2 space-y-2 ml-10">
-												<c:forEach var="reply" items="${cmt.replies}">
+											<div id="reply-list-${cmt.getId()}" class="mt-2 space-y-2 ml-10">
+												<c:forEach var="reply" items="${cmt.getReplies()}">
 													<div class="comment-level-2 mb-2 flex gap-2">
-														<a href="UsersProfileServlet?userId=${reply.userId}">
-															<img src="img/${reply.profilePic}" class="w-7 h-7 rounded-full border shadow-sm">
+														<a href="UsersProfileServlet?userId=${reply.getUserId()}">
+															<img src="img/${reply.getProfilePic()}" class="w-7 h-7 rounded-full border shadow-sm">
 														</a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+														<div class="flex flex-col flex-1">
+															<div class="bg-white/40 px-3 py-1.5 rounded-2xl inline-block max-w-fit shadow-sm">
+																<p class="font-bold text-[12px]"><a href="UsersProfileServlet?userId=${reply.getUserId()}" class="hover:underline">${reply.getName()}</a></p>
+																<p class="text-[13px] text-gray-700">${reply.getText()}</p>
+																<c:if test="${not empty reply.getMedia()}">
+																	<img src="img/${reply.getMedia()}" class="mt-1 rounded-lg max-h-32 border shadow-sm">
+																</c:if>
+															</div>
+															<div class="flex gap-4 ml-3 mt-0.5 text-[10px] font-bold text-gray-500 items-center">
+																<div class="react-container clickable">
+																	<span class="hover:text-blue-600 transition" onclick="handleAJAXReact(${reply.getId()}, 'Like', 'reply', event)">Like</span>
+																	<div class="react-box !p-1 !rounded-full">
+																		<span title="Like" onclick="handleAJAXReact(${reply.getId()}, 'Like', 'reply', event)">👍</span>
+																		<span title="Love" onclick="handleAJAXReact(${reply.getId()}, 'Love', 'reply', event)">❤️</span>
+																		<span title="Care" onclick="handleAJAXReact(${reply.getId()}, 'Care', 'reply', event)">🥰</span>
+																		<span title="Haha" onclick="handleAJAXReact(${reply.getId()}, 'Haha', 'reply', event)">😆</span>
+																		<span title="Wow" onclick="handleAJAXReact(${reply.getId()}, 'Wow', 'reply', event)">😮</span>
+																		<span title="Sad" onclick="handleAJAXReact(${reply.getId()}, 'Sad', 'reply', event)">😢</span>
+																		<span title="Angry" onclick="handleAJAXReact(${reply.getId()}, 'Angry', 'reply', event)">😡</span>
+																		<span title="Dislike" onclick="handleAJAXReact(${reply.getId()}, 'Dislike', 'reply', event)">👎</span>
+																	</div>
+																</div>
+																<span class="clickable hover:text-blue-600 transition" onclick="showReplyBox(${cmt.getId()}, '${reply.getName()}')">Reply</span>
+																<span class="clickable hover:text-blue-600 transition" onclick="shareCommentOrReply(this)">Share</span>
+																<div id="reply-react-container-${reply.getId()}" class="text-[9px] font-normal text-gray-400">
+																	<c:set var="trc" value="${reply.getLikeCount() + reply.getLoveCount() + reply.getCareCount() + reply.getHahaCount() + reply.getWowCount() + reply.getSadCount() + reply.getAngryCount() + reply.getDislikes()}"/>
+																	<c:if test="${trc > 0}">
+																		<c:if test="${reply.getLikeCount() > 0}">👍 <span class="text-gray-600">${reply.getLikeCount()}</span>&nbsp;&nbsp;</c:if>
+																		<c:if test="${reply.getLoveCount() > 0}">❤️ <span class="text-gray-600">${reply.getLoveCount()}</span>&nbsp;&nbsp;</c:if>
+																		<c:if test="${reply.getCareCount() > 0}">🥰 <span class="text-gray-600">${reply.getCareCount()}</span>&nbsp;&nbsp;</c:if>
+																		<c:if test="${reply.getHahaCount() > 0}">😆 <span class="text-gray-600">${reply.getHahaCount()}</span>&nbsp;&nbsp;</c:if>
+																		<c:if test="${reply.getWowCount() > 0}">😮 <span class="text-gray-600">${reply.getWowCount()}</span>&nbsp;&nbsp;</c:if>
+																		<c:if test="${reply.getSadCount() > 0}">😢 <span class="text-gray-600">${reply.getSadCount()}</span>&nbsp;&nbsp;</c:if>
+																		<c:if test="${reply.getAngryCount() > 0}">😡 <span class="text-gray-600">${reply.getAngryCount()}</span>&nbsp;&nbsp;</c:if>
+																		<c:if test="${reply.getDislikes() > 0}">👎 <span class="text-gray-600">${reply.getDislikes()}</span>&nbsp;&nbsp;</c:if>
+																	</c:if>
+																</div>
+															</div>
+														</div>
+													</div>
+												</c:forEach>
+											</div>
+
+											<!-- Reply Input Box -->
+											<div id="replyInputContainer-${cmt.getId()}" class="hidden mt-2 ml-10 relative">
+												<div class="flex gap-2">
+													<img src="img/${ub.getProfile_pic()}" class="w-7 h-7 rounded-full border shadow-sm" width="28px">
+													<div class="flex-1 bg-white/40 backdrop-blur-sm rounded-2xl px-3 py-1.5 flex items-center border border-white/20">
+														<input type="text" id="input-reply-${cmt.getId()}" placeholder="Write a reply..." class="bg-transparent outline-none flex-1 text-[12px] font-medium"
+															onkeydown="if(event.key === 'Enter') submitReplyAJAX('${cmt.getId()}')">
+														<i class="fa-regular fa-face-smile text-yellow-500 cursor-pointer mx-2" onclick="toggleEmojiPicker('emoji-picker-reply-${cmt.getId()}')"></i>
+                                                        <label for="replyMedia-${cmt.getId()}" class="cursor-pointer mx-2 text-gray-500 hover:text-blue-600 transition">
+                                                            <i class="fa-solid fa-camera"></i>
+                                                        </label>
+                                                        <input type="file" id="replyMedia-${cmt.getId()}" class="hidden" accept="image/*,video/*" onchange="previewReplyMedia('${cmt.getId()}')">
+														<button onclick="submitReplyAJAX('${cmt.getId()}')" class="text-blue-600"><i class="fa fa-paper-plane text-xs"></i></button>
+													</div>
+												</div>
+                                                <div id="replyPreview-${cmt.getId()}" class="hidden ml-9 mt-2 relative inline-block">
+                                                    <img id="replyImgPreview-${cmt.getId()}" src="" class="h-16 rounded-lg shadow-md border">
+                                                    <button onclick="removeReplyMedia('${cmt.getId()}')" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow-md">×</button>
+                                                </div>
+												<div id="emoji-picker-reply-${cmt.getId()}" class="hidden absolute bottom-10 left-10 bg-white border rounded-xl p-2 shadow-xl z-[5000] w-40">
+													<div class="grid grid-cols-4 gap-2 text-lg">
+														<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-${cmt.getId()}', '😀')">😀</span>
+														<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-${cmt.getId()}', '😂')">😂</span>
+														<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-${cmt.getId()}', '❤️')">❤️</span>
+														<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-${cmt.getId()}', '👍')">👍</span>
+														<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-${cmt.getId()}', '🥰')">🥰</span>
+														<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-${cmt.getId()}', '😮')">😮</span>
+														<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-${cmt.getId()}', '😢')">😢</span>
+														<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-${cmt.getId()}', '😡')">😡</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</c:forEach>
+						</div>
+						<!-- Comment Input -->
+						<form onsubmit="event.preventDefault(); submitCommentAJAX(${post.getId()});" class="flex gap-2 mt-4 items-center relative">
+							<img src="img/${ub.getProfile_pic()}" class="w-8 h-8 rounded-full border shadow-sm" width="30Px">
+							<div class="flex-1 bg-white/40 backdrop-blur-sm rounded-2xl px-4 py-2 flex items-center gap-2 border border-white/30 focus-within:ring-2 ring-blue-500/20 transition-all">
+								<input id="input-post-${post.getId()}" class="bg-transparent outline-none flex-1 text-sm font-medium" placeholder="Write a comment...">
+								<div class="flex items-center gap-1.5 text-gray-400">
+									<i class="fa-regular fa-face-smile hover:text-yellow-500 cursor-pointer transition-colors" onclick="toggleEmojiPicker('emoji-picker-post-${post.getId()}')"></i>
+									<i class="fa-regular fa-image hover:text-blue-500 cursor-pointer transition-colors" onclick="document.getElementById('commentMedia-${post.getId()}').click()"></i>
+								</div>
+								<input type="file" id="commentMedia-${post.getId()}" class="hidden" accept="image/*" onchange="previewCommentMedia(event, ${post.getId()})">
+								<button type="submit" class="text-blue-600 hover:scale-110 transition-transform"><i class="fa fa-paper-plane"></i></button>
+							</div>
+							<div id="emoji-picker-post-${post.getId()}" class="hidden absolute bottom-12 right-0 bg-white border rounded-xl p-2 shadow-xl z-[5000] w-40">
+								<div class="grid grid-cols-4 gap-2 text-xl">
+									<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-post-${post.getId()}', '😀')">😀</span>
+									<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-post-${post.getId()}', '😂')">😂</span>
+									<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-post-${post.getId()}', '❤️')">❤️</span>
+									<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-post-${post.getId()}', '👍')">👍</span>
+									<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-post-${post.getId()}', '🥰')">🥰</span>
+									<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-post-${post.getId()}', '😮')">😮</span>
+									<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-post-${post.getId()}', '😢')">😢</span>
+									<span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-post-${post.getId()}', '😡')">😡</span>
 								</div>
 							</div>
 						</form>
@@ -798,15 +751,29 @@ to {
 				<!-- Contacts Section -->
 				<div class="glass-card p-5 rounded-3xl">
 					<div class="flex items-center justify-between mb-4">
-
-
-
-
-
-
-
-
-
+						<h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest">Contacts</h3>
+						<div class="flex gap-2 text-gray-400">
+							<i class="fa fa-video hover:text-blue-500 transition cursor-pointer"></i>
+							<i class="fa fa-search hover:text-blue-500 transition cursor-pointer"></i>
+							<i class="fa fa-ellipsis-h hover:text-blue-500 transition cursor-pointer"></i>
+						</div>
+					</div>
+					<div class="space-y-1">
+						<c:forEach var="friend" items="${friendList}">
+							<div onclick="location.href='messages.jsp?userName=${friend.getName()}'" class="flex items-center gap-3 p-2 rounded-xl hover:bg-white/40 transition-all cursor-pointer group">
+								<div class="relative">
+									<img src="img/${friend.getProfile_pic()}" class="w-10 h-10 rounded-xl object-cover shadow-sm group-hover:rotate-6 transition-transform">
+									<div class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
+								</div>
+								<span class="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">${friend.getName()}</span>
+							</div>
+						</c:forEach>
+						<c:if test="${empty friendList}">
+							<p class="text-xs text-gray-400 text-center py-4">No contacts online</p>
+						</c:if>
+					</div>
+				</div>
+			</div>
 		</aside>
 	</div>
 
@@ -834,9 +801,9 @@ to {
 				<h2 class="text-xl font-bold text-gray-800">Create Story</h2>
 				<button onclick="closeStoryModal()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-red-100 hover:text-red-600 transition">
 					<i class="fa fa-times"></i>
-				</button
-			<!-- Header -->
-			<div class="flex items-center justify-between p-5 border-b border-gray-700 bg-[#242526]">
+				</button>
+			</div>
+			<form id="storyForm" action="StoryServlet" method="post" enctype="multipart/form-data" class="p-6 space-y-4">
 				<div>
 					<label class="block text-sm font-bold text-gray-700 mb-1">Story Text (Optional)</label>
 					<textarea name="text" placeholder="Write something in your story..." class="w-full p-3 border rounded-xl outline-none resize-none h-20 text-sm focus:ring-2 focus:ring-blue-500/20 transition-all"></textarea>
@@ -855,6 +822,12 @@ to {
 					<img id="storyImagePreview" src="#" class="w-full h-auto object-contain max-h-[200px] hidden">
 					<video id="storyVideoPreview" src="#" class="w-full h-auto object-contain max-h-[200px] hidden" controls></video>
 				</div>
+				<button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition">Share to Story</button>
+			</form>
+		</div>
+	</div>
+
+	<!-- Story Viewer Modal -->
 	<div id="storyViewerModal" class="modal !bg-black/95">
 		<div class="relative w-full h-full flex items-center justify-center">
 			<button onclick="closeStoryViewer()" class="absolute top-6 right-6 text-white text-3xl z-50 hover:scale-110 transition">
@@ -883,13 +856,6 @@ to {
 					<video id="storyViewerVideo" src="" class="w-full h-full object-contain hidden" autoplay controls></video>
 					
 					<!-- Text-only Story overlay -->
-
-				<!-- Story Content Body -->
-				<div class="flex-1 flex items-center justify-center relative p-4">
-					<img id="storyViewerImage" src="" class="w-full h-full object-contain hidden">
-					<video id="storyViewerVideo" src="" class="w-full h-full object-contain hidden" autoplay controls></video>
-					
-					<!-- Text-only Story overlay -->
 					<div id="storyViewerTextContainer" class="w-full h-full bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-2xl flex items-center justify-center p-6 text-center text-white hidden">
 						<p id="storyViewerText" class="text-xl font-bold leading-normal"></p>
 					</div>
@@ -898,275 +864,262 @@ to {
 		</div>
 	</div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	<!-- Live Stream Modal -->
+	<div id="liveModal" class="modal !bg-black/95 z-[9999]">
+		<div class="modal-content !max-w-[850px] !w-[95%] !bg-[#18191A] rounded-2xl shadow-2xl overflow-hidden border border-gray-700 p-0">
+			<!-- Header -->
+			<div class="flex items-center justify-between p-4 border-b border-gray-700">
+				<div class="flex items-center gap-3">
+                    <div class="w-3 h-3 bg-red-600 rounded-full animate-pulse"></div>
+                    <h2 class="text-xl font-bold text-white">Live Broadcast</h2>
+                </div>
+				<button onclick="closeLiveModal()" class="w-8 h-8 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-white transition">
+                    <i class="fa fa-times"></i>
+                </button>
+			</div>
+
+			<!-- Main Content Area -->
+			<div class="flex flex-col md:flex-row h-[65vh] min-h-[450px]">
+                <!-- Video Section -->
+				<div class="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
+                    <video id="liveVideo" autoplay muted playsinline class="w-full h-full object-cover transform scale-x-[-1]"></video>
+                    
+                    <!-- Overlay Elements -->
+                    <div class="absolute top-4 left-4 flex gap-2">
+                        <span id="liveBadge" class="hidden bg-red-600 text-white px-3 py-1 rounded-md text-sm font-bold uppercase tracking-wider shadow-lg animate-pulse">LIVE</span>
+                        <span id="liveTimer" class="hidden bg-black/60 backdrop-blur-sm text-white px-3 py-1 rounded-md text-sm font-bold">00:00</span>
+                    </div>
+                    <div class="absolute top-4 right-4 flex gap-2">
+                        <span id="liveViewers" class="hidden bg-black/60 backdrop-blur-sm text-white px-3 py-1 rounded-md text-sm font-bold flex items-center gap-2">
+                            <i class="fa fa-eye text-red-500"></i> <span id="viewerCount">0</span>
+                        </span>
+                    </div>
+
+                    <!-- Setup Overlay -->
+                    <div id="liveSetupOverlay" class="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center z-10 p-6">
+                        <i class="fa fa-video text-6xl text-gray-400 mb-4 animate-bounce"></i>
+                        <h3 class="text-white text-2xl font-bold mb-2">Camera Setup</h3>
+                        <p class="text-gray-400 text-center text-sm mb-6 max-w-md">Allow camera and microphone access to start your live broadcast.</p>
+                        <button onclick="requestCameraAccess()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold transition shadow-[0_0_20px_rgba(37,99,235,0.4)] flex items-center gap-2 hover:scale-105">
+                            <i class="fa fa-camera"></i> Enable Camera
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chat/Control Section -->
+                <div class="w-full md:w-[320px] border-l border-gray-700 flex flex-col bg-[#242526]">
+                    <div class="p-4 border-b border-gray-700">
+                        <h3 class="text-white font-bold mb-2 text-sm uppercase tracking-wider">Stream Details</h3>
+                        <input type="text" id="liveTitle" placeholder="What's your live about?" class="w-full bg-[#3A3B3C] text-white outline-none p-3 rounded-xl text-sm border border-transparent focus:border-blue-500 transition shadow-inner">
+                    </div>
+
+                    <!-- Simulated Chat -->
+                    <div id="liveChatBox" class="flex-1 p-4 overflow-y-auto space-y-3 hidden custom-scrollbar">
+                        <!-- Chat messages will appear here -->
+                    </div>
+                    <div id="chatPlaceholder" class="flex-1 flex flex-col items-center justify-center text-gray-500">
+                        <i class="fa fa-comment-slash text-4xl mb-3 opacity-30"></i>
+                        <p class="text-sm font-medium">Live chat will appear here</p>
+                    </div>
+
+                    <div class="p-4 border-t border-gray-700 bg-[#18191A]">
+                        <button id="goLiveBtn" disabled onclick="startLiveStream()" class="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl transition shadow-[0_0_15px_rgba(220,38,38,0.4)] flex items-center justify-center gap-2">
+                            <i class="fa fa-broadcast-tower"></i> Go Live Now
+                        </button>
+                        <button id="endLiveBtn" onclick="endLiveStream()" class="w-full hidden bg-gray-700 hover:bg-gray-600 text-white font-bold py-3.5 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+                            <i class="fa fa-stop-circle text-red-500"></i> End Broadcast
+                        </button>
+                    </div>
+                </div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Create Post Modal -->
+	<div id="postModal" class="modal">
+		<div
+			class="modal-content !max-w-[500px] !w-[95%] aspect-square flex flex-col bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] transform transition-all">
+
+			<!-- Modal Header -->
+			<div class="flex items-center justify-between p-4 border-b">
+				<h2 class="text-xl font-bold text-center flex-1 text-gray-800">Create
+					Post</h2>
+				<button onclick="closeModal()"
+					class="bg-gray-100 hover:bg-red-100 hover:text-red-600 rounded-full p-2 w-9 h-9 flex items-center justify-center transition-all">
+					<i class="fa fa-xmark text-lg"></i>
+				</button>
+			</div>
+
+			<form id="postForm" action="UsersPostServlet" method="post"
+				enctype="multipart/form-data"
+				class="p-5 flex flex-col flex-1 overflow-y-auto">
+
+				<!-- User Info -->
+				<div class="flex items-center gap-3 mb-4">
+					<div class="relative">
+						<img src="img/${ub.getProfile_pic()}"
+							class="w-11 h-11 rounded-full border-2 border-blue-500 shadow-sm">
+					</div>
+					<div>
+						<p class="font-bold text-gray-800">${ub.getName()}</p>
+						<div class="flex gap-2">
+							<!-- Feeling Indicator -->
+							<div
+								class="flex items-center gap-1 bg-gray-100 px-2 py-0.5 rounded-md">
+								<i class="fa fa-face-smile text-yellow-500 text-xs"></i> <select
+									name="feeling"
+									class="text-[11px] font-bold bg-transparent outline-none cursor-pointer text-gray-600">
+									<option value="">Feeling</option>
+									<option value="Happy">😊 Happy</option>
+									<option value="Loved">😍 Loved</option>
+									<option value="Haha">😆 Haha</option>
+									<option value="Wow">😯 Wow</option>
+									<option value="Sad">😢 Sad!</option>
+								</select>
+							</div>
+							<!-- Tag Indicator (New) -->
+							<div id="tagBadge"
+								class="hidden flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded-md">
+								<i class="fa fa-user-tag text-blue-500 text-xs"></i> <span
+									class="text-[11px] font-bold text-blue-600">Friends
+									Tagged</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Text Area -->
+				<textarea name="content"
+					placeholder="What's on your mind, ${ub.getName()}?"
+					class="w-full flex-1 text-xl outline-none resize-none placeholder-gray-400 text-gray-700 min-h-[100px]"></textarea>
+
+				<!-- 👥 Friends Tag Selection (এটি লুকানো থাকবে, ক্লিক করলে আসবে) -->
+				<div id="tagSection"
+					class="hidden mb-3 p-3 bg-blue-50 rounded-xl border border-blue-100 shadow-inner">
+					<p class="text-xs font-bold text-blue-600 mb-2">Tag Friends:</p>
+					<select name="taggedFriends" multiple
+						class="w-full bg-white border-none rounded-lg text-sm p-2 outline-none h-20 shadow-sm">
+						<option value="1">Sakura</option>
+						<option value="2">John Doe</option>
+						<option value="3">Alex</option>
+					</select>
+				</div>
+
+				<!-- Image/Video Preview -->
+				<div id="modalPreviewContainer"
+					class="hidden relative mt-2 mb-2 rounded-xl overflow-hidden border-2 border-blue-50 shadow-inner">
+					<button type="button" onclick="removeModalPreview()"
+						class="absolute top-2 right-2 bg-black/50 text-white hover:bg-red-500 rounded-full w-7 h-7 flex items-center justify-center z-10 transition-all">×</button>
+					<img id="modalImagePreview" src="#"
+						class="w-full h-auto object-cover max-h-[180px]">
+				</div>
+
+				<!-- 🌈 কালারফুল ৩ডি "Add to Post" বক্স -->
+				<div
+					class="mt-auto p-3 border-2 border-gray-100 rounded-2xl flex items-center justify-between shadow-sm bg-gradient-to-r from-white to-gray-50">
+					<span class="font-bold text-gray-700 text-sm pl-2">Add to
+						your post</span>
+					<div class="flex gap-2">
+						<!-- Photo/Video Icon (Glossy Green) -->
+						<div title="Photo/Video"
+							onclick="document.getElementById('modalFileInput').click()"
+							class="w-10 h-10 flex items-center justify-center rounded-xl bg-green-50 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+							<i class="fa fa-image text-xl"></i>
+						</div>
+						<!-- Tag Friends Icon (Glossy Blue) -->
+						<div title="Tag Friends" onclick="toggleTagSection()"
+							class="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+							<i class="fa fa-user-tag text-xl"></i>
+						</div>
+						<!-- Feeling/Activity Icon (Glossy Yellow) -->
+						<div title="Feeling"
+							class="w-10 h-10 flex items-center justify-center rounded-xl bg-yellow-50 text-yellow-600 hover:bg-yellow-500 hover:text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+							<i class="fa fa-face-smile text-xl"></i>
+						</div>
+					</div>
+				</div>
+
+				<input type="file" name="media" id="modalFileInput" class="hidden"
+					accept="image/*,video/*" onchange="previewModalImage(this)">
+
+				<button type="submit"
+					class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 rounded-xl mt-4 shadow-lg active:scale-95 transition-all">
+					Post</button>
+			</form>
+		</div>
+	</div>
+
+	<!-- Live Video Modal -->
+	<div id="liveModal" class="modal z-[10000]">
+		<div class="modal-content !max-w-[800px] !w-[95%] bg-black text-white rounded-2xl shadow-2xl p-0 overflow-hidden flex flex-col md:flex-row h-[80vh]">
+			<!-- Video Section -->
+			<div id="liveVideoContainer" class="flex-1 relative bg-gray-900 flex flex-col justify-center items-center overflow-hidden">
+				<video id="liveVideo" autoplay muted playsinline class="w-full h-full object-cover"></video>
+				
+				<!-- Floating Emoji Container -->
+				<div id="floatingEmojiContainer" class="absolute inset-0 pointer-events-none z-10"></div>
+				
+				<!-- Floating Reaction Panel (Visible when live) -->
+				<div id="liveReactionPanel" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md rounded-full px-4 py-2 flex gap-3 z-20 transition-all border border-white/10 hover:bg-black/80">
+					<span class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="triggerLiveReaction('Like')">👍</span>
+					<span class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="triggerLiveReaction('Love')">❤️</span>
+					<span class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="triggerLiveReaction('Care')">🥰</span>
+					<span class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="triggerLiveReaction('Haha')">😆</span>
+					<span class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="triggerLiveReaction('Wow')">😮</span>
+					<span class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="triggerLiveReaction('Sad')">😢</span>
+					<span class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="triggerLiveReaction('Angry')">😡</span>
+					<span class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="triggerLiveReaction('Dislike')">👎</span>
+				</div>
+
+				<!-- Live Badges (Hidden Initially) -->
+				<div class="absolute top-4 left-4 flex gap-2 z-10">
+					<div id="liveBadge" class="hidden bg-red-600 text-white font-bold text-xs px-3 py-1 rounded-md animate-pulse">LIVE</div>
+					<div id="liveTimer" class="hidden bg-black/50 text-white text-xs px-3 py-1 rounded-md font-mono">00:00</div>
+					<div id="liveViewers" class="hidden bg-black/50 text-white text-xs px-3 py-1 rounded-md flex items-center gap-1">
+						<i class="fa fa-eye"></i> <span id="viewerCount">0</span>
+					</div>
+				</div>
+
+				<button type="button" onclick="closeLiveModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-red-500 z-10 transition">×</button>
+			</div>
+
+			<!-- Sidebar / Chat Section -->
+			<div class="w-full md:w-[300px] bg-[#242526] flex flex-col border-l border-white/10 relative">
+				<div class="p-4 border-b border-white/10">
+					<h3 class="font-bold text-lg mb-2">Live Broadcast Setup</h3>
+					<input type="text" id="liveTitle" placeholder="Describe your live video..." class="w-full bg-[#3A3B3C] text-white rounded-lg p-2 text-sm outline-none">
+				</div>
+
+				<!-- Setup Overlay (Before going live) -->
+				<div id="liveSetupOverlay" class="absolute inset-0 top-[100px] bg-[#242526] z-20 flex flex-col items-center justify-center p-6 text-center">
+					<div class="w-16 h-16 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center text-2xl mb-4 cursor-pointer hover:bg-blue-500 hover:text-white transition" onclick="requestCameraAccess()">
+						<i class="fa fa-video"></i>
+					</div>
+					<h4 class="font-bold mb-2">Camera Access Required</h4>
+					<p class="text-xs text-gray-400 mb-4">Click the camera icon to allow access and preview your video before going live.</p>
+				</div>
+
+				<!-- Chat Area -->
+				<div class="flex-1 overflow-y-auto p-4 flex flex-col gap-3 relative">
+					<div id="chatPlaceholder" class="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
+						Chat will appear here once live
+					</div>
+					<div id="liveChatBox" class="hidden flex-col gap-3 flex-1 overflow-y-auto"></div>
+				</div>
+
+				<!-- Live Chat Input (Hidden initially, visible when live) -->
+				<div id="liveChatInputArea" class="hidden p-3 border-t border-white/10 flex gap-2">
+					<input type="text" id="liveChatInput" placeholder="Write a comment..." class="flex-1 bg-[#3A3B3C] text-white rounded-full px-4 py-1.5 text-xs outline-none border border-transparent focus:border-blue-500" onkeydown="if(event.key === 'Enter') sendLiveComment()">
+					<button onclick="sendLiveComment()" class="bg-blue-600 hover:bg-blue-700 text-white w-7 h-7 rounded-full flex items-center justify-center transition">
+						<i class="fa fa-paper-plane text-xs"></i>
+					</button>
+				</div>
+
+				<!-- Bottom Actions -->
+				<div class="p-4 border-t border-white/10">
+					<button type="button" id="goLiveBtn" onclick="startLiveStream()" disabled class="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition">Go Live</button>
+					<button type="button" id="endLiveBtn" onclick="endLiveStream()" class="hidden w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition">End Live Video</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -1197,204 +1150,24 @@ to {
 	</div>
 
 	<!-- Reel Viewer Modal -->
-	<div id="reelViewer" class="modal !bg-black/98 z-[99999]">
-		<div class="relative w-full max-w-6xl h-full md:h-[90vh] flex flex-col lg:flex-row items-center justify-center bg-black lg:rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-			
-			<!-- Left Panel: Video & Nav (Floating controls on overlay) -->
-			<div class="relative flex-1 h-full lg:h-[90vh] bg-black flex items-center justify-center overflow-hidden">
-				<!-- Top Navigation Buttons Floating on Video -->
-				<button onclick="closeReelViewer()" class="absolute top-4 left-4 bg-black/40 hover:bg-black/60 text-white rounded-full px-4 py-2 flex items-center gap-2 transition z-[1000] shadow-lg border border-white/10 hover:scale-105">
-					<i class="fa fa-house text-sm"></i> 
-					<span class="text-xs font-bold">Home</span>
-				</button>
-				<button onclick="closeReelViewer(); openReelModal()" class="absolute top-4 left-24 bg-gradient-to-r from-orange-500 to-pink-500 hover:opacity-90 text-white rounded-full px-4 py-2 flex items-center gap-2 transition z-[1000] shadow-lg border border-white/10 hover:scale-105">
-					<i class="fa fa-plus text-xs"></i> 
-					<span class="text-xs font-bold">Create</span>
-				</button>
-				<button onclick="closeReelViewer()" class="absolute top-4 right-4 bg-black/40 hover:bg-black/60 text-white rounded-full p-2.5 flex items-center justify-center tra
-					<i class="fa fa-plus text-xs"></i> 
-					<span class="text-xs font-bold">Create</span>
-				</button>
-				<button onclick="closeReelViewer()" class="absolute top-4 right-4 bg-black/40 hover:bg-black/60 text-white rounded-full p-2.5 flex items-center justify-center transition z-[1000] shadow-lg border border-white/10 hover:scale-105">
-					<i class="fa fa-xmark text-lg"></i>
-				</button>
-				<!-- Previous Button -->
-				<button onclick="prevReel(event)" class="absolute left-4 text-white/60 hover:text-white text-2xl z-50 transition bg-black/40 hover:bg-black/70 w-12 h-12 rounded-full flex items-center justify-center border border-white/10 hover:scale-105">
-					<i class="fa fa-chevron-left"></i>
-				</button>
-				
-				<!-- Video Element -->
-				<video id="viewerVideo" class="h-full aspect-[9/16] object-contain bg-black" loop autoplay playsinline webkit-playsinline controls></video>
-				
-				<!-- Next Button -->
-				<button onclick="nextReel(event)" class="absolute right-4 text-white/60 hover:text-white text-2xl z-50 transition bg-black/40 hover:bg-black/70 w-12 h-12 rounded-full flex items-center justify-center border border-white/10 hover:scale-105">
-				<div class="lg:hidden absolute right-4 bottom-24 flex flex-col gap-5 items-center z-50">
-					<!-- Reaction Toggle -->
-					<div class="flex flex-col items-center">
-						<div onclick="toggleMobileReactions()" class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-xl shadow-lg active:scale-95">
-							<i class="fa fa-heart"></i>
-						</div>
-						<span id="viewerMobileReactCount" class="text-white text-xs font-bold mt-1">0</span>
+	<div id="reelViewer" class="modal !bg-black/95">
+		<div class="relative w-full h-full flex items-center justify-center">
+			<button onclick="closeReelViewer()" class="absolute top-6 right-6 text-white text-4xl z-50">×</button>
+			<div class="h-[90vh] aspect-[9/16] bg-black rounded-2xl overflow-hidden relative shadow-2xl">
+				<video id="viewerVideo" class="w-full h-full object-contain" loop autoplay controls></video>
+				<div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent text-white">
+					<div class="flex items-center gap-3 mb-2">
+						<img id="viewerUserPic" src="" class="w-10 h-10 rounded-full border-2 border-white">
+						<span id="viewerUserName" class="font-bold"></span>
 					</div>
-					<!-- Comment Trigger -->
-					<div class="flex flex-col items-center">
-						<div onclick="toggleMobileComments()" class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-xl shadow-lg active:scale-95">
-					<div class="flex flex-col items-center">
-						<div onclick="toggleMobileReactions()" class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-xl shadow-lg active:scale-95">
-							<i class="fa fa-heart"></i>
-						</div>
-						<span id="viewerMobileReactCount" class="text-white text-xs font-bold mt-1">0</span>
-					</div>
-					<!-- Comment Trigger -->
-					<div class="flex flex-col items-center">
-						<div onclick="toggleMobileComments()" class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-xl shadow-lg active:scale-95">
-							<i class="fa fa-comment"></i>
-						</div>
-						<span id="viewerMobileCommentCount" class="text-white text-xs font-bold mt-1">0</span>
-					</div>
-				</div>
-			</div>
-
-			<!-- Right Panel: Social Sidebar (Visible on desktop, drawer style on mobile) -->
-			<div id="reelSidebar" class="hidden lg:flex w-full lg:w-[400px] h-[40vh] lg:h-[90vh] bg-[#18191A] border-t lg:border-t-0 lg:border-l border-white/10 flex-col text-white transition-all duration-300 z-50">
-				<!-- Header with User Details -->
-				<div class="p-4 border-b border-white/10 flex items-center justify-between">
-					<div class="flex items-center gap-3">
-						<img id="viewerUserPic" src="" class="w-10 h-10 rounded-full border-2 border-blue-500 object-cover">
-						<div>
-							<p id="viewerUserName" class="font-bold text-sm"></p>
-							<p class="text-[10px] text-gray-400">Reels Creator</p>
-						</div>
-					</div>
-					<button class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-1.5 rounded-full transition">Follow</button>
-				</div>
-						</div>
-					</div>
-					<button class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-1.5 rounded-full transition">Follow</button>
-				</div>
-
-				<!-- Description / Content -->
-				<div class="p-4 border-b border-white/10 bg-[#242526]/50">
-					<p id="viewerContent" class="text-sm text-gray-200 leading-relaxed"></p>
-				</div>
-
-				<!-- Reaction & Stats Panel -->
-				<div class="p-4 border-b border-white/10 space-y-3">
-					<!-- Granular reaction counts -->
-					<div id="viewerReactStats" class="text-xs text-gray-400 flex flex-wrap gap-2">
-						<!-- Loaded dynamically: e.g. 👍 5 ❤️ 2 -->
-					</div>
-
-					<!-- Actions (Reaction button, share) -->
-					<div class="flex gap-4 items-center pt-2">
-						<!-- Dynamic Reaction Button (Hover for 8 reactions) -->
-						<div class="react-container relative flex-1">
-							<button id="viewerReactBtn" onclick="handleReelReact('Like', event)" class="w-full bg-[#242526] hover:bg-[#3A3B3C] py-2 px-4 rounded-xl flex items-center justify-center gap-2 text-sm font-bold border border-white/5 transition-all">
-								<i class="fa-regular fa-thumbs-up"></i> Like
-							</button>
-							<!-- Emojis Picker Box -->
-							<div class="react-box !-top-12 !bg-[#242526] border border-white/10 !p-1.5 !rounded-full shadow-2xl gap-2">
-								<span title="Like" class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="handleReelReact('Like', event)">👍</span>
-								<span title="Love" class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="handleReelReact('Love', event)">❤️</span>
-								<span title="Care" class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="handleReelReact('Care', event)">🥰</span>
-								<span title="Haha" class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="handleReelReact('Haha', event)">😆</span>
-								<span title="Wow" class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="handleRe
-								<span title="Sad" class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="handleReelReact('Sad', event)">😢</span>
-								<span title="Angry" class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="handleReelReact('Angry', event)">😡</span>
-								<span title="Dislike" class="cursor-pointer hover:scale-150 transition-transform text-lg" onclick="handleReelReact('Dislike', event)">👎</span>
-							</div>
-						</div>
-
-						<button class="flex-1 bg-[#242526] hover:bg-[#3A3B3C] py-2 px-4 rounded-xl flex items-center justify-center gap-2 text-sm font-bold border border-white/5 transition-all">
-							<i class="fa-solid fa-share"></i> Share
-						</button>
-					</div>
-				</div>
-
-				<!-- Comments Section -->
-				<div class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-[#18191A]" id="viewerCommentsList">
-					<!-- Comments loaded dynamically -->
-				</div>
-
-				<!-- Comment Input Area -->
-				<div class="p-3 border-t border-white/10 bg-[#242526] flex gap-2 items-center relative">
-					<img src="img/${ub.profile_pic}" class="w-8 h-8 rounded-full border border-white/10 object-cover">
-					<div class="flex-1 bg-[#3A3B3C] rounded-full px-4 py-2 flex items-center gap-2 border border-white/5">
-						<input type="text" id="viewerCommentInput" class="bg-transparent outline-none flex-1 text-sm text-white" placeholder="Write a comment..." onkeydown="if(event.key === 'Enter') submitReelComment()">
-						<button onclick="submitReelComment()" class="text-blue-500 hover:scale-110 transition-transform">
-							<i class="fa fa-paper-plane"></i>
-						</button>
-					</div>
+					<p id="viewerContent" class="text-sm"></p>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div id="reelsDataContainer" style="display: none;">
-		<c:forEach var="reel" items="${reelsList}">
-			<div class="reel-data-item" 
-				 data-id="${reel.id}"
-				 data-video-src="img/${reel.file_name}"
-				 data-user-name="<c:out value="${reel.name}"/>"
-				 data-user-pic="img/${reel.profile_pic}"
-				 data-content="<c:out value="${reel.content}"/>"
-				 data-like-count="${reel.likeCount}"
-				 data-love-count="${reel.loveCount}"
-				 data-care-count="${reel.careCount}"
-				 data-haha-count="${reel.hahaCount}"
-				 data-wow-count="${reel.wowCount}"
-				 data-sad-count="${reel.sadCount}"
-				 data-angry-count="${reel.angryCount}"
-				 data-dislike-count="${reel.dislikes}"
-				 data-comment-count="${reel.commentCount}">
-				 <div class="reel-comments-data">
-					 <c:forEach var="cmt" items="${reel.comments}">
-						 <div class="reel-comment-item"
-							  data-id="${cmt.id}"
-							  data-name="<c:out value="${cmt.name}"/>"
-							  data-profile-pic="${cmt.profilePic}"
-							  data-text="<c:out value="${cmt.comment_text}"/>">
-						 </div>
-					 </c:forEach>
-				 </div>
-			</div>
-		</c:forEach>
-	</div>
-
 	<script>
     var contextPath = "${pageContext.request.contextPath}";
-    
-    // JS array containing all reels parsed safely from DOM
-    const reelsData = [];
-    document.querySelectorAll('#reelsDataContainer .reel-data-item').forEach(el => {
-        const comments = [];
-        el.querySelectorAll('.reel-comment-item').forEach(cmtEl => {
-            comments.push({
-                id: Number(cmtEl.getAttribute('data-id')),
-                name: cmtEl.getAttribute('data-name'),
-                profilePic: cmtEl.getAttribute('data-profile-pic'),
-                text: cmtEl.getAttribute('data-text')
-            });
-        });
-        
-        reelsData.push({
-            id: Number(el.getAttribute('data-id')),
-            videoSrc: el.getAttribute('data-video-src'),
-            userName: el.getAttribute('data-user-name'),
-            userPic: el.getAttribute('data-user-pic'),
-            content: el.getAttribute('data-content'),
-            likeCount: Number(el.getAttribute('data-like-count')) || 0,
-            loveCount: Number(el.getAttribute('data-love-count')) || 0,
-            careCount: Number(el.getAttribute('data-care-count')) || 0,
-            hahaCount: Number(el.getAttribute('data-haha-count')) || 0,
-            wowCount: Number(el.getAttribute('data-wow-count')) || 0,
-            sadCount: Number(el.getAttribute('data-sad-count')) || 0,
-            angryCount: Number(el.getAttribute('data-angry-count')) || 0,
-            dislikeCount: Number(el.getAttribute('data-dislike-count')) || 0,
-            commentCount: Number(el.getAttribute('data-comment-count')) || 0,
-            comments: comments
-        });
-    });
 
     // --- Live Stream Functions ---
     let liveStream = null;
@@ -1418,275 +1191,279 @@ to {
         }
         
         if (liveStream) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            liveStream.getTracks().forEach(track => track.stop());
+            document.getElementById('liveVideo').srcObject = null;
+        }
+        resetLiveUI();
+    }
+
+    function requestCameraAccess() {
+        let handleStream = function(stream) {
+            liveStream = stream;
+            let video = document.getElementById('liveVideo');
+            if(stream) {
+                video.srcObject = stream;
+                video.play();
+            } else {
+                video.style.display = 'none';
+                let placeholder = document.createElement('div');
+                placeholder.id = "liveFallbackBox";
+                placeholder.className = 'w-full h-full flex flex-col items-center justify-center text-gray-500 bg-black/50 absolute inset-0';
+                placeholder.innerHTML = '<i class="fa fa-video-slash text-6xl mb-4 opacity-50"></i><p class="font-bold text-lg">Camera Not Available</p><p class="text-xs mt-2">Simulated Broadcast Mode Active</p>';
+                video.parentNode.appendChild(placeholder);
+            }
+            
+            document.getElementById('liveSetupOverlay').classList.add('hidden');
+            document.getElementById('goLiveBtn').disabled = false;
+        };
+
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(handleStream)
+            .catch(function(err) {
+                console.warn("Audio/Video failed, trying Video only...", err);
+                navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                .then(handleStream)
+                .catch(function(err2) {
+                    console.error("Camera access failed entirely:", err2);
+                    handleStream(null);
+                });
+            });
+        } else {
+            console.warn("Browser restricts camera access.");
+            handleStream(null);
+        }
+    }
+
+    function startLiveStream() {
+        let title = document.getElementById('liveTitle').value.trim();
+        if(!title) title = "Live Broadcast";
+
+        if (liveStream) {
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(liveStream, { mimeType: 'video/webm' });
+            mediaRecorder.ondataavailable = function(e) {
+                if (e.data.size > 0) {
+                    recordedChunks.push(e.data);
+                }
+            };
+            mediaRecorder.start();
+        }
+
+        document.getElementById('goLiveBtn').classList.add('hidden');
+        document.getElementById('endLiveBtn').classList.remove('hidden');
+        document.getElementById('liveTitle').disabled = true;
+
+        // Show live badges, reaction panel and chat input area
+        document.getElementById('liveBadge').classList.remove('hidden');
+        document.getElementById('liveTimer').classList.remove('hidden');
+        document.getElementById('liveViewers').classList.remove('hidden');
+        document.getElementById('chatPlaceholder').classList.add('hidden');
+        document.getElementById('liveChatBox').classList.remove('hidden');
+        document.getElementById('liveReactionPanel').classList.remove('hidden');
+        document.getElementById('liveChatInputArea').classList.remove('hidden');
+
+        // Start timer & viewers
+        liveTimerSeconds = 0;
+        fakeViewers = Math.floor(Math.random() * 20) + 5;
+        document.getElementById('viewerCount').innerText = fakeViewers;
+
+        liveInterval = setInterval(() => {
+            liveTimerSeconds++;
+            let mins = String(Math.floor(liveTimerSeconds / 60)).padStart(2, '0');
+            let secs = String(liveTimerSeconds % 60).padStart(2, '0');
+            document.getElementById('liveTimer').innerText = mins + ":" + secs;
+            
+            if(Math.random() > 0.3) {
+                fakeViewers += Math.floor(Math.random() * 8) - 2;
+                if(fakeViewers < 1) fakeViewers = 1;
+                document.getElementById('viewerCount').innerText = fakeViewers;
+            }
+        }, 1000);
+
+        // Start fake chat and simulated reactions
+        const fakeNames = ["Sakura", "John", "Alex", "Emma", "David", "Sato", "Maria"];
+        const fakeMsgs = ["Awesome!", "Hello there!", "Looking great!", "Where are you streaming from?", "Nice setup!", "Wow!", "Keep it up.", "Can you show us around?", "Love this app!"];
+        const fakePics = ["pic-1.png", "pic-2.png", "pic-3.png", "pic-4.png", "pic-5.png", "pic-6.png"];
+        
+        fakeCommentsInterval = setInterval(() => {
+            let rand = Math.random();
+            if(rand > 0.45) {
+                let name = fakeNames[Math.floor(Math.random() * fakeNames.length)];
+                let msg = fakeMsgs[Math.floor(Math.random() * fakeMsgs.length)];
+                let pic = fakePics[Math.floor(Math.random() * fakePics.length)];
+                appendLiveComment(name, msg, pic, false);
+            } else if (rand > 0.15) {
+                let name = fakeNames[Math.floor(Math.random() * fakeNames.length)];
+                let emojis = ['👍', '❤️', '🥰', '😆', '😮', '😢', '😡', '👎'];
+                let emoji = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                createFloatingEmoji(emoji);
+                appendLiveSystemMessage(name + " reacted with " + emoji);
+            }
+        }, 2200);
+    }
+
+    function sendLiveComment() {
+        let input = document.getElementById('liveChatInput');
+        if (!input || !input.value.trim()) return;
+        
+        let commentText = input.value.trim();
+        let name = "${ub.getName()}";
+        let userPic = "${ub.getProfile_pic()}";
+        
+        appendLiveComment(name, commentText, userPic || 'default-avatar.png', true);
+        input.value = '';
+    }
+
+    function appendLiveComment(name, text, profilePic, isSelf) {
+        let nameColor = isSelf ? 'text-blue-400 font-bold' : 'text-gray-300 font-bold';
+        let bgStyle = isSelf ? 'bg-blue-900/40 border border-blue-500/20' : 'bg-[#3A3B3C]';
+        
+        let chatHtml = 
+            '<div class="flex items-start gap-2 animate-slide-in">' +
+                '<img src="img/' + profilePic + '" onerror="this.src=\'https://i.imgur.com/6VBx3io.png\'" class="w-7 h-7 rounded-full border border-white/10 object-cover shadow-sm">' +
+                '<div class="' + bgStyle + ' rounded-xl px-3 py-2 max-w-[85%] shadow-sm">' +
+                    '<p class="text-[11px] ' + nameColor + ' mb-0.5">' + name + '</p>' +
+                    '<p class="text-[13px] text-white leading-tight">' + text + '</p>' +
+                '</div>' +
+            '</div>';
+        
+        let chatBox = document.getElementById('liveChatBox');
+        if (chatBox) {
+            chatBox.insertAdjacentHTML('beforeend', chatHtml);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    }
+
+    function triggerLiveReaction(type) {
+        let emojiMap = {
+            'Like': '👍', 'Love': '❤️', 'Care': '🥰', 'Haha': '😆', 
+            'Wow': '😮', 'Sad': '😢', 'Angry': '😡', 'Dislike': '👎'
+        };
+        let emoji = emojiMap[type] || '👍';
+        
+        createFloatingEmoji(emoji);
+        
+        let name = "${ub.getName()}";
+        appendLiveSystemMessage(name + " reacted with " + emoji);
+    }
+
+    function appendLiveSystemMessage(msg) {
+        let chatHtml = 
+            '<div class="flex items-center justify-center py-1 animate-slide-in">' +
+                '<span class="text-[10px] text-gray-400 bg-white/5 px-2.5 py-1 rounded-full border border-white/5">' + msg + '</span>' +
+            '</div>';
+        let chatBox = document.getElementById('liveChatBox');
+        if (chatBox) {
+            chatBox.insertAdjacentHTML('beforeend', chatHtml);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    }
+
+    function createFloatingEmoji(emoji) {
+        let container = document.getElementById('floatingEmojiContainer');
+        if (!container) return;
+        
+        let el = document.createElement('div');
+        el.innerText = emoji;
+        el.className = 'absolute text-2xl select-none pointer-events-none transition-all duration-1000 ease-out z-[99]';
+        
+        let startX = Math.random() * 60 + 20; 
+        el.style.left = startX + '%';
+        el.style.bottom = '10%';
+        el.style.opacity = '1';
+        el.style.transform = 'scale(0.5)';
+        
+        container.appendChild(el);
+        
+        // Force reflow
+        el.offsetHeight;
+        
+        let endX = startX + (Math.random() * 40 - 20); 
+        let endY = Math.random() * 40 + 50; 
+        let scale = Math.random() * 1.5 + 0.8;
+        
+        el.style.left = endX + '%';
+        el.style.bottom = endY + '%';
+        el.style.opacity = '0';
+        el.style.transform = 'scale(' + scale + ') rotate(' + (Math.random() * 40 - 20) + 'deg)';
+        
+        setTimeout(() => {
+            el.remove();
+        }, 1000);
+    }
+
+    function endLiveStream() {
+        clearInterval(liveInterval);
+        clearInterval(fakeCommentsInterval);
+        
+        let btn = document.getElementById('endLiveBtn');
+        btn.innerText = "Posting Live Video...";
+        btn.disabled = true;
+
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.onstop = function() {
+                let blob = new Blob(recordedChunks, { type: "video/webm" });
+                let file = new File([blob], "live_video.webm", { type: "video/webm" });
+                
+                let title = document.getElementById('liveTitle').value.trim();
+                if(!title) title = "Live Broadcast";
+
+                let formData = new FormData();
+                formData.append("ajax", "true");
+                formData.append("type", "video");
+                formData.append("content", title);
+                formData.append("media", file);
+
+                fetch('UsersPostServlet?ajax=true', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        alert("Live Video Posted successfully!");
+                        refreshFeed();
+                    } else {
+                        alert("Failed to post live video!");
+                    }
+                })
+                .catch(err => {
+                    console.error("Upload error: ", err);
+                    alert("Error posting video!");
+                })
+                .finally(() => {
+                    closeLiveModal();
+                });
+            };
+            mediaRecorder.stop();
+        } else {
+            closeLiveModal();
+        }
+    }
+
+    function resetLiveUI() {
+        document.getElementById('liveSetupOverlay').classList.remove('hidden');
+        document.getElementById('goLiveBtn').disabled = true;
+        document.getElementById('goLiveBtn').classList.remove('hidden');
+        document.getElementById('endLiveBtn').classList.add('hidden');
+        document.getElementById('endLiveBtn').innerText = "End Live Video";
+        document.getElementById('endLiveBtn').disabled = false;
+        document.getElementById('liveTitle').disabled = false;
+        document.getElementById('liveTitle').value = '';
+        
+        let fallback = document.getElementById("liveFallbackBox");
+        if(fallback) fallback.remove();
+        document.getElementById('liveVideo').style.display = 'block';
+        
+        document.getElementById('liveBadge').classList.add('hidden');
+        document.getElementById('liveTimer').classList.add('hidden');
+        document.getElementById('liveTimer').innerText = '00:00';
+        document.getElementById('liveViewers').classList.add('hidden');
+        document.getElementById('viewerCount').innerText = '0';
+        
+        document.getElementById('chatPlaceholder').classList.remove('hidden');
+        document.getElementById('liveChatBox').classList.add('hidden');
+        document.getElementById('liveChatBox').innerHTML = '';
+        document.getElementById('liveReactionPanel').classList.add('hidden');
         document.getElementById('liveChatInputArea').classList.add('hidden');
         
         fakeViewers = 0;
@@ -1719,322 +1496,314 @@ to {
         }
     }
 
+    function openReelViewer(reelId) {
+        // Fetch reel details (simple version)
+        const reel = document.querySelector(`.reel-card[onclick="openReelViewer(\${reelId})"]`);
+        if (reel) {
+            const videoSrc = reel.querySelector('source').src;
+            const userName = reel.querySelector('.reel-info').innerText;
+            const userPic = reel.querySelector('.reel-user img').src;
 
+            const viewer = document.getElementById('reelViewer');
+            const viewerVideo = document.getElementById('viewerVideo');
+            
+            viewerVideo.src = videoSrc;
+            document.getElementById('viewerUserName').innerText = userName;
+            document.getElementById('viewerUserPic').src = userPic;
+            
+            viewer.style.display = 'flex';
+        }
+    }
 
-
-    // Keyboard listener for Arrow keys and Escape key
-    document.addEventListener('keydown', function(event) {
+    function closeReelViewer() {
         const viewer = document.getElementById('reelViewer');
-        if (viewer && viewer.style.display === 'flex') {
-            if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-                nextReel();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        const viewerVideo = document.getElementById('viewerVideo');
+        viewerVideo.pause();
+        viewerVideo.src = "";
+        viewer.style.display = 'none';
+    }
+
+    // ১. ৮টি রিঅ্যাকশন হ্যান্ডলার (পোস্ট, কমেন্ট, রিপ্লাই সবার জন্য)
+    function handleAJAXReact(id, type, level, event) {
+        // Prevent click bubbling to parent elements
+        if (event) event.stopPropagation();
+
+        let targetUrl = (level === 'post') ? ('${pageContext.request.contextPath}/InteractionServlet') : ('${pageContext.request.contextPath}/CommentServlet');
+        
+        // FormData ব্যবহার করতে হবে কারণ উভয় Servlet-এ @MultipartConfig আছে
+        // @MultipartConfig থাকলে URLSearchParams দিয়ে পাঠানো data getParameter() এ পাওয়া যায় না
+        let formData = new FormData();
+        if (level === 'post') {
+            formData.append('id', id);
+            formData.append('action', type);
+        } else {
+            formData.append('commentId', id);
+            formData.append('action', type);
+            formData.append('level', level);
+        }
+
+        let emojiMap = {
+            'Like': '👍', 'Love': '❤️', 'Care': '🥰', 'Haha': '😆', 
+            'Wow': '😮', 'Sad': '😢', 'Angry': '😡', 'Dislike': '👎', 'Dislikes': '👎'
+        };
+        let colorMap = {
+            'Like': 'text-blue-600', 'Love': 'text-red-500', 'Care': 'text-yellow-500', 
+            'Haha': 'text-yellow-500', 'Wow': 'text-yellow-500', 'Sad': 'text-yellow-500', 
+            'Angry': 'text-red-600', 'Dislike': 'text-gray-800', 'Dislikes': 'text-gray-800'
+        };
+        let activeEmoji = emojiMap[type] || '👍';
+        let activeColor = colorMap[type] || 'text-blue-600';
+
+        fetch(targetUrl, { 
+            method: 'POST', 
+            body: formData  // Content-Type header সেট করা উচিত নয়, browser নিজে সেট করবে multipart/form-data boundary সহ
+        })
+        .then(res => {
+            const contentType = res.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return res.json();
+            }
+            return res.text().then(txt => { throw new Error('Non-JSON response: ' + txt.substring(0, 200)); });
+        })
+        .then(data => {
+            if (data.status === 'ok' || data.success) {
+                // Build granular count string
+                let countsHtml = '';
+                if (data.counts) {
+                    for (let key in data.counts) {
+                        if (data.counts[key] > 0) {
+                            let mappedKey = key === 'Dislikes' ? 'Dislike' : key;
+                            countsHtml += `\${emojiMap[mappedKey]} <span class="text-gray-600">\${data.counts[key]}</span>&nbsp;&nbsp;`;
+                        }
+                    }
+                    countsHtml = countsHtml.trim();
+                } else {
+                    countsHtml = `\${activeEmoji} <span class="text-blue-500">\${data.newCount}</span>`;
+                }
+
+                if (level === 'post') {
+                    let countSpan = document.getElementById(`react-count-\${id}`);
+                    if (countSpan) {
+                        if (data.newCount > 0) {
+                            countSpan.innerHTML = countsHtml;
+                        } else {
+                            countSpan.innerText = '0';
+                        }
+                    }
+                    // পোস্ট রিঅ্যাকশন বাটনে visual feedback
+                    let actionBtnContent = document.getElementById(`post-action-btn-content-\${id}`);
+                    if (actionBtnContent && data.newCount > 0) {
+                        actionBtnContent.innerHTML = `\${activeEmoji} <span class="\${activeColor}">\${type}</span>`;
+                    } else if (actionBtnContent) {
+                        actionBtnContent.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> Like`;
+                    }
+                } else {
+                    // কমেন্ট বা রিপ্লাই রিঅ্যাকশন UI আপডেট
+                    let containerId = level === 'comment' ? `comment-react-container-\${id}` : `reply-react-container-\${id}`;
+                    let container = document.getElementById(containerId);
+                    if (container) {
+                        if (data.newCount > 0) {
+                            container.innerHTML = countsHtml;
+                        } else {
+                            container.innerHTML = '';
+                        }
+                    }
+                }
+            } else {
+                console.warn('Reaction server response:', data);
+            }
+        })
+        .catch(err => console.error('Reaction Error:', err));
+    }
+
+    // ২. কমেন্ট সাবমিট
+    function submitCommentAJAX(postId) {
+        let input = document.getElementById('input-post-' + postId);
+        let fileInput = document.getElementById('commentMedia-' + postId);
+        if (!input || !input.value.trim()) return;
+
+        let formData = new FormData();
+        formData.append("postId", postId);
+        formData.append("comment_text", input.value);
+        formData.append("action", "ADD_COMMENT");
+        if (fileInput && fileInput.files[0]) {
+            formData.append("media", fileInput.files[0]);
+        }
+
+        fetch('CommentServlet', { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                let countText = document.getElementById(`post-comment-count-text-\${postId}`);
+                if (countText) {
+                    let currentCount = parseInt(countText.innerText) || 0;
+                    countText.innerText = `\${currentCount + 1} Comments`;
+                }
+                
+                let list = document.getElementById(`comment-list-\${postId}`);
+                if (list) {
+                    let escapedName = data.userName.replace(/'/g, "\\'");
+                    let html = `
+                        <div class="flex flex-col gap-2 group/cmt mb-4">
+                            <div class="flex gap-2">
+                                <img src="img/\${data.userPic}" class="w-8 h-8 rounded-full border shadow-sm cursor-pointer" onclick="location.href='UsersProfileServlet?userId=\${data.userId}'">
+                                <div class="flex flex-col flex-1">
+                                    <div class="bg-white/50 px-4 py-2 rounded-2xl shadow-sm inline-block max-w-fit">
+                                        <p class="font-bold text-[13px] hover:underline cursor-pointer" onclick="location.href='UsersProfileServlet?userId=\${data.userId}'">\${data.userName}</p>
+                                        <p class="text-[14px] text-gray-700">\${data.text}</p>
+                                        \${data.fileName ? '<img src="img/' + data.fileName + '" class="mt-2 rounded-xl max-h-40 border shadow-sm">' : ''}
+                                    </div>
+                                    <div class="flex gap-4 ml-4 mt-1 text-[11px] font-bold text-gray-500 items-center">
+                                        <div class="react-container clickable">
+                                            <span class="hover:text-blue-600 transition" onclick="handleAJAXReact(\${data.commentId}, 'Like', 'comment', event)">Like</span>
+                                            <div class="react-box !p-1 !rounded-full">
+                                                <span title="Like" onclick="handleAJAXReact(\${data.commentId}, 'Like', 'comment', event)">👍</span>
+                                                <span title="Love" onclick="handleAJAXReact(\${data.commentId}, 'Love', 'comment', event)">❤️</span>
+                                                <span title="Care" onclick="handleAJAXReact(\${data.commentId}, 'Care', 'comment', event)">🥰</span>
+                                                <span title="Haha" onclick="handleAJAXReact(\${data.commentId}, 'Haha', 'comment', event)">😆</span>
+                                                <span title="Wow" onclick="handleAJAXReact(\${data.commentId}, 'Wow', 'comment', event)">😮</span>
+                                                <span title="Sad" onclick="handleAJAXReact(\${data.commentId}, 'Sad', 'comment', event)">😢</span>
+                                                <span title="Angry" onclick="handleAJAXReact(\${data.commentId}, 'Angry', 'comment', event)">😡</span>
+                                                <span title="Dislike" onclick="handleAJAXReact(\${data.commentId}, 'Dislike', 'comment', event)">👎</span>
+                                            </div>
+                                        </div>
+                                        <span class="clickable hover:text-blue-600 transition" onclick="showReplyBox(\${data.commentId}, '\${escapedName}')">Reply</span>
+                                        <span class="clickable hover:text-blue-600 transition" onclick="shareCommentOrReply(this)">Share</span>
+                                        <div id="comment-react-container-\${data.commentId}" class="text-[10px] font-normal text-gray-400"></div>
+                                    </div>
+
+                                    <!-- Reply List -->
+                                    <div id="reply-list-\${data.commentId}" class="mt-2 space-y-2 ml-10"></div>
+
+                                    <!-- Reply Input Box -->
+                                    <div id="replyInputContainer-\${data.commentId}" class="hidden mt-2 ml-10 relative">
+                                        <div class="flex gap-2">
+                                            <img src="img/\${data.userPic}" class="w-7 h-7 rounded-full border shadow-sm" width="28px">
+                                            <div class="flex-1 bg-white/40 backdrop-blur-sm rounded-2xl px-3 py-1.5 flex items-center border border-white/20">
+                                                <input type="text" id="input-reply-\${data.commentId}" placeholder="Write a reply..." class="bg-transparent outline-none flex-1 text-[12px] font-medium"
+                                                    onkeydown="if(event.key === 'Enter') submitReplyAJAX('\${data.commentId}')">
+                                                <i class="fa-regular fa-face-smile text-yellow-500 cursor-pointer mx-2" onclick="toggleEmojiPicker('emoji-picker-reply-\\${data.commentId}')"></i>
+                                                <label for="replyMedia-\${data.commentId}" class="cursor-pointer mx-2 text-gray-500 hover:text-blue-600 transition">
+                                                    <i class="fa-solid fa-camera"></i>
+                                                </label>
+                                                <input type="file" id="replyMedia-\${data.commentId}" class="hidden" accept="image/*,video/*" onchange="previewReplyMedia('\${data.commentId}')">
+                                                <button onclick="submitReplyAJAX('\${data.commentId}')" class="text-blue-600"><i class="fa fa-paper-plane text-xs"></i></button>
+                                            </div>
+                                        </div>
+                                        <div id="emoji-picker-reply-\${data.commentId}" class="hidden absolute bottom-10 left-10 bg-white border rounded-xl p-2 shadow-xl z-[5000] w-40">
+                                            <div class="grid grid-cols-4 gap-2 text-lg">
+                                                <span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-\${data.commentId}', '😀')">😀</span>
+                                                <span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-\${data.commentId}', '😂')">😂</span>
+                                                <span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-\${data.commentId}', '❤️')">❤️</span>
+                                                <span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-\${data.commentId}', '👍')">👍</span>
+                                                <span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-\${data.commentId}', '🥰')">🥰</span>
+                                                <span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-\${data.commentId}', '😮')">😮</span>
+                                                <span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-\${data.commentId}', '😢')">😢</span>
+                                                <span class="cursor-pointer hover:scale-125 transition" onclick="addEmoji('input-reply-\${data.commentId}', '😡')">😡</span>
+                                            </div>
+                                        </div>
+                                        <div id="replyPreview-\${data.commentId}" class="hidden ml-9 mt-2 relative inline-block">
+                                            <img id="replyImgPreview-\${data.commentId}" src="" class="h-16 rounded-lg shadow-md border">
+                                            <button onclick="removeReplyMedia('\${data.commentId}')" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow-md">×</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                    list.insertAdjacentHTML('beforeend', html);
+                }
+                input.value = '';
+                if (fileInput) fileInput.value = '';
+                removeCommentMedia(postId); // Helper to hide preview
+            }
+        });
+    }
+
+    // ৩. রিপ্লাই সাবমিট
+    function submitReplyAJAX(commentId) {
+        let input = document.getElementById('input-reply-' + commentId);
+        let fileInput = document.getElementById('replyMedia-' + commentId);
+        if (!input || !input.value.trim()) return;
+
+        let formData = new FormData();
+        formData.append("commentId", commentId);
+        formData.append("replyText", input.value);
+        formData.append("action", "REPLY");
+        if (fileInput && fileInput.files[0]) {
+            formData.append("media", fileInput.files[0]);
+        }
+
+        fetch('CommentServlet', { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                let list = document.getElementById(`reply-list-\${commentId}`);
+                if (list) {
+                    let escapedName = data.userName.replace(/'/g, "\\'");
+                    let html = `
+                        <div class="comment-level-2 mb-2 flex gap-2">
+                            <a href="UsersProfileServlet?userId=\${data.userId}">
+                                <img src="img/\${data.userPic}" class="w-7 h-7 rounded-full border shadow-sm">
+                            </a>
+                            <div class="flex flex-col flex-1">
+                                <div class="bg-white/40 px-3 py-1.5 rounded-2xl inline-block max-w-fit shadow-sm">
+                                    <p class="font-bold text-[12px]"><a href="UsersProfileServlet?userId=\${data.userId}" class="hover:underline">\${data.userName}</a></p>
+                                    <p class="text-[13px] text-gray-700">\${data.text}</p>
+                                    \${data.fileName ? '<img src="img/' + data.fileName + '" class="mt-1 rounded-lg max-h-32 border shadow-sm">' : ''}
+                                </div>
+                                <div class="flex gap-4 ml-3 mt-0.5 text-[10px] font-bold text-gray-500 items-center">
+                                    <div class="react-container clickable">
+                                        <span class="hover:text-blue-600 transition" onclick="handleAJAXReact(\${data.replyId}, 'Like', 'reply', event)">Like</span>
+                                        <div class="react-box !p-1 !rounded-full">
+                                            <span title="Like" onclick="handleAJAXReact(\${data.replyId}, 'Like', 'reply', event)">👍</span>
+                                            <span title="Love" onclick="handleAJAXReact(\${data.replyId}, 'Love', 'reply', event)">❤️</span>
+                                            <span title="Care" onclick="handleAJAXReact(\${data.replyId}, 'Care', 'reply', event)">🥰</span>
+                                            <span title="Haha" onclick="handleAJAXReact(\${data.replyId}, 'Haha', 'reply', event)">😆</span>
+                                            <span title="Wow" onclick="handleAJAXReact(\${data.replyId}, 'Wow', 'reply', event)">😮</span>
+                                            <span title="Sad" onclick="handleAJAXReact(\${data.replyId}, 'Sad', 'reply', event)">😢</span>
+                                            <span title="Angry" onclick="handleAJAXReact(\${data.replyId}, 'Angry', 'reply', event)">😡</span>
+                                            <span title="Dislike" onclick="handleAJAXReact(\${data.replyId}, 'Dislike', 'reply', event)">👎</span>
+                                        </div>
+                                    </div>
+                                    <span class="clickable hover:text-blue-600 transition" onclick="showReplyBox(\${commentId}, '\${escapedName}')">Reply</span>
+                                    <span class="clickable hover:text-blue-600 transition" onclick="shareCommentOrReply(this)">Share</span>
+                                    <div id="reply-react-container-\${data.replyId}" class="text-[9px] font-normal text-gray-400"></div>
+                                </div>
+                            </div>
+                        </div>`;
+                    list.insertAdjacentHTML('beforeend', html);
+                }
+                input.value = '';
+                document.getElementById('replyInputContainer-' + commentId).classList.add('hidden');
+                removeReplyMedia(commentId);
+            }
+        });
+    }
+
+    function shareCommentOrReply(element) {
+        let container = element.closest('.flex-1');
+        if(container) {
+            let textNode = container.querySelector('p.text-gray-700');
+            if(textNode) {
+                let text = textNode.innerText;
+                if(!confirm("Share this comment/reply to your timeline?")) return;
+                
+                let formData = new FormData();
+                formData.append("ajax", "true");
+                formData.append("content", "Shared a comment: \"" + text + "\"");
+                
+                fetch('UsersPostServlet?ajax=true', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        alert("Shared to your timeline successfully!");
+                        refreshFeed();
+                    } else {
+                        alert("Failed to share.");
+                    }
+                })
+                .catch(err => {
+                    console.error("Share error: ", err);
                     alert("Error sharing comment.");
                 });
             }
@@ -2057,6 +1826,10 @@ to {
                 if (shareEl) {
                     let count = parseInt(shareEl.innerText) || 0;
                     shareEl.innerText = (count + 1) + " Shares";
+                }
+            } else {
+                alert("Share failed: " + data.error);
+            }
         })
         .catch(err => console.error("Share error", err));
     }
@@ -2138,18 +1911,6 @@ to {
         if(!confirm("Are you sure you want to delete this post?")) return;
         
         let formData = new FormData();
-        })
-        .finally(() => {
-            btn.innerText = "Share Reel";
-            btn.disabled = false;
-        });
-    });
-
-    // Delete Post Function
-    function deletePost(postId) {
-        if(!confirm("Are you sure you want to delete this post?")) return;
-        
-        let formData = new FormData();
         formData.append("action", "DELETE");
         formData.append("postId", postId);
         formData.append("ajax", "true");
@@ -2157,6 +1918,18 @@ to {
         fetch('UsersPostServlet?ajax=true', { method: 'POST', body: formData })
         .then(res => {
             if (!res.ok) throw new Error("HTTP error " + res.status);
+            return res.json();
+        })
+        .then(data => {
+            if(data.success) {
+                refreshFeed();
+            } else {
+                alert("Failed to delete post.");
+            }
+        })
+        .catch(err => {
+            console.error("Delete error: ", err);
+            window.location.reload();
         });
     }
 
@@ -2188,285 +1961,184 @@ to {
             if(input && targetName) {
                 input.value = "@" + targetName + " ";
                 input.focus();
-            let input = document.getElementById('input-reply-' + id);
-            if(input && targetName) {
-                input.value = "@" + targetName + " ";
-                input.focus();
             }
-            }
-            
-            // Repopulate reels JS array
-            if (typeof populateReelsData === 'function') {
-                populateReelsData();
-        .catch(err => {
-            console.error("Delete error: ", err);
-            window.location.reload();
-        });
+        }
+    }
+    function focusCmt(id) { 
+        let input = document.getElementById('input-post-' + id);
+        if(input) input.focus(); 
+    }
+    function toggleTagSection() { 
+        let tag = document.getElementById('tagSection');
+        if(tag) tag.classList.toggle('hidden'); 
     }
 
-    // ৭. ফিড রিফ্রেশ ফাংশন (No Reload Logic)
-    function refreshFeed() {
-        fetch('UsersPostServlet')
-        .then(res => res.text())
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            
-            // Update main feed
-            const newMain = doc.querySelector('main');
-            if (newMain) {
-                document.querySelector('main').innerHTML = newMain.innerHTML;
-            }
-            
-            // Update reels data container
-            const newReelsContainer = doc.getElementById('reelsDataContainer');
-            if (newReelsContainer) {
-                const oldReelsContainer = document.getElementById('reelsDataContainer');
-                if (oldReelsContainer) {
-                    oldReelsContainer.innerHTML = newReelsContainer.innerHTML;
-                }
-            }
-            
-            // Repopulate reels JS array
-            if (typeof populateReelsData === 'function') {
-                populateReelsData();
-            }
-            
-            initTimeAgo(); 
-        });
+    // --- Modal Functions ---
+    function openModal() {
+        const modal = document.getElementById('postModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
     }
 
-    function initTimeAgo() {
-        // যদি আপনার কোনো টাইম-এগো লাইব্রেরি থাকে তবে এখানে কল করুন
-        console.log("Feed Refreshed!");
+    function closeModal() {
+        const modal = document.getElementById('postModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
     }
 
-    // ৫. প্রিভিউ এবং টগল ফাংশন
-    function showReplyBox(id, targetName) {
-        let el = document.getElementById('replyInputContainer-' + id);
-        if(el) {
-            el.classList.remove('hidden');
-            let input = document.getElementById('input-reply-' + id);
-            if(input && targetName) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('postModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+
+    // --- Media Preview Functions ---
+    function previewModalImage(input) {
+        const preview = document.getElementById('modalImagePreview');
+        const container = document.getElementById('modalPreviewContainer');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (preview) preview.src = e.target.result;
+                if (container) container.classList.remove('hidden');
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeModalPreview() {
+        const input = document.getElementById('modalFileInput');
+        const preview = document.getElementById('modalImagePreview');
+        const container = document.getElementById('modalPreviewContainer');
+        if (input) input.value = "";
+        if (preview) preview.src = "#";
+        if (container) container.classList.add('hidden');
+    }
+
+    function previewCommentMedia(event, postId) {
+        const preview = document.getElementById('commentImgPreview-' + postId);
+        const container = document.getElementById('commentPreview-' + postId);
+        const file = event.target.files[0];
+        if (file && preview && container) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                container.classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function removeCommentMedia(postId) {
+        const input = document.getElementById('commentMedia-' + postId);
+        const preview = document.getElementById('commentImgPreview-' + postId);
+        const container = document.getElementById('commentPreview-' + postId);
+        if (input) input.value = "";
+        if (preview) {
+            preview.src = "";
+            preview.classList.add('hidden');
+        }
+        if (container) container.classList.add('hidden');
+    }
+
+    function previewReplyMedia(commentId) {
+        let input = document.getElementById('replyMedia-' + commentId);
+        let preview = document.getElementById('replyImgPreview-' + commentId);
+        let container = document.getElementById('replyPreview-' + commentId);
+        if (input && input.files && input.files[0] && preview && container) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                container.classList.remove('hidden');
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeReplyMedia(commentId) {
+        let input = document.getElementById('replyMedia-' + commentId);
+        let preview = document.getElementById('replyImgPreview-' + commentId);
+        let container = document.getElementById('replyPreview-' + commentId);
+        if (input) input.value = "";
+        if (preview) preview.src = "";
+        if (container) container.classList.add('hidden');
+    }
+
+    // --- Other UI Functions ---
+    function toggleEmojiPicker(id) {
+        const picker = document.getElementById(id);
+        if (picker) {
+            // Close other pickers first
+            document.querySelectorAll('[id^="emoji-picker-"]').forEach(p => {
+                if (p.id !== id) p.classList.add('hidden');
+            });
+            picker.classList.toggle('hidden');
         }
     }
 
     function addEmoji(inputId, emoji) {
         const input = document.getElementById(inputId);
+        if (input) {
+            input.value += emoji;
+            input.focus();
+        }
+    }
+    
+    function showReactionList(postId) {
+        // Placeholder for reaction list
+        console.log("Showing reactions for post: " + postId);
+    }
+
+    function previewMedia(event, type, id) {
+        // Placeholder for other media previews
+        console.log("Previewing media for " + type + " id: " + id);
+    }
+
+    // Close emoji pickers when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.relative')) {
+            document.querySelectorAll('[id^="emoji-picker-"]').forEach(p => p.classList.add('hidden'));
+        }
+    });
+
+    // --- Saved Posts & Memories Features JS ---
+    function toggleSavePost(postId, btn) {
+        let isSaved = btn.innerText.includes("Unsave");
+        let action = isSaved ? "UNSAVE" : "SAVE";
+        
+        fetch('FeaturesServlet?action=' + action + '&postId=' + postId, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                if(action === "SAVE") {
+                    btn.innerHTML = '<i class="fa fa-bookmark"></i> Unsave Post';
+                    alert("Post Saved successfully!");
+                } else {
+                    btn.innerHTML = '<i class="fa fa-bookmark"></i> Save Post';
+                    alert("Post Unsaved successfully!");
+                }
+            } else {
+                alert("Action failed!");
+            }
+        })
+        .catch(err => {
+            console.error("Save error:", err);
+            alert("Error processing request");
+        });
+    }
+
+    function openFeaturesModal(title) {
+        document.getElementById('featuresModalTitle').innerText = title;
+        document.getElementById('featuresModalBody').innerHTML = '<div class="text-center py-8"><i class="fa fa-spinner animate-spin text-2xl text-blue-500"></i><p class="mt-2 text-gray-400">Loading...</p></div>';
+        document.getElementById('featuresModal').style.display = 'flex';
+    }
 
     function closeFeaturesModal() {
         document.getElementById('featuresModal').style.display = 'none';
@@ -2507,305 +2179,144 @@ to {
         posts.forEach(p => {
             let mediaHtml = '';
             if (p.fileName) {
-                if (p.postType === 'video' || p.fileName.endsWith('.webm') || p.fileName.endsWith('.mp4') || p.fileName.endsWith('.mov') || p.fileName.endsWith('.ogg') || p.fileName.endsWith('.avi') || p.fileName.endsWith('.mkv')) {
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                if(action === "SAVE") {
-                    btn.innerHTML = '<i class="fa fa-bookmark"></i> Unsave Post';
-                    alert("Post Saved successfully!");
+                if (p.postType === 'video' || p.fileName.endsWith('.webm') || p.fileName.endsWith('.mp4')) {
+                    mediaHtml = '<video src="img/' + p.fileName + '" controls class="w-full max-h-[250px] object-contain bg-black rounded-lg mt-2"></video>';
                 } else {
-                    btn.innerHTML = '<i class="fa fa-bookmark"></i> Save Post';
-                    alert("Post Unsaved successfully!");
+                    mediaHtml = '<img src="img/' + p.fileName + '" class="w-full max-h-[250px] object-cover rounded-lg mt-2">';
                 }
-            } else {
-                alert("Action failed!");
             }
-        })
-        .catch(err => {
-            console.error("Save error:", err);
-            alert("Error processing request");
+            
+            let feelingHtml = p.feeling ? '<span class="text-xs bg-white/10 px-2 py-0.5 rounded-full text-blue-300">is feeling ' + p.feeling + '</span>' : '';
+            
+            html += `
+                <div class="bg-[#242526] p-4 rounded-2xl border border-gray-700 space-y-3">
+                    <div class="flex items-center gap-3">
+                        <img src="img/\${p.profile_Pic}" class="w-10 h-10 rounded-full border border-gray-600 object-cover">
+                        <div>
+                            <div class="font-bold flex items-center gap-2">\${p.getName()} \${feelingHtml}</div>
+                            <div class="text-xs text-gray-400">\${p.getTime()}</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-200 text-sm leading-relaxed">\${p.getContent()}</p>
+                    \${mediaHtml}
+                </div>
+            `;
         });
+        container.innerHTML = html;
     }
 
-    function openFeaturesModal(title) {
-        document.getElementById('featuresModalTitle').innerText = title;
-        document.getElementById('featuresModalBody').innerHTML = '<div class="text-center py-8"><i class="fa fa-spinner animate-spin text-2xl text-blue-500"></i><p class="mt-2 text-gray-400">Loading...</p></div>';
-        document.getElementById('featuresModal').style.display = 'flex';
+    // --- Stories Functions ---
+    function openStoryModal() {
+        document.getElementById('storyModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeStoryModal() {
+        document.getElementById('storyModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        removeStoryPreview();
+    }
+    
+    function previewStoryMedia(input) {
+        const previewImg = document.getElementById('storyImagePreview');
+        const previewVideo = document.getElementById('storyVideoPreview');
+        const container = document.getElementById('storyPreviewContainer');
+        
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const url = URL.createObjectURL(file);
+            
+            container.classList.remove('hidden');
+            if (file.type.startsWith('video/')) {
+                previewVideo.src = url;
+                previewVideo.classList.remove('hidden');
+                previewImg.classList.add('hidden');
+                previewImg.src = "";
+            } else {
+                previewImg.src = url;
+                previewImg.classList.remove('hidden');
+                previewVideo.classList.add('hidden');
+                previewVideo.src = "";
+            }
+        }
+    }
+    
+    function removeStoryPreview() {
+        const input = document.getElementById('storyMediaInput');
+        const previewImg = document.getElementById('storyImagePreview');
+        const previewVideo = document.getElementById('storyVideoPreview');
+        const container = document.getElementById('storyPreviewContainer');
+        
+        if (input) input.value = "";
+        if (previewImg) {
+            previewImg.src = "#";
+            previewImg.classList.add('hidden');
+        }
+        if (previewVideo) {
+            previewVideo.src = "";
+            previewVideo.classList.add('hidden');
+        }
+        if (container) container.classList.add('hidden');
     }
 
-    function closeFeaturesModal() {
-        document.getElementById('featuresModal').style.display = 'none';
+    let storyTimeout = null;
+    function openStoryViewer(name, profilePic, mediaUrl, text) {
+        document.getElementById('storyViewerUserName').innerText = name;
+        document.getElementById('storyViewerUserPic').src = 'img/' + profilePic;
+        
+        const imgEl = document.getElementById('storyViewerImage');
+        const videoEl = document.getElementById('storyViewerVideo');
+        const textContainer = document.getElementById('storyViewerTextContainer');
+        const textEl = document.getElementById('storyViewerText');
+        
+        imgEl.classList.add('hidden');
+        videoEl.classList.add('hidden');
+        textContainer.classList.add('hidden');
+        
+        if (mediaUrl && mediaUrl !== 'null' && mediaUrl !== '') {
+            if (mediaUrl.toLowerCase().endsWith('.mp4') || mediaUrl.toLowerCase().endsWith('.webm')) {
+                videoEl.src = 'img/' + mediaUrl;
+                videoEl.classList.remove('hidden');
+                videoEl.play();
+            } else {
+                imgEl.src = 'img/' + mediaUrl;
+                imgEl.classList.remove('hidden');
+            }
+        } else {
+            textEl.innerText = text;
+            textContainer.classList.remove('hidden');
+        }
+        
+        document.getElementById('storyViewerModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Reset and trigger progress bar
+        const progressBar = document.getElementById('storyProgressBar');
+        progressBar.style.transition = 'none';
+        progressBar.style.width = '0%';
+        
+        setTimeout(() => {
+            progressBar.style.transition = 'width 5000ms linear';
+            progressBar.style.width = '100%';
+        }, 50);
+
+        // Auto close after 5 seconds
+        if (storyTimeout) clearTimeout(storyTimeout);
+        storyTimeout = setTimeout(() => {
+            closeStoryViewer();
+        }, 5050);
     }
+    
+    function closeStoryViewer() {
+        document.getElementById('storyViewerModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        
+        const videoEl = document.getElementById('storyViewerVideo');
         videoEl.pause();
         videoEl.src = "";
         
         if (storyTimeout) clearTimeout(storyTimeout);
     }
-    
-    let currentReelIndex = -1;
-
-    function openReelsFeed() {
-        if (reelsData.length > 0) {
-            showReelAtIndex(0);
-        } else {
-            alert("No Reels available to watch!");
-        }
-    }
-
-    function openReelViewer(reelId) {
-        const index = reelsData.findIndex(r => r.id === reelId);
-        if (index !== -1) {
-            showReelAtIndex(index);
-        }
-    }
-
-    function showReelAtIndex(index) {
-        if (index < 0 || index >= reelsData.length) return;
-        currentReelIndex = index;
-        const reel = reelsData[index];
-
-        const viewer = document.getElementById('reelViewer');
-        const viewerVideo = document.getElementById('viewerVideo');
-        
-        viewerVideo.src = reel.videoSrc;
-        
-        // Desktop elements
-        document.getElementById('viewerUserName').innerText = reel.userName;
-        document.getElementById('viewerUserPic').src = reel.userPic;
-        document.getElementById('viewerContent').innerText = reel.content || "";
-
-        // Mobile overlay elements
-        document.getElementById('viewerMobileUserName').innerText = reel.userName;
-        document.getElementById('viewerMobileUserPic').src = reel.userPic;
-
-        const viewer = document.getElementById('reelViewer');
-        const viewerVideo = document.getElementById('viewerVideo');
-        
-        viewerVideo.src = reel.videoSrc;
-        
-        // Desktop elements
-        document.getElementById('viewerUserName').innerText = reel.userName;
-        document.getElementById('viewerUserPic').src = reel.userPic;
-        document.getElementById('viewerContent').innerText = reel.content || "";
-
-        // Mobile overlay elements
-        document.getElementById('viewerMobileUserName').innerText = reel.userName;
-        document.getElementById('viewerMobileUserPic').src = reel.userPic;
-        document.getElementById('viewerMobileContent').innerText = reel.content || "";
-
-        // Update counts
-        const totalReacts = reel.likeCount + reel.loveCount + reel.careCount + reel.hahaCount + reel.wowCount + reel.sadCount + reel.angryCount + reel.dislikeCount;
-        document.getElementById('viewerMobileReactCount').innerText = totalReacts;
-        document.getElementById('viewerMobileCommentCount').innerText = reel.commentCount;
-        const index = reelsData.findIndex(r => r.id === reelId);
-        if (index !== -1) {
-            showReelAtIndex(index);
-        }
-    }
-
-    function showReelAtIndex(index) {
-        if (index < 0 || index >= reelsData.length) return;
-        currentReelIndex = index;
-        const reel = reelsData[index];
-
-        const viewer = document.getElementById('reelViewer');
-        const viewerVideo = document.getElementById('viewerVideo');
-        
-        viewerVideo.src = reel.videoSrc;
-        
-        // Desktop elements
-        document.getElementById('viewerUserName').innerText = reel.userName;
-        document.getElementById('viewerUserPic').src = reel.userPic;
-        document.getElementById('viewerContent').innerText = reel.content || "";
-
-        // Mobile overlay elements
-        document.getElementById('viewerMobileUserName').innerText = reel.userName;
-        document.getElementById('viewerMobileUserPic').src = reel.userPic;
-        document.getElementById('viewerMobileContent').innerText = reel.content || "";
-
-        // Update counts
-        const totalReacts = reel.likeCount + reel.loveCount + reel.careCount + reel.hahaCount + reel.wowCount + reel.sadCount + reel.angryCount + reel.dislikeCount;
-        document.getElementById('viewerMobileReactCount').innerText = totalReacts;
-        document.getElementById('viewerMobileCommentCount').innerText = reel.commentCount;
-
-        // Render Stats & Reactions
-        renderReelReactStats(reel);
-        renderReelComments(reel);
-        
-        viewer.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Disable scroll under modal
-
-        // Reset like button UI feedback
-        document.getElementById('viewerReactBtn').innerHTML = `<i class="fa-regular fa-thumbs-up"></i> Like`;
-            showReelAtIndex(index);
-        }
-    }
-
-    function showReelAtIndex(index) {
-        if (index < 0 || index >= reelsData.length) return;
-        currentReelIndex = index;
-        const reel = reelsData[index];
-
-        const viewer = document.getElementById('reelViewer');
-        const viewerVideo = document.getElementById('viewerVideo');
-        
-        viewerVideo.src = reel.videoSrc;
-        
-        // Desktop elements
-        document.getElementById('viewerUserName').innerText = reel.userName;
-        document.getElementById('viewerUserPic').src = reel.userPic;
-        document.getElementById('viewerContent').innerText = reel.content || "";
-
-        // Mobile overlay elements
-        document.getElementById('view
-        // Desktop elements
-        document.getElementById('viewerUserName').innerText = reel.userName;
-        document.getElementById('viewerUserPic').src = reel.userPic;
-        document.getElementById('viewerContent').innerText = reel.content || "";
-
-        // Mobile overlay elements
-        document.getElementById('viewerMobileUserName').innerText = reel.userName;
-        document.getElementById('viewerMobileUserPic').src = reel.userPic;
-        document.getElementById('viewerMobileContent').innerText = reel.content || "";
-
-        // Update counts
-        const totalReacts = reel.likeCount + reel.loveCount + reel.careCount + reel.hahaCount + reel.wowCount + reel.sadCount + reel.angryCount + reel.dislikeCount;
-        document.getElementById('viewerMobileReactCount').innerText = totalReacts;
-        document.getElementById('viewerMobileCommentCount').innerText = reel.commentCount;
-
-        // Render Stats & Reactions
-        renderReelReactStats(reel);
-        renderReelComments(reel);
-        
-        viewer.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Disable scroll under modal
-
-        // Reset like button UI feedback
-        document.getElementById('viewerReactBtn').innerHTML = `<i class="fa-regular fa-thumbs-up"></i> Like`;
-                viewerVideo.play().catch(err => {
-                    console.error("Muted playback also failed:", err);
-                });
-            });
-        }
-    }
-
-    function closeReelViewer() {
-        document.getElementById('reelViewer').style.display = 'none';
-        document.body.style.overflow = 'auto'; // Restore scroll
-        
-        const videoEl = document.getElementById('viewerVideo');
-        videoEl.pause();
-        videoEl.src = "";
-        currentReelIndex = -1;
-
-        // Restore sidebar classes if it was opened in mobile layout
-        const sidebar = document.getElementById('reelSidebar');
-        sidebar.classList.add('hidden', 'lg:flex');
-        sidebar.classList.remove('flex', 'absolute', 'bottom-0', 'left-0', 'right-0', 'h-[60vh]', 'rounded-t-3xl', 'shadow-2xl', 'animate-slide-in');
-    }
-
-    function nextReel(event) {
-        if (event) event.stopPropagation();
-        if (currentReelIndex < reelsData.length - 1) {
-            showReelAtIndex(currentReelIndex + 1);
-        } else {
-            // Loop back to the first reel
-            showReelAtIndex(0);
-        }
-    }
-
-    function prevReel(event) {
-        if (event) event.stopPropagation();
-        if (currentReelIndex > 0) {
-            showReelAtIndex(currentReelIndex - 1);
-        } else {
-            // Loop to the last reel
-            showReelAtIndex(reelsData.length - 1);
-        }
-    }
-
-    function renderReelReactStats(reel) {
-        const statsContainer = document.getElementById('viewerReactStats');
-        let html = '';
-        // Render Stats & Reactions
-        renderReelReactStats(reel);
-        renderReelComments(reel);
-        
-        viewer.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Disable scroll under modal
-
-        // Reset like button UI feedback
-        document.getElementById('viewerReactBtn').innerHTML = `<i class="fa-regular fa-thumbs-up"></i> Like`;
-
-        // Mobile-friendly play handler
-        const playPromise = viewerVideo.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(error => {
-                console.log("Auto-play prevented, playing muted:", error);
-                viewerVideo.muted = true;
-                viewerVideo.play().catch(err => {
-                    console.error("Muted playback also failed:", err);
-                });
-            });
-        }
-    }
-
-    function closeReelViewer() {
-        document.getElementById('reelViewer').style.display = 'none';
-        document.body.style.overflow = 'auto'; // Restore scroll
-        
-        const videoEl = document.getElementById('viewerVideo');
-        videoEl.pause();
-        videoEl.src = "";
-        currentReelIndex = -1;
-
-        // Restore sidebar classes if it was opened in mobile layout
-        const sidebar = document.getElementById('reelSidebar');
-        sidebar.classList.add('hidden', 'lg:flex');
-        sidebar.classList.remove('flex', 'absolute', 'bottom-0', 'left-0', 'right-0', 'h-[60vh]', 'rounded-t-3xl', 'shadow-2xl', 'animate-slide-in');
-    }
-
-    function nextReel(event) {
-        if (event) event.stopPropagation();
-        if (currentReelIndex < reelsData.length - 1) {
-            showReelAtIndex(currentReelIndex + 1);
-        } else {
-            // Loop back to the first reel
-            showReelAtIndex(0);
-        }
-    }
-
-    function prevReel(event) {
-            console.error("Comment error: ", err);
-            alert("Error posting comment!");
-        });
-    }
-
-    function toggleMobileComments() {
-        const sidebar = document.getElementById('reelSidebar');
-        if (sidebar.classList.contains('hidden')) {
-            sidebar.classList.remove('hidden', 'lg:flex');
-            sidebar.classList.add('flex', 'absolute', 'bottom-0', 'left-0', 'right-0', 'h-[60vh]', 'rounded-t-3xl', 'shadow-2xl', 'animate-slide-in');
-        } else {
-            sidebar.classList.add('hidden', 'lg:flex');
-            sidebar.classList.remove('flex', 'absolute', 'bottom-0', 'left-0', 'right-0', 'h-[60vh]', 'rounded-t-3xl', 'shadow-2xl', 'animate-slide-in');
-        }
-    }
-
-    function toggleMobileReactions() {
-        handleReelReact('Like');
-    }
-
-    // Auto-trigger Reels Feed if URL contains showReels=true parameter
-    window.addEventListener('DOMContentLoaded', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('showReels') === 'true') {
-            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            window.history.replaceState({path: cleanUrl}, '', cleanUrl);
-            setTimeout(openReelsFeed, 300);
-        }
-    });
 </script>
 
 
@@ -2820,701 +2331,19 @@ to {
 			<i class="fa fa-user-group text-xl"></i>
 			<span class="text-[10px] font-bold">Friends</span>
 		</a>
-		<a href="#" onclick="openReelsFeed(); return false;" class="flex flex-col items-center gap-1 text-gray-500 hover:text-blue-500 transition">
-			<i class="fa fa-clapperboard text-xl"></i>
-			<span class="text-[10px] font-bold">Reels</span>
+		<a href="#" onclick="openLiveModal(); return false;" class="flex flex-col items-center gap-1 text-red-500 animate-pulse">
+			<i class="fa fa-video text-xl"></i>
+			<span class="text-[10px] font-bold">Go Live</span>
 		</a>
 		<a href="messages.jsp" class="flex flex-col items-center gap-1 text-gray-500 hover:text-blue-500 transition">
 			<i class="fa-brands fa-facebook-messenger text-xl"></i>
 			<span class="text-[10px] font-bold">Messenger</span>
 		</a>
 		<a href="UsersProfileServlet?userId=${sessionScope.userId}" class="flex flex-col items-center gap-1 text-gray-500 hover:text-blue-500 transition">
-			<img src="img/${ub.profile_pic}" class="w-6 h-6 rounded-full border border-gray-300">
+			<img src="img/${ub.getProfile_pic()}" class="w-6 h-6 rounded-full border border-gray-300">
 			<span class="text-[10px] font-bold">Profile</span>
 		</a>
 	</nav>
-
-<script>
-    (function() {
-        var myName = "${ub.name}";
-        var contextPath = "${pageContext.request.contextPath}";
-        if (!myName || myName === "") return;
-
-        var protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-        var host = window.location.host;
-        var wsUrl = protocol + host + contextPath + "/ws/user/" + encodeURIComponent(myName);
-        var socket = new WebSocket(wsUrl);
-
-        socket.onopen = function() {
-            console.log("Global Real-time Notification WebSocket connected.");
-        };
-
-        socket.onmessage = function(event) {
-            var data = event.data;
-            if (data.startsWith("NOTIF|")) {
-                var content = data.substring(6);
-                showToastNotification(content);
-                incrementNotificationBadge();
-            } else if (data.startsWith("CHAT|")) {
-                var parts = data.split("|", 3);
-                var sender = parts[1];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            toast.style.bottom = "20px";
-            toast.style.right = "20px";
-            toast.style.backgroundColor = "rgba(15, 23, 42, 0.9)";
-            toast.style.color = "white";
-            toast.style.padding = "16px 24px";
-            toast.style.borderRadius = "16px";
-            toast.style.boxShadow = "0 10px 25px rgba(0,0,0,0.2)";
-            toast.style.zIndex = "999999";
-            toast.style.fontFamily = "'Outfit', sans-serif";
-            toast.style.fontSize = "14px";
-            toast.style.display = "flex";
-            toast.style.alignItems = "center";
-            toast.style.gap = "12px";
-            toast.style.transition = "all 0.3s ease";
-            toast.style.transform = "translateY(50px)";
-            toast.style.opacity = "0";
-            
-            toast.innerHTML = `<i class="fa fa-bell text-yellow-400 text-lg"></i> <span>\${message}</span>`;
-            document.body.appendChild(toast);
-            
-            setTimeout(function() {
-                toast.style.transform = "translateY(0)";
-                toast.style.opacity = "1";
-            }, 100);
-            
-            setTimeout(function() {
-                toast.style.transform = "translateY(50px)";
-                toast.style.opacity = "0";
-                setTimeout(function() {
-                    toast.remove();
-                }, 300);
-            }, 5000);
-        }
-
-        function incrementNotificationBadge() {
-            var notificationLinks = document.querySelectorAll('a[href="NotificationServlet"]');
-            notificationLinks.forEach(function(link) {
-                var badge = link.querySelector('span.bg-red-600');
-                if (badge) {
-                    var currentVal = parseInt(badge.innerText) || 0;
-                    badge.innerText = currentVal + 1;
-                } else {
-                    var newBadge = document.createElement("span");
-                    newBadge.className = "absolute -top-1 -right-1 bg-red-600 text-white text-[11px] px-1.5 rounded-full border-2 border-white font-bold";
-                    newBadge.innerText = "1";
-                    link.appendChild(newBadge);
-                }
-            });
-        }
-    })();
-</script>
 
 </body>
 </html>
-        
-        for (let i = 0; i < 8; i++) {
-            const el = document.createElement('div');
-            el.innerText = emoji;
-            el.style.position = 'absolute';
-            el.style.bottom = '100px';
-            const randomX = (Math.random() - 0.5) * 200; 
-            el.style.left = `calc(50% + ${randomX}px)`;
-            el.style.fontSize = `${24 + Math.random() * 16}px`;
-            el.style.opacity = '1';
-            el.style.zIndex = '9999';
-<script>
-    (function() {
-        var myName = "${ub.name}";
-        var contextPath = "${pageContext.request.contextPath}";
-        if (!myName || myName === "") return;
-
-        var protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-        var host = window.location.host;
-        var wsUrl = protocol + host + contextPath + "/ws/user/" + encodeURIComponent(myName);
-        var socket = new WebSocket(wsUrl);
-
-        socket.onopen = function() {
-            console.log("Global Real-time Notification WebSocket connected.");
-        };
-
-        socket.onmessage = function(event) {
-            var data = event.data;
-            if (data.startsWith("NOTIF|")) {
-                var content = data.substring(6);
-                showToastNotification(content);
-                incrementNotificationBadge();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	<!-- Mobile Bottom Navigation Bar (Visible only on mobile/tablet) -->
-	<nav class="lg:hidden fixed bottom-0 left-0 right-0 h-[65px] glass-nav border-t border-white/20 z-[9999] flex justify-around items-center px-4 rounded-t-3xl shadow-2xl">
-		<a href="UsersPostServlet" class="flex flex-col items-center gap-1 text-blue-500">
-			<i class="fa fa-house text-xl"></i>
-			<span class="text-[10px] font-bold">Home</span>
-		</a>
-		<a href="FriendServlet" class="flex flex-col items-center gap-1 text-gray-500 hover:text-blue-500 transition">
-			<i class="fa fa-user-group text-xl"></i>
-			<span class="text-[10px] font-bold">Friends</span>
-		</a>
-		<a href="#" onclick="openReelsFeed(); return false;" class="flex flex-col items-center gap-1 text-gray-500 hover:text-blue-500 transition">
-			<i class="fa fa-clapperboard text-xl"></i>
-			<span class="text-[10px] font-bold">Reels</span>
-		</a>
-		<a href="#" onclick="openReelModal(); return false;" class="flex flex-col items-center justify-center -mt-5 w-11 h-11 bg-gradient-to-tr from-orange-500 via-pink-500 to-red-500 rounded-full text-white shadow-lg border-2 border-white hover:scale-110 active:scale-95 transition-all" title="Create Reel">
-			<i class="fa fa-plus text-lg"></i>
-		</a>
-		<a href="messages.jsp" class="flex flex-col items-center gap-1 text-gray-500 hover:text-blue-500 transition">
-			<i class="fa-brands fa-facebook-messenger text-xl"></i>
-			<span class="text-[10px] font-bold">Messenger</span>
-		</a>
-		<a href="UsersProfileServlet?userId=${sessionScope.userId}" class="flex flex-col items-center gap-1 text-gray-500 hover:text-blue-500 transition">
-			<img src="img/${ub.profile_pic}" class="w-6 h-6 rounded-full border border-gray-300">
-			<span class="text-[10px] font-bold">Profile</span>
-		</a>
-	</nav>
-
-<script>
-    (function() {
-        var myName = "${ub.name}";
-        var contextPath = "${pageContext.request.contextPath}";
-        if (!myName || myName === "") return;
-
-        var protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    function toggleMobileReactions() {
-        handleReelReact('Like');
-    }
-
-    // Auto-trigger Reels Feed or Create Reel Modal if URL contains parameters
-    window.addEventListener('DOMContentLoaded', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('showReels') === 'true') {
-            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            window.history.replaceState({path: cleanUrl}, '', cleanUrl);
-            setTimeout(openReelsFeed, 300);
-        } else if (urlParams.get('showCreateReel') === 'true') {
-            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            window.history.replaceState({path: cleanUrl}, '', cleanUrl);
-            setTimeout(openReelModal, 300);
-        }
-    });
-</script>
-
-
-
-	<!-- Mobile Bottom Navigation Bar (Visible only on mobile/tablet) -->
-	<nav class="lg:hidden fixed bottom-0 left-0 right-0 h-[65px] glass-nav border-t border-white/20 z-[9999] flex justify-around items-center px-4 rounded-t-3xl shadow-2xl">
-		<a href="UsersPostServlet" class="flex flex-col items-center gap-1 text-blue-500">
-			<i class="fa fa-house text-xl"></i>
-			<span class="text-[10px] font-bold">Home</span>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-			<img src="img/${ub.profile_pic}" class="w-6 h-6 rounded-full border border-gray-300">
-			<span class="text-[10px] font-bold">Profile</span>
-		</a>
-	</nav>
-
-<script>
-    (function() {
-        var myName = "${ub.name}";
-        var contextPath = "${pageContext.request.contextPath}";
-        if (!myName || myName === "") return;
-
-        var protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-        var host = window.location.host;
-        var wsUrl = protocol + host + contextPath + "/ws/user/" + encodeURIComponent(myName);
-        var socket = new WebSocket(wsUrl);
-
-        socket.onopen = function() {
-            console.log("Global Real-time Notification WebSocket connected.");
-        };
-
-        socket.onmessage = function(event) {
-            var data = event.data;
-            if (data.startsWith("NOTIF|")) {
-                var content = data.substring(6);
-                showToastNotification(content);
-                incrementNotificationBadge();
-            } else if (data.startsWith("CHAT|")) {
-                var parts = data.split("|", 3);
-                var sender = parts[1];
-                var msgText = parts[2];
-                showToastNotification("New message from " + sender + ": " + msgText);
-                incrementNotificationBadge();
-            }
-        };
-
-        function showToastNotification(message) {
-            var toast = document.createElement("div");
-            toast.style.position = "fixed";
-            toast.style.bottom = "20px";
-            toast.style.right = "20px";
-            toast.style.backgroundColor = "rgba(15, 23, 42, 0.9)";
-            toast.style.color = "white";
-            toast.style.padding = "16px 24px";
-            toast.style.borderRadius = "16px";
-            toast.style.boxShadow = "0 10px 25px rgba(0,0,0,0.2)";
-            toast.style.zIndex = "999999";
-            toast.style.fontFamily = "'Outfit', sans-serif";
-            toast.style.fontSize = "14px";
-            toast.style.display = "flex";
-            toast.style.alignItems = "center";
-            toast.style.gap = "12px";
-            toast.style.transition = "all 0.3s ease";
-            toast.style.transform = "translateY(50px)";
-            toast.style.opacity = "0";
-            
-            toast.innerHTML = `<i class="fa fa-bell text-yellow-400 text-lg"></i> <span>\${message}</span>`;
-            document.body.appendChild(toast);
-            
-            setTimeout(function() {
-                toast.style.transform = "translateY(0)";
-                toast.style.opacity = "1";

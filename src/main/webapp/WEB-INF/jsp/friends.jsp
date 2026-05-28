@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <!DOCTYPE html>
@@ -138,27 +138,22 @@
 
         <div class="menu">
             <a href="UsersPostServlet">🏠 Home</a>
-            <a href="UsersPostServlet?showReels=true">🎬 Reels</a>
             <a href="messages.jsp">💬 Messages</a>
-            <a href="NotificationServlet" class="relative">🔔 Notifications
-                <c:if test="${not empty unreadCount && unreadCount > 0}">
-                    <span class="ml-1 px-1.5 py-0.5 text-[10px] bg-red-600 text-white rounded-full font-bold">${unreadCount}</span>
-                </c:if>
-            </a>
+            <a href="NotificationServlet">🔔 Notifications</a>
             <a href="FriendServlet">👥 Friends</a>
             <a href="UsersProfileServlet?userId=${sessionScope.userId}">👤 Profile</a>
+            <a href="UsersLogoutServlet">🚪 Logout</a>
+        </div>
+    </div>
 
+    <div style="border-top:1px solid #eee; padding-top:10px;">
+        <b>${ub.getName()}</b><br>
+        <small>${ub.getEmail()}</small>
+    </div>
+</div>
 
-
-
-
-
-
-
-
-
-
-
+<!-- ===== MAIN ===== -->
+<div class="main">
 <div class="container">
 
     <!-- INCOMING -->
@@ -237,124 +232,15 @@
             <i class="fa fa-user-group text-xl"></i>
             <span class="text-[10px] font-bold">Friends</span>
         </a>
-        <a href="UsersPostServlet?showReels=true" class="flex flex-col items-center gap-1 text-gray-500 hover:text-blue-500 transition">
-            <i class="fa fa-clapperboard text-xl"></i>
-            <span class="text-[10px] font-bold">Reels</span>
-        </a>
         <a href="messages.jsp" class="flex flex-col items-center gap-1 text-gray-500 hover:text-blue-500 transition">
             <i class="fa-brands fa-facebook-messenger text-xl"></i>
             <span class="text-[10px] font-bold">Messenger</span>
         </a>
         <a href="UsersProfileServlet?userId=${sessionScope.userId}" class="flex flex-col items-center gap-1 text-gray-500 hover:text-blue-500 transition">
-            <img src="img/${ub.profile_pic}" class="w-6 h-6 rounded-full border border-gray-300">
+            <img src="img/${ub.getProfile_pic()}" class="w-6 h-6 rounded-full border border-gray-300">
             <span class="text-[10px] font-bold">Profile</span>
         </a>
     </nav>
 
-<script>
-    (function() {
-        var myName = "${ub.name}";
-
-                                    <form action="FriendServlet" method="post" onsubmit="return confirm('Are you sure you want to unfriend ${f.name}?')">
-                                        <input type="hidden" name="targetId" value="${f.id}">
-                                        <button name="action" value="DELETE" class="bg-red-500/10 hover:bg-red-500 text-red-600 hover:text-white border border-red-500/20 font-bold px-3 py-1.5 rounded-xl text-xs transition shadow-sm">
-                                            Unfriend
-                                        </button>
-                                    </form>
-                                </div>
-                            </c:forEach>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </nav>
-
-    <!-- WebSockets Real-time Notification System -->
-    <script>
-                toast.style.opacity = "0";
-                setTimeout(function() {
-                    toast.remove();
-                }, 300);
-            }, 5000);
-        }
-
-        function incrementNotificationBadge() {
-            var notificationLinks = document.querySelectorAll('a[href="NotificationServlet"]');
-            notificationLinks.forEach(function(link) {
-                var badge = link.querySelector('span.bg-red-600');
-                if (badge) {
-                    var currentVal = parseInt(badge.innerText) || 0;
-                    badge.innerText = currentVal + 1;
-                } else {
-                    var newBadge = document.createElement("span");
-                    newBadge.className = "absolute -top-1 -right-1 bg-red-600 text-white text-[11px] px-1.5 rounded-full border-2 border-white font-bold";
-                    newBadge.innerText = "1";
-                    link.appendChild(newBadge);
-                }
-            });
-
-            var sidebarNotif = document.querySelector('.menu a[href="NotificationServlet"]');
-            if (sidebarNotif) {
-                var badge = sidebarNotif.querySelector('span.bg-red-600');
-                if (badge) {
-                    var currentVal = parseInt(badge.innerText) || 0;
-                    badge.innerText = currentVal + 1;
-                } else {
-                    var newBadge = document.createElement("span");
-                    newBadge.className = "ml-1 px-1.5 py-0.5 text-[10px] bg-red-600 text-white rounded-full font-bold bg-red-600";
-                    newBadge.innerText = "1";
-                    sidebarNotif.appendChild(newBadge);
-                }
-            }
-        }
-    })();
-</script>
-
 </body>
 </html>
-
-</body>
-</html>
-                toast.style.gap = "12px";
-                toast.style.transition = "all 0.3s ease";
-                toast.style.transform = "translateY(50px)";

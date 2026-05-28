@@ -2,6 +2,7 @@ ychatapp\Servlet\StoryServlet.class
 ychatapp\model\dao\MessageDAO.class
 ychatapp\Servlet\UploadCoverServlet.class
 ychatapp\websocket\UserWebSocket.class
+ychatapp\model\beans\InspectBeans.class
 ychatapp\Servlet\UsersProfileServlet.class
 ychatapp\Servlet\VideosServlet.class
 ychatapp\Servlet\GroupsServlet.class

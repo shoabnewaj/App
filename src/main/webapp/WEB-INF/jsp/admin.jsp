@@ -72,9 +72,9 @@
             </div>
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-xl border border-white/10">
-                    <img src="${pageContext.request.contextPath}/uploads/${not empty ub.profile_pic ? ub.profile_pic : 'default.png'}" 
+                    <img src="${pageContext.request.contextPath}/uploads/${not empty ub.getProfile_pic() ? ub.getProfile_pic() : 'default.png'}" 
                          class="w-7 h-7 rounded-full object-cover border border-white/20" alt="Admin">
-                    <span class="text-sm font-semibold text-white/90"><c:out value="${ub.name}"/></span>
+                    <span class="text-sm font-semibold text-white/90"><c:out value="${ub.getName()}"/></span>
                 </div>
                 <a href="${pageContext.request.contextPath}/UsersPostServlet" 
                    class="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl text-sm font-semibold transition-all shadow-md shadow-blue-500/10 flex items-center gap-2">
@@ -358,3 +358,4 @@
     </script>
 </body>
 </html>
+
