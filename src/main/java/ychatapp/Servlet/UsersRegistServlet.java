@@ -35,19 +35,21 @@ public class UsersRegistServlet extends HttpServlet {
 
         // ✅ image upload
         Part part = req.getPart("profile_pic"); // JSP input name
-        String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
+        String user_img = null;
 
-        String user_img = null; // এখানে আপনি user_img নাম দিয়েছেন
+        if (part != null) {
+            String submittedFileName = part.getSubmittedFileName();
+            if (submittedFileName != null && !submittedFileName.trim().isEmpty()) {
+                String fileName = Paths.get(submittedFileName).getFileName().toString();
+                if (!fileName.isEmpty()) {
+                    String uploadPath = getServletContext().getRealPath("/img");
+                    File uploadDir = new File(uploadPath);
+                    if (!uploadDir.exists()) uploadDir.mkdir();
 
-        if (fileName != null && !fileName.isEmpty()) {
-            String uploadPath = getServletContext().getRealPath("/img");
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) uploadDir.mkdir();
-
-            user_img = System.currentTimeMillis() + "_" + fileName;
-
-            // ✅ ভুল ১: profile_pic এর বদলে user_img হবে
-            part.write(uploadPath + File.separator + user_img);
+                    user_img = System.currentTimeMillis() + "_" + fileName;
+                    part.write(uploadPath + File.separator + user_img);
+                }
+            }
         }
 
         // ✅ FIXED constructor usage
