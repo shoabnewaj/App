@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,81 +30,73 @@
             font-family: 'Outfit', sans-serif;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .edit-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            padding: 40px;
-            border-radius: 2rem;
-            box-shadow: 0 20px 40px rgba(31, 38, 135, 0.08);
-            width: 100%;
-            max-width: 420px;
-            box-sizing: border-box;
-            animation: fadeIn 0.6s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        h2 {
-            text-align: center;
-            color: #1e293b;
-            font-weight: 800;
-            font-size: 1.85rem;
-            margin-top: 0;
-            margin-bottom: 25px;
-            letter-spacing: -0.5px;
-        }
-        
-        .input-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-        
-        label {
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: #475569;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: block;
-            margin-bottom: 8px;
-        }
-        
-        input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            border-radius: 1rem;
-            box-sizing: border-box;
-            background: rgba(255, 255, 255, 0.5);
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.95rem;
-            color: #334155;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-        
-        input:focus {
-            border-color: #3b82f6;
-            background: white;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
-        }
-        
-        .save-btn {
+           
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             background: var(--btn-gradient);
             color: white;
             border: none;
@@ -126,6 +118,14 @@
         }
         
         .save-btn:active {
+            transform: translateY(0);
+        }
+        
+        .cancel-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
             transform: translateY(0);
         }
         

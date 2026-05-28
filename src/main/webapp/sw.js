@@ -1,4 +1,4 @@
-const CACHE_NAME = "ychat-v1";
+﻿const CACHE_NAME = "ychat-v1";
 
 const urlsToCache = [
   "/",
@@ -37,14 +37,20 @@ self.addEventListener("activate", event => {
 
 // Fetch → network first, fallback to cache
 self.addEventListener("fetch", event => {
+  // Only cache GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // cache new request
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME)
-          .then(cache => cache.put(event.request, responseClone));
-
+        // Only cache successful status 200 responses
+        if (response && response.status === 200) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME)
+            .then(cache => cache.put(event.request, responseClone));
+        }
         return response;
       })
       .catch(() => {

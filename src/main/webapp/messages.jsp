@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messenger | Y-ChatApp</title>
     <link rel="icon" type="image/png" href="<%=request.getContextPath()%>/icons/icon-192.png">
+    <link rel="manifest" href="<%=request.getContextPath()%>/manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('<%=request.getContextPath()%>/sw.js')
+                    .then(reg => console.log('Service Worker registered', reg))
+                    .catch(err => console.error('Service Worker registration failed', err));
+            });
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -16,82 +26,89 @@
         .sidebar { width: 360px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
         .sidebar-header { padding: 20px; background: purple; color: white; }
         
-        /* 🔥 Search Bar Styles */
-        .search-container { padding: 10px 15px; border-bottom: 1px solid #eee; }
-        .search-box {
-            width: 100%; padding: 10px 15px; border: none; border-radius: 20px;
-            background: #f0f2f5; outline: none; font-size: 14px;
-        }
-
-        /* Chat List */
-        #friendListContainer { flex: 1; overflow-y: auto; padding: 10px; }
-        .friend-item { 
-            display: flex; align-items: center; padding: 12px; border-radius: 12px; 
-            cursor: pointer; transition: 0.2s; margin-bottom: 5px;
-        }
-        .friend-item:hover { background-color: #f3e8ff; }
-        .friend-item.active { background-color: #ede9fe; border-left: 4px solid purple; }
-
-        .avatar { 
-            width: 45px; height: 45px; background: #9333ea; color: white; 
-            border-radius: 50%; margin-right: 12px; display: flex; 
-            align-items: center; justify-content: center; font-weight: bold; position: relative;
-        }
-        .online-dot { 
-            width: 12px; height: 12px; background: #31a24c; border: 2px solid white;
-            border-radius: 50%; position: absolute; bottom: 0; right: 0;
-        }
-
-        /* Chat Window */
-        .main-chat { flex: 1; display: flex; flex-direction: column; background: white; }
-        .chat-header { padding: 15px 25px; border-bottom: 1px solid #eee; font-weight: bold; font-size: 18px; color: purple; display: flex; justify-content: space-between; align-items: center; }
-        .call-buttons { display: flex; gap: 20px; font-size: 22px; opacity: 0.3; pointer-events: none; }
-        .call-buttons.active { opacity: 1; pointer-events: auto; }
-        .call-buttons i { cursor: pointer; transition: 0.2s; color: purple; }
-        .call-buttons i:hover { color: #31a24c; transform: scale(1.1); }
-        #chatBox { flex: 1; padding: 20px; overflow-y: auto; background: #f9f9f9; display: flex; flex-direction: column; gap: 8px; }
+  
         
-        /* Messages */
-        .msg { max-width: 70%; padding: 10px 15px; border-radius: 18px; font-size: 15px; word-wrap: break-word; }
-        .sent { align-self: flex-end; background: purple; color: white; border-bottom-right-radius: 2px; }
-        .received { align-self: flex-start; background: #e4e6eb; color: black; border-bottom-left-radius: 2px; }
-
-        .input-area { padding: 20px; border-top: 1px solid #eee; display: flex; gap: 10px; }
-        .input-area input { flex: 1; padding: 12px 20px; border: 1px solid #ddd; border-radius: 25px; outline: none; }
-        .btn-send { background: purple; color: white; border: none; padding: 10px 25px; border-radius: 25px; cursor: pointer; font-weight: bold; }
-        .back-link { display: block; padding: 15px; text-align: center; text-decoration: none; color: purple; font-weight: bold; border-top: 1px solid #eee; }
-
-        /* ==========================================
-           📞 PREMIUM CALLING SYSTEM STYLES
-        ========================================== */
-        .call-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(15, 10, 25, 0.85);
-            backdrop-filter: blur(20px);
-            display: none;
-            align-items: center;
+        body { 
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            font-family: 'Outfit', sans-serif; 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
             justify-content: center;
-            z-index: 10000;
-            color: white;
-            flex-direction: column;
+            align-items: center;
+            padding: 16px;
         }
 
-        .call-container {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 32px;
-            padding: 50px 40px;
-            width: 90%;
-            max-width: 480px;
-            text-align: center;
-            box-shadow: 0 30px 70px rgba(0,0,0,0.5);
-            display: flex;
+        /* Glassmorphism card utility */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            if (camOff) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             flex-direction: column;
             align-items: center;
             position: relative;
             animation: zoomInCall 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .call-container.video-active {
+            max-width: 640px;
+            height: 480px;
+            padding: 0;
         }
 
         @keyframes zoomInCall {
@@ -131,20 +148,20 @@
             100% { transform: scale(2.5); opacity: 0; }
         }
 
-        .call-status {
-            font-size: 15px; color: #d8b4fe; margin-bottom: 35px; font-weight: 500; letter-spacing: 0.5px;
-        }
 
-        .call-username {
-            font-size: 28px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px;
-        }
 
-        .call-actions {
-            display: flex; gap: 25px; justify-content: center; width: 100%; z-index: 5;
-        }
 
-        .call-btn {
-            width: 65px; height: 65px; border-radius: 50%;
+
+
+
+
+
+
+
+
+
+
+
             display: flex; align-items: center; justify-content: center;
             font-size: 26px; cursor: pointer; transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: none; outline: none; color: white;
@@ -157,9 +174,9 @@
         .call-btn-accept { background: #10b981; }
         .call-btn-accept:hover { background: #059669; transform: scale(1.15) rotate(10deg); }
 
-        .call-btn-mute { background: rgba(255,255,255,0.12); }
-        .call-btn-mute:hover { background: rgba(255,255,255,0.22); transform: scale(1.12); }
-        .call-btn-mute.active { background: #eab308; box-shadow: 0 8px 20px rgba(234, 179, 8, 0.3); }
+        .call-btn-mute { background: rgba(255,255,255,0.25); }
+        .call-btn-mute:hover { background: rgba(255,255,255,0.4); transform: scale(1.12); }
+        .call-btn-mute.active { background: #ef4444; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4); }
 
         .video-grid {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -181,24 +198,24 @@
             width: 110px; height: 150px; background: rgba(25, 20, 35, 0.8);
             border-radius: 16px; overflow: hidden; border: 2px solid rgba(255,255,255,0.8);
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            z-index: 15;
-            backdrop-filter: blur(10px);
-        }
 
-        .local-video-container video {
-            width: 100%; height: 100%; object-fit: cover;
-        }
 
-        .active-call-controls {
-            position: absolute; bottom: 35px; left: 50%;
-            transform: translateX(-50%); display: flex; gap: 20px;
-            z-index: 20;
-        }
 
-        .voice-waves {
-            display: none; gap: 6px; height: 50px; align-items: center; margin-bottom: 35px;
-        }
-        .voice-wave-bar {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             width: 5px; height: 100%; background: #c084fc;
             border-radius: 3px;
             animation: wavePulseCall 1.4s infinite ease-in-out;
@@ -288,9 +305,188 @@
 
     <!-- 📞 Calling System HTML Overlay -->
     <div id="callOverlay" class="call-overlay">
+        <audio id="remoteAudio" autoplay></audio>
         <div class="call-container" id="callContainer">
             <!-- Pulsing Rings (Only during Calling/Ringing) -->
             <div id="callingRings" style="position: absolute; width: 130px; height: 130px; top: 50px; display: none; z-index: 1;">
+                <div class="pulsing-rings"></div>
+                <div class="pulsing-rings"></div>
+            </div>
+
+            <!-- Call Info Display -->
+            <div id="callInfoBox" style="position: relative; z-index: 2;">
+                <div class="call-avatar" id="callAvatar">Y</div>
+                <h2 class="call-username" id="callUsername">Username</h2>
+                <div class="call-status" id="callStatus">Calling...</div>
+            </div>
+
+            <!-- Voice Waves (Only active during voice call) -->
+            <div class="voice-waves" id="voiceWaves" style="position: relative; z-index: 2;">
+                <div class="voice-wave-bar"></div>
+                <div class="voice-wave-bar"></div>
+                <div 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                display: none !important;
+            }
+            body.chat-open .main-chat {
+                display: flex !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Centralized App Panel Container -->
+            left: 16px;
+            width: 300px;
+            height: 220px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            overflow: hidden;
+            animation: fadeInScaleEmoji 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes fadeInScaleEmoji {
+            from { opacity: 0; transform: scale(0.9) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .emoji-picker-panel.hidden {
+                        <span class="text-[10px] text-gray-500 font-semibold">Logged in</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-container p-3 border-b border-white/15">
+                <div class="relative flex items-center bg-white/40 rounded-2xl border border-white/50 focus-within:border-purple-500/50 focus-within:bg-white/60 transition-all duration-300 px-3.5 py-2">
+                    <i class="fa fa-search text-gray-400 mr-2 text-xs"></i>
+                    <input type="text" id="userSearch" class="bg-transparent outline-none w-full text-xs font-semibold text-gray-700 placeholder-gray-400" placeholder="Search friends..." onkeyup="filterUsers()">
+                </div>
+            </div>
+            
+            <div id="friendListContainer" class="custom-scrollbar">
+                <p style="padding:20px; color:#999; text-align:center;">Connecting...</p>
+            </div>
+
+            <a href="UsersPostServlet" class="flex items-center justify-center gap-2 p-3.5 m-3 rounded-2xl bg-white/20 hover:bg-white/60 border border-white/30 text-purple-700 hover:text-purple-900 font-bold transition-all duration-300 text-xs shadow-sm hover:shadow-md">
+                <i class="fa fa-house-chimney text-xs"></i> Back to Home Feed
+            </a>
+        </div>
+
+        <div class="main-chat">
+            <div class="chat-header glass-nav px-6 py-4 flex ite
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 <div class="pulsing-rings"></div>
                 <div class="pulsing-rings"></div>
             </div>
@@ -320,7 +516,7 @@
             <!-- Video Session Grid -->
             <div class="video-grid" id="videoGrid">
                 <div class="remote-video-container">
-                    <video id="remoteVideo" autoplay playsinline></video>
+                    <video id="remoteVideo" autoplay playsinline muted></video>
                     <!-- Fallback simulated remote avatar/canvas if no feed -->
                     <div id="remoteAvatarFallback" style="display: none; position: absolute; font-size: 80px; font-weight: bold; color: rgba(255,255,255,0.2);">Remote</div>
                 </div>
@@ -369,38 +565,38 @@
                     updateFriendList(data.substring(13).split(","));
                 } else if (data.startsWith("CHAT|")) {
                     var parts = data.split("|", 3);
-                    if (document.getElementById("targetFriendName").value === parts[1]) {
-                        displayMessage(parts[2], 'received');
-                    } else {
-                        // Notify if chat is not open
-                        alert("New message from " + parts[1]);
-                    }
-                } else if (data.startsWith("CALL_OFFER|")) {
-                    var parts = data.split("|", 3);
-                    handleCallOffer(parts[1], JSON.parse(parts[2]));
-                } else if (data.startsWith("CALL_ANSWER|")) {
-                    var parts = data.split("|", 3);
-                    handleCallAnswer(parts[1], JSON.parse(parts[2]));
-                } else if (data.startsWith("ICE_CANDIDATE|")) {
-                    var parts = data.split("|", 3);
-                    handleIceCandidate(parts[1], JSON.parse(parts[2]));
-                } else if (data.startsWith("CALL_REJECT|")) {
-                    var parts = data.split("|", 3);
-                    handleCallReject(parts[1]);
-                } else if (data.startsWith("CALL_END|")) {
-                    var parts = data.split("|", 3);
-                    handleCallEnd(parts[1]);
-                } else if (data.startsWith("WEBRTC_ANSWER|")) {
-                    var parts = data.split("|", 3);
-                    handleWebRTCAnswer(parts[1], JSON.parse(parts[2]));
-                }
-            };
+       
 
-            // 🔥 Check for deep link
-            const urlParams = new URLSearchParams(window.location.search);
-            const targetUser = urlParams.get('userName');
-            if (targetUser) {
-                window.targetToOpen = targetUser;
+            <!-- Call Info Display -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             }
         };
 
@@ -432,38 +628,38 @@
                 html += `
                     <div class="friend-item" id="friend-item-\${user}" onclick="openChat('\${user}', this)">
                         <div class="avatar">\${user.charAt(0).toUpperCase()}<div class="online-dot"></div></div>
-                        <div class="friend-info"><b>\${user}</b><br><small style="color:green">Active</small></div>
-                    </div>`;
-            });
-            container.innerHTML = html || "<p style='text-align:center; padding:20px; color:#999;'>No one online</p>";
-            
-            if (window.targetToOpen) {
-                let item = document.getElementById("friend-item-" + window.targetToOpen);
-                if (item) openChat(window.targetToOpen, item);
-                window.targetToOpen = null; // Reset
-            }
-            filterUsers();
-        }
+                        <div class="friend-info"><b>\${user}</b><br><small style="color
 
-        function openChat(friend, element) {
-            document.body.classList.add('chat-open');
-            document.getElementById("chattingWith").innerText = friend;
-            document.getElementById("targetFriendName").value = friend;
-            document.getElementById("callButtons").classList.add("active");
-            document.getElementById("chatBox").innerHTML = "<p style='text-align:center; padding-top:50px; color:#999;'>Loading messages...</p>";
-            document.querySelectorAll('.friend-item').forEach(i => i.classList.remove('active'));
-            if(element) element.classList.add('active');
 
-            fetch(`loadMessages?user1=\${encodeURIComponent(myName)}&user2=\${encodeURIComponent(friend)}`)
-            .then(res => res.json())
-            .then(data => {
-                const chatBox = document.getElementById("chatBox");
-                chatBox.innerHTML = "";
-                if (data.length === 0) {
-                    chatBox.innerHTML = "<p style='text-align:center; padding-top:50px; color:#999;'>No previous messages. Say hi!</p>";
-                } else {
-                    data.forEach(m => {
-                        displayMessage(m.message, m.sender === myName ? 'sent' : 'received');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     });
                 }
             })
@@ -512,234 +708,56 @@
         let currentCallFriend = null;
         let callType = null;
         let isCaller = false;
-        let callTimer = null;
-        let callStartTime = null;
-        let simulationInterval = null;
-        
-        let micMuted = false;
-        let camOff = false;
+                <input type="text" id="messageText" placeholder="Type a message..." class="flex-1 bg-white/40 backdrop-blur-sm border border-white/50 rounded-full px-5 py-3 text-sm outline-none text-gray-700 placeholder-gray-400 focus:border-purple-500/50 focus:bg-white/60 transition-all font-medium" onkeypress="if(event.key==='Enter') sendToFriend()">
+                <button class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 text-white flex items-center justify-
 
-        const rtcConfig = {
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
-            ]
-        };
 
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
 
-        function startOutgoingRingtone() {
-            initAudio();
-            stopRingtone();
-            let playTone = () => {
-                let osc1 = audioCtx.createOscillator();
-                let osc2 = audioCtx.createOscillator();
-                let gain = audioCtx.createGain();
-                
-                osc1.type = 'sine';
-                osc1.frequency.setValueAtTime(440, audioCtx.currentTime);
-                osc2.type = 'sine';
-                osc2.frequency.setValueAtTime(480, audioCtx.currentTime);
-                
-                gain.gain.setValueAtTime(0, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime + 1.5);
-                gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 2.0);
-                
-                osc1.connect(gain);
-                osc2.connect(gain);
-                gain.connect(audioCtx.destination);
-                
-                osc1.start();
-                osc2.start();
-                
-                toneOscillators.push(osc1, osc2);
-                
-                setTimeout(() => {
-                    try { osc1.stop(); osc2.stop(); } catch(e) {}
-                }, 2000);
-            };
-            
-            playTone();
-            ringInterval = setInterval(playTone, 4000);
-        }
 
-        function startIncomingRingtone() {
-            initAudio();
-            stopRingtone();
-            let playRing = () => {
-                let osc = audioCtx.createOscillator();
-                let gain = audioCtx.createGain();
-                
-                osc.type = 'triangle';
-                let now = audioCtx.currentTime;
-                osc.frequency.setValueAtTime(523.25, now); // C5
-                osc.frequency.setValueAtTime(659.25, now + 0.15); // E5
-                osc.frequency.setValueAtTime(783.99, now + 0.3); // G5
-                osc.frequency.setValueAtTime(1046.50, now + 0.45); // C6
-                
-                gain.gain.setValueAtTime(0, now);
-                gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
-                gain.gain.setValueAtTime(0.2, now + 0.5);
-                gain.gain.linearRampToValueAtTime(0, now + 0.75);
-                
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                
-                osc.start();
-                toneOscillators.push(osc);
-                
-                setTimeout(() => {
-                    try { osc.stop(); } catch(e) {}
-                }, 800);
-            };
-            
-            playRing();
-            ringInterval = setInterval(playRing, 1200);
-        }
 
-        function stopRingtone() {
-            if (ringInterval) {
-                clearInterval(ringInterval);
-                ringInterval = null;
-            }
-            toneOscillators.forEach(osc => {
-                try { osc.stop(); } catch(e) {}
-            });
-            toneOscillators = [];
-        }
 
-        function playConnectedTone() {
-            initAudio();
-            let osc = audioCtx.createOscillator();
-            let gain = audioCtx.createGain();
-            osc.frequency.setValueAtTime(660, audioCtx.currentTime);
-            osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15);
-            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            setTimeout(() => {
-                try { osc.stop(); } catch(e) {}
-            }, 300);
-        }
 
-        function initiateCall(type) {
-            var friend = document.getElementById("targetFriendName").value;
-            if (!friend || friend === "None") return;
 
-            initAudio();
-            isCaller = true;
-            currentCallFriend = friend;
-            callType = type;
-            
-            document.getElementById("callOverlay").style.display = "flex";
-            document.getElementById("callingRings").style.display = "block";
-            document.getElementById("callAvatar").innerText = friend.charAt(0).toUpperCase();
-            document.getElementById("callUsername").innerText = friend;
-            document.getElementById("callStatus").innerText = "Calling " + friend + "...";
-            document.getElementById("acceptBtn").style.display = "none";
-            document.getElementById("declineBtn").style.display = "flex";
-            document.getElementById("videoGrid").style.display = "none";
-            document.getElementById("voiceWaves").style.display = "none";
 
-            startOutgoingRingtone();
 
-            socket.send("CALL_OFFER|" + friend + "|" + JSON.stringify({ type: type }));
 
-            // Fallback simulation timer if remote user does not respond
-            callTimer = setTimeout(() => {
-                simulateConnectedCall();
-            }, 6000);
-        }
 
-        function startVoiceCall() {
-            initiateCall('voice');
-        }
 
-        function startVideoCall() {
-            initiateCall('video');
-        }
 
-        async function handleCallOffer(sender, offerData) {
-            if (offerData.sdp) {
-                if (peerConnection) {
-                    await peerConnection.setRemoteDescription(new RTCSessionDescription(offerData.sdp));
-                    const answer = await peerConnection.createAnswer();
-                    await peerConnection.setLocalDescription(answer);
-                    socket.send("WEBRTC_ANSWER|" + sender + "|" + JSON.stringify({ sdp: answer }));
-                }
-                return;
-            }
 
-            if (currentCallFriend && currentCallFriend !== sender) {
-                socket.send("CALL_REJECT|" + sender + "|busy");
-                return;
-            }
-            
-            initAudio();
-            isCaller = false;
-            currentCallFriend = sender;
-            callType = offerData.type;
 
-            document.getElementById("callOverlay").style.display = "flex";
-            document.getElementById("callingRings").style.display = "block";
-            document.getElementById("callAvatar").innerText = sender.charAt(0).toUpperCase();
-            document.getElementById("callUsername").innerText = sender;
-            document.getElementById("callStatus").innerText = "Incoming " + (callType === 'video' ? 'Video' : 'Voice') + " Call...";
-            document.getElementById("acceptBtn").style.display = "flex";
-            document.getElementById("declineBtn").style.display = "flex";
-            document.getElementById("videoGrid").style.display = "none";
-            document.getElementById("voiceWaves").style.display = "none";
 
-            startIncomingRingtone();
-            
-            callTimer = setTimeout(() => {
-                declineCall();
-            }, 30000);
-        }
 
-        function declineCall() {
-            stopRingtone();
-            if (callTimer) clearTimeout(callTimer);
-            
-            if (currentCallFriend) {
-                if (isCaller) {
-                    socket.send("CALL_END|" + currentCallFriend + "|cancelled");
-                } else {
-                    socket.send("CALL_REJECT|" + currentCallFriend + "|declined");
-                }
-            }
-            
-            resetCallUI();
-        }
 
-        function handleCallReject(sender) {
-            stopRingtone();
-            if (callTimer) clearTimeout(callTimer);
-            document.getElementById("callStatus").innerText = "Call Declined";
-            setTimeout(() => {
-                resetCallUI();
-            }, 2000);
-        }
 
-        function handleCallEnd(sender) {
-            stopRingtone();
-            if (callTimer) clearTimeout(callTimer);
-            endCall(true);
-        }
 
-        function acceptCall() {
-            stopRingtone();
-            if (callTimer) clearTimeout(callTimer);
-            
-            document.getElementById("acceptBtn").style.display = "none";
-            document.getElementById("callingRings").style.display = "none";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <div class="video-grid" id="videoGrid">
+                <div class="remote-video-container">
+                    <video id="remoteVideo" autoplay playsinline muted></video>
+                    <!-- Fallback simulated remote avatar/canvas if no feed -->
+                    <div id="remoteAvatarFallback" style="display: none; position: absolute; font-size: 80px; font-weight: bold; color: rgba(255,255,255,0.2);">Remote</div>
+                </div>
+                <div class="local-video-container">
+                    <video id="localVideo" autoplay playsinline muted></video>
+                </div>
+            </div>
             document.getElementById("callStatus").innerText = "Connecting...";
 
             socket.send("CALL_ANSWER|" + currentCallFriend + "|" + JSON.stringify({ status: "accepted" }));
@@ -761,16 +779,31 @@
         async function startPeerConnection() {
             playConnectedTone();
             
+            let audioFallbackUsed = false;
             try {
                 const constraints = {
                     audio: true,
                     video: callType === 'video'
                 };
                 
-                localStream = await navigator.mediaDevices.getUserMedia(constraints);
+                try {
+                    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+                } catch (mediaErr) {
+                    console.warn("Primary media access failed:", mediaErr);
+                    if (callType === 'video') {
+                        // Fallback to audio-only
+                        console.log("Attempting audio-only fallback...");
+                        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                        audioFallbackUsed = true;
+                    } else {
+                        throw mediaErr;
+                    }
+                }
                 
                 const localVideo = document.getElementById("localVideo");
-                localVideo.srcObject = localStream;
+                if (localVideo) {
+                    localVideo.srcObject = localStream;
+                }
                 
                 peerConnection = new RTCPeerConnection(rtcConfig);
                 
@@ -780,8 +813,10 @@
                 
                 peerConnection.ontrack = (event) => {
                     const remoteVideo = document.getElementById("remoteVideo");
-                    remoteVideo.srcObject = event.streams[0];
-                    switchToActiveCallUI();
+                    const remoteAudio = document.getElementById("remoteAudio");
+                    if (remoteVideo) remoteVideo.srcObject = event.streams[0];
+                    if (remoteAudio) remoteAudio.srcObject = event.streams[0];
+                    switchToActiveCallUI(audioFallbackUsed);
                 };
                 
                 peerConnection.onicecandidate = (event) => {
@@ -792,230 +827,245 @@
                 
                 if (isCaller) {
                     const offer = await peerConnection.createOffer();
-                    await peerConnection.setLocalDescription(offer);
-                    socket.send("CALL_OFFER|" + currentCallFriend + "|" + JSON.stringify({ sdp: offer, type: callType }));
+                    await peerConnection.setLocalD
+                    handleIceCandidate(parts[1], JSON.parse(parts[2]));
+                } else if (data.startsWith("CALL_REJECT|")) {
+                    var parts = data.split("|", 3);
+                    handleCallReject(parts[1]);
+                } else if (data.startsWith("CALL_END|")) {
+                    var parts = data.split("|", 3);
+                    handleCallEnd(parts[1]);
+                } else if (data.startsWith("WEBRTC_ANSWER|")) {
+                    var parts = data.split("|", 3);
+                    handleWebRTCAnswer(parts[1], JSON.parse(parts[2]));
+                }
+            };
+
+            // 🔥 Check for deep link
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetUser = urlParams.get('userName');
+            if (targetUser) {
+                window.targetToOpen = targetUser;
+            }
+        };
+
+
+
+
+
+
+
+
+
+            }
+        };
+
+        // 🔥 SEARCH FILTER LOGIC
+        function filterUsers() {
+            var input = document.getElementById('userSearch').value.toLowerCase();
+            var items = document.getElementsByClassName('friend-item');
+
+            for (var i = 0; i < items.length; i++) {
+                var nameElement = items[i].querySelector('.friend-name');
+                if (nameElement) {
+                    var name = nameElement.innerText.toLowerCase();
+                    if (name.includes(input)) {
+                        items[i].style.display = "flex";
+                    } else {
+                        items[i].style.display = "none";
+                        </div>
+                        <div class="text-[10px] text-gray-400 font-bold self-start mt-1">Active</div>
+                    </div>`;
+            });
+            container.innerHTML = html || "<p style='text-align:center; padding:20px; color:#999; font-weight: 600; font-size: 13px;'>No friends online</p>";
+            
+            if (window.targetToOpen) {
+                let item = document.getElementById("friend-item-" + window.targetToOpen);
+                if (item) openChat(window.targetToOpen, item);
+                window.targetToOpen = null; // Reset
+            }
+            filterUsers();
+        }
+
+        function openChat(friend, element) {
+            document.body.classList.add('chat-open');
+            document.getElementById("chattingWith").innerText = friend;
+            document.getElementById("targetFriendName").value = friend;
+            document.getElementById("headerAvatar").innerText = friend.charAt(0).toUpperCase();
+            document.getElementById("activeStatusText").innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Active`;
+            document.getElementById("callButtons").classList.add("active");
+            document.getElementById("chatBox").innerHTML = `
+                <div class="flex-1 flex flex-col items-center justify-center p-6 text-center text-gray-500 my-auto">
+                    <div class="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <span class="text-xs font-bold text-gray-500">Loading conversation...</span>
+            // Ensure any online users that are not in database friends are also listed
+            usersSet.forEach(user => {
+                if (!friendsMap.has(user)) {
+                    </div>`;
+            });
+            container.innerHTML = html || "<p style='text-align:center; padding:20px; color:#999; font-weight: 600; font-size: 13px;'>No friends online</p>";
+            
+            if (window.targetToOpen) {
+                let item = document.getElementById("friend-item-" + window.targetToOpen);
+                if (item) openChat(window.targetToOpen, item);
+                window.targetToOpen = null; // Reset
+            }
+            filterUsers();
+        }
+
+        function openChat(friend, element) {
+            document.body.classList.add('chat-open');
+            document.getElementById("chattingWith").innerText = friend;
+            document.getElementById("targetFriendName").value = friend;
+            document.getElementById("headerAvatar").innerText = friend.charAt(0).toUpperCase();
+            document.getElementById("activeStatusText").innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Active`;
+            document.getElementById("callButtons").classList.add("active");
+            document.getElementById("chatBox").innerHTML = `
+                <div class="flex-1 flex flex-col items-center justify-center p-6 text-center text-gray-500 my-auto">
+                    <div class="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <span class="text-xs font-bold text-gray-500">Loading conversation...</span>
+                </div>`;
+            document.querySelectorAll('.friend-item').forEach(i => i.classList.remove('active'));
+            if(element) element.classList.add('active');
+
+            fetch(`loadMessages?user1=\${encodeURIComponent(myName)}&user2=\${encodeURIComponent(friend)}`)
+            .then(res => res.json())
+            .then(data => {
+                const chatBox = document.getElementById("chatBox");
+                chatBox.innerHTML = "";
+                if (data.length === 0) {
+                    chatBox.innerHTML = `
+                        <div class="flex-1 flex flex-col items-center justify-center p-6 text-center text-gray-500 my-auto">
+                            <div class="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center mb-4">
+                                <i class="fa-regular fa-message text-indigo-600 text-xl animate-bounce" style="animation-duration: 2s;"></i>
+                            </div>
+                            <h4 class="font-extrabold text-gray-800 text-sm mb-1">No previous messages</h4>
+                            <p class="text-[11px] text-gray-500">Send a message below to start your conversation.</p>
+                        </div>`;
                 } else {
-                    switchToActiveCallUI();
+                    data.forEach(m => {
+                        displayMessage(m.message, m.sender === myName ? 'sent' : 'received');
+                    });
                 }
-                
-            } catch (err) {
-                console.warn("Media access denied. Falling back to simulated call.", err);
-                switchToActiveCallUI(true);
-            }
-        }
-
-        async function handleWebRTCAnswer(sender, answerData) {
-            if (peerConnection && answerData.sdp) {
-                await peerConnection.setRemoteDescription(new RTCSessionDescription(answerData.sdp));
-            }
-        }
-
-        async function handleIceCandidate(sender, candidate) {
-            if (peerConnection) {
-                try {
-                    await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-                } catch(e) {}
-            }
-        }
-
-        function switchToActiveCallUI(simulation = false) {
-            document.getElementById("callInfoBox").style.display = callType === 'voice' ? 'block' : 'none';
-            document.getElementById("voiceWaves").style.display = callType === 'voice' ? 'flex' : 'none';
-            document.getElementById("videoGrid").style.display = callType === 'video' ? 'block' : 'none';
-            document.getElementById("acceptBtn").style.display = "none";
-            document.getElementById("declineBtn").style.display = "none";
-            document.getElementById("activeCallControls").style.display = "flex";
-            document.getElementById("callStatus").innerText = "Active Call (00:00)";
+            document.getElementById("headerAvatar").innerText = "N";
+            document.getElementById("activeStatusText").innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>Offline`;
+            document.getElementById("callButtons").classList.remove("active");
             
-            callStartTime = Date.now();
-            callTimer = setInterval(() => {
-                let elapsed = Math.floor((Date.now() - callStartTime) / 1000);
-                let mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
-                let secs = String(elapsed % 60).padStart(2, '0');
-                document.getElementById("callStatus").innerText = "Active Call (" + mins + ":" + secs + ")";
-            }, 1000);
+            // Restore empty chat placeholder
+            document.getElementById("chatBox").innerHTML = `
+                <div id="emptyChatPlaceholder" class="flex-1 flex flex-col items-center justify-center p-6 text-center text-gray-500 my-auto">
+                    <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-purple-500/10 to-blue-500/10 flex items-center justify-center border border-white/30 shadow-inner mb-6 animate-bounce" style="animation-duration: 3s;">
+                        <i class="fa-solid fa-comments text-3xl text-purple-600 animate-pulse"></i>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 mb-2">Welcome to YchatApp Messenger</h3>
+                    <p class="text-xs font-semibold text-gray-500 max-w-[280px]">Select any active friend from the sidebar list to start chatting with them in real-time!</p>
+                </div>`;
+        }
 
-            if (callType === 'video') {
-                if (simulation || !localStream) {
-                    startVideoSimulations();
+        function displayMessage(msg, type) {
+            var chatBox = document.getElementById("chatBox");
+            var div = document.createElement("div");
+            div.className = "msg " + type;
+            div.innerText = msg;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // ==========================================
+        // 📞 PREMIUM CALLING & WEBRTC SIGNALING SYSTEM
+        // ==========================================
+        let audioCtx = null;
+        let ringInterval = null;
+        let toneOscillators = [];
+        
+                <div class="flex-1 flex flex-col items-center justify-center p-6 text-center text-gray-500 my-auto">
+                    <div class="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <span class="text-xs font-bold text-gray-500">Loading conversation...</span>
+                </div>`;
+            document.querySelectorAll('.friend-item').forEach(i => i.classList.remove('active'));
+            if(element) element.classList.add('active');
+
+            fetch(`loadMessages?user1=\${encodeURIComponent(myName)}&user2=\${encodeURIComponent(friend)}`)
+            .then(res => res.json())
+            .then(data => {
+                const chatBox = document.getElementById("chatBox");
+                chatBox.innerHTML = "";
+                if (data.length === 0) {
+                    chatBox.innerHTML = `
+                        <div class="flex-1 flex flex-col items-center justify-center p-6 text-center text-gray-500 my-auto">
+                            <div class="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center mb-4">
+                                <i class="fa-regular fa-message text-indigo-600 text-xl animate-bounce" style="animation-duration: 2s;"></i>
+                            </div>
+                            <h4 class="font-extrabold text-gray-800 text-sm mb-1">No previous messages</h4>
+                            <p class="text-[11px] text-gray-500">Send a message below to start your conversation.</p>
+                        </div>`;
+                } else {
+                    data.forEach(m => {
+                        displayMessage(m.message, m.sender === myName ? 'sent' : 'received');
+                    });
                 }
-            }
-        }
+            })
+            .catch(err => {
+                console.error("Error loading messages:", err);
+                document.getElementById("chatBox").innerHTML = `
+                    <div class="flex-1 flex flex-col items-center justify-center p-6 text-center text-red-500 my-auto">
+                        <i class="fa fa-triangle-exclamation text-2xl text-red-500 mb-2"></i>
+                        <span class="text-xs font-bold">Failed to load message history</span>
+                    </div>`;
+            });
 
-        function startVideoSimulations() {
-            let remoteContainer = document.querySelector(".remote-video-container");
-            let localContainer = document.querySelector(".local-video-container");
-            
-            document.querySelectorAll(".simulated-canvas").forEach(c => c.remove());
-            
-            let remoteCanvas = document.createElement("canvas");
-            let localCanvas = document.createElement("canvas");
-            
-            remoteCanvas.className = "simulated-canvas";
-            localCanvas.className = "simulated-canvas";
-            
-            remoteCanvas.style.cssText = "width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0; border-radius: 32px;";
-            localCanvas.style.cssText = "width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0;";
-            
-            remoteContainer.appendChild(remoteCanvas);
-            localContainer.appendChild(localCanvas);
-            
-            let rCtx = remoteCanvas.getContext("2d");
-            let lCtx = localCanvas.getContext("2d");
-            
-            remoteCanvas.width = 640; remoteCanvas.height = 480;
-            localCanvas.width = 160; localCanvas.height = 200;
-            
-            let frame = 0;
-            simulationInterval = setInterval(() => {
-                frame++;
-                
-                // Draw Remote (Premium cosmic space backdrop)
-                rCtx.fillStyle = "#0f0a19";
-                rCtx.fillRect(0, 0, 640, 480);
-                
-                let grad = rCtx.createRadialGradient(320, 240, 10, 320, 240, 300);
-                grad.addColorStop(0, "rgba(124, 58, 237, 0.45)");
-                grad.addColorStop(1, "#0f0a19");
-                rCtx.fillStyle = grad;
-                rCtx.fillRect(0, 0, 640, 480);
-                
-                for (let i = 0; i < 5; i++) {
-                    let x = 320 + Math.sin(frame * 0.015 + i * 1.5) * 140;
-                    let y = 240 + Math.cos(frame * 0.02 + i * 2) * 90;
-                    let r = 25 + Math.sin(frame * 0.03 + i) * 8;
-                    
-                    let g = rCtx.createRadialGradient(x - r/3, y - r/3, 2, x, y, r);
-                    g.addColorStop(0, "rgba(244, 63, 94, 0.65)");
-                    g.addColorStop(1, "rgba(168, 85, 247, 0.05)");
-                    
-                    rCtx.beginPath();
-                    rCtx.arc(x, y, r, 0, Math.PI * 2);
-                    rCtx.fillStyle = g;
-                    rCtx.fill();
-                }
-                
-                rCtx.fillStyle = "rgba(255, 255, 255, 0.85)";
-                rCtx.font = "bold 22px 'Segoe UI', sans-serif";
-                rCtx.textAlign = "center";
-                rCtx.fillText(currentCallFriend, 320, 380);
-                
-                rCtx.fillStyle = "rgba(192, 132, 252, 0.8)";
-                rCtx.font = "14px 'Segoe UI', sans-serif";
-                rCtx.fillText("Connected • Remote Feed Active", 320, 410);
 
-                // Draw Local (Moving geometric gradient grid)
-                lCtx.fillStyle = "#1e1b4b";
-                lCtx.fillRect(0, 0, 160, 200);
-                
-                let lGrad = lCtx.createLinearGradient(0, 0, 160, 200);
-                lGrad.addColorStop(0, "rgba(168, 85, 247, 0.6)");
-                lGrad.addColorStop(1, "rgba(59, 130, 246, 0.6)");
-                lCtx.fillStyle = lGrad;
-                lCtx.fillRect(0, 0, 160, 200);
-                
-                lCtx.strokeStyle = "rgba(255, 255, 255, 0.15)";
-                lCtx.lineWidth = 1.5;
-                lCtx.beginPath();
-                for (let x = 0; x < 160; x += 25) {
-                    let offset = Math.sin(frame * 0.04 + x) * 6;
-                    lCtx.moveTo(x + offset, 0);
-                    lCtx.lineTo(x + offset, 200);
-                }
-                lCtx.stroke();
-                
-                lCtx.fillStyle = "rgba(255, 255, 255, 0.9)";
-                lCtx.font = "bold 12px 'Segoe UI', sans-serif";
-                lCtx.textAlign = "center";
-                lCtx.fillText("You", 80, 175);
-                
-            }, 30);
-        }
 
-        function simulateConnectedCall() {
-            stopRingtone();
-            if (callTimer) clearTimeout(callTimer);
-            switchToActiveCallUI(true);
-        }
 
-        function endCall(byRemote = false) {
-            playConnectedTone();
-            
-            stopRingtone();
-            if (callTimer) {
-                clearInterval(callTimer);
-                clearTimeout(callTimer);
-                callTimer = null;
-            }
-            
-            if (simulationInterval) {
-                clearInterval(simulationInterval);
-                simulationInterval = null;
-            }
-            
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
-                localStream = null;
-            }
-            
-            if (peerConnection) {
-                peerConnection.close();
-                peerConnection = null;
-            }
-            
-            if (currentCallFriend && !byRemote) {
-                socket.send("CALL_END|" + currentCallFriend + "|ended");
-            }
-            
-            resetCallUI();
-        }
 
-        function resetCallUI() {
-            document.getElementById("callOverlay").style.display = "none";
-            document.getElementById("callingRings").style.display = "none";
-            document.getElementById("activeCallControls").style.display = "none";
-            document.querySelectorAll(".simulated-canvas").forEach(c => c.remove());
-            
-            micMuted = false;
-            camOff = false;
-            
-            const micBtn = document.getElementById("muteMicBtn");
-            const camBtn = document.getElementById("toggleCamBtn");
-            if (micBtn) {
-                micBtn.classList.remove("active");
-                micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-            }
-            if (camBtn) {
-                camBtn.classList.remove("active");
-                camBtn.innerHTML = '<i class="fa-solid fa-video"></i>';
-            }
-            
-            currentCallFriend = null;
-            isCaller = false;
-        }
 
-        function toggleMuteMic() {
-            micMuted = !micMuted;
-            if (localStream) {
-                localStream.getAudioTracks().forEach(track => track.enabled = !micMuted);
-            }
-            const btn = document.getElementById("muteMicBtn");
-            if (micMuted) {
-                btn.classList.add("active");
-                btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-            } else {
-                btn.classList.remove("active");
-                btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-            }
-        }
 
-        function toggleCamera() {
-            camOff = !camOff;
-            if (localStream) {
-                localStream.getVideoTracks().forEach(track => track.enabled = !camOff);
-            }
-            const btn = document.getElementById("toggleCamBtn");
-            if (camOff) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 btn.classList.add("active");
                 btn.innerHTML = '<i class="fa-solid fa-video-slash"></i>';
             } else {
@@ -1040,6 +1090,13 @@
             <span class="text-[10px] font-bold">Messenger</span>
         </a>
         <a href="UsersProfileServlet?userId=${sessionScope.userId}" class="flex flex-col items-center gap-1 text-gray-500 hover:text-blue-500 transition">
+            <img src="img/${ub.profile_pic}" class="w-6 h-6 rounded-full border border-gray-300">
+            <span class="text-[10px] font-bold">Profile</span>
+        </a>
+    </nav>
+
+</body>
+</html>
             <img src="img/${ub.profile_pic}" class="w-6 h-6 rounded-full border border-gray-300">
             <span class="text-[10px] font-bold">Profile</span>
         </a>
