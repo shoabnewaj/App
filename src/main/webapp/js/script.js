@@ -1,4 +1,4 @@
-﻿var socket;
+var socket;
 
 window.onload = function() {
 
@@ -46,66 +46,66 @@ window.onload = function() {
         }
 
         // NOTIFICATION
-    
+        else if (data.startsWith("NOTIF|")) {
+            let msg = data.split("|")[1];
+            let list = document.querySelector(".notification-list");
 
+            if (list) {
+                let item = document.createElement("div");
+                item.innerHTML = "🔔 " + msg + " (Just now)";
+                list.prepend(item);
+            }
+        }
+    };
 
+    socket.onerror = function(err) {
+        console.error("WebSocket Error:", err);
+        document.getElementById("friendListContainer").innerHTML =
+            "<p style='padding:15px; color:red;'>Connection Error!</p>";
+    };
 
+    socket.onclose = function() {
+        console.log("Connection closed");
+    };
+};
 
+// ================= FUNCTIONS =================
 
+// FRIEND LIST
+function updateFriendList(users) {
+    var container = document.getElementById("friendListContainer");
+    var html = "";
 
+    users.forEach(function(user) {
+        user = user.trim();
+        if (user && user !== myName) {
+            html += `<div class="friend-item" onclick="openChat('${user}')">
+                        <div class="online-dot"></div>
+                        <b>${user}</b>
+                     </div>`;
+        }
+    });
 
+    container.innerHTML = html || "<p style='padding:15px;'>No one online</p>";
+}
 
+// OPEN CHAT
+function openChat(friend) {
+    document.getElementById("chattingWith").innerText = friend;
+    document.getElementById("targetFriendName").value = friend;
+    document.getElementById("chatBox").innerHTML =
+        `<div style='text-align:center;color:#999;'>Conversation with ${friend}</div>`;
+}
 
+// SEND MESSAGE
+function sendToFriend() {
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        alert("Connection not ready!");
+        return;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    var friend = document.getElementById("targetFriendName").value;
+    var msgInput = document.getElementById("messageText");
     var msg = msgInput.value.trim();
 
     if (!friend) {
