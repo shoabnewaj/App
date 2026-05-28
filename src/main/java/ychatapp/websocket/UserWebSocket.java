@@ -41,19 +41,13 @@ public class UserWebSocket {
             String receiver = parts[1];
             String content = parts.length > 2 ? parts[2] : "";
 
-            if ("CHAT".equalsIgnoreCase(type)) {
-                sendMessageToUser(receiver, "CHAT|" + sender + "|" + content);
-            } else if ("CALL_SDP".equalsIgnoreCase(type) || 
-                       "CALL_CANDIDATE".equalsIgnoreCase(type) || 
-                       "CALL_BUSY".equalsIgnoreCase(type) || 
-                       "CALL_REJECT".equalsIgnoreCase(type) || 
-                       "CALL_ACCEPT".equalsIgnoreCase(type) ||
-                       "LIVE_SIGNAL".equalsIgnoreCase(type)) {
-                sendMessageToUser(receiver, type + "|" + sender + "|" + content);
-            } else if ("LIVE_CHAT".equalsIgnoreCase(type)) {
+            if ("LIVE_CHAT".equalsIgnoreCase(type)) {
                 broadcastToLiveStream(receiver, "LIVE_CHAT|" + sender + "|" + content);
             } else if ("LIVE_REACTION".equalsIgnoreCase(type)) {
                 broadcastToLiveStream(receiver, "LIVE_REACTION|" + sender + "|" + content);
+            } else {
+                // Default fallback: forward all other signals (CHAT, CALL_OFFER, CALL_ANSWER, etc.) to the receiver
+                sendMessageToUser(receiver, type + "|" + sender + "|" + content);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,7 +94,7 @@ public class UserWebSocket {
             for (Session s : userSessions) {
                 if (s.isOpen()) {
                     try {
-                        s.getBasicRemote().sendText("NOTIFICATION|" + message);
+                        s.getBasicRemote().sendText("NOTIF|" + message);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -135,7 +129,7 @@ public class UserWebSocket {
     }
 
     private void broadcastOnlineUsers() {
-        StringBuilder sb = new StringBuilder("ONLINE_LIST|");
+        StringBuilder sb = new StringBuilder("ONLINE_USERS|");
         int count = 0;
         for (String user : clients.keySet()) {
             if (count > 0) {

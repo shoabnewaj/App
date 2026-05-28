@@ -39,19 +39,32 @@ public class Main {
         Context ctx = tomcat.addWebapp("/", new File(webappDirLocation).getAbsolutePath());
         ctx.setParentClassLoader(Main.class.getClassLoader());
         
-        // Configure Tomcat to scan target/classes for annotations
-        File additionWebInfClasses = new File("target/classes");
-        System.out.println("DEBUG: additionWebInfClasses absolute path is: " + additionWebInfClasses.getAbsolutePath());
-        System.out.println("DEBUG: additionWebInfClasses exists: " + additionWebInfClasses.exists());
-        
-        if (additionWebInfClasses.exists()) {
-            System.out.println("DEBUG: target/classes directory has contents: " + java.util.Arrays.toString(additionWebInfClasses.list()));
-            WebResourceRoot resources = new StandardRoot(ctx);
+        // Configure Tomcat to scan target/classes and build/classes for annotations/classes
+        WebResourceRoot resources = new StandardRoot(ctx);
+        boolean resourcesAdded = false;
+
+        File targetClasses = new File("target/classes");
+        System.out.println("DEBUG: targetClasses absolute path is: " + targetClasses.getAbsolutePath());
+        System.out.println("DEBUG: targetClasses exists: " + targetClasses.exists());
+        if (targetClasses.exists()) {
             resources.addPreResources(new DirResourceSet(resources, "/WEB-INF/classes",
-                    additionWebInfClasses.getAbsolutePath(), "/"));
+                    targetClasses.getAbsolutePath(), "/"));
+            resourcesAdded = true;
+        }
+
+        File buildClasses = new File("build/classes");
+        System.out.println("DEBUG: buildClasses absolute path is: " + buildClasses.getAbsolutePath());
+        System.out.println("DEBUG: buildClasses exists: " + buildClasses.exists());
+        if (buildClasses.exists()) {
+            resources.addPreResources(new DirResourceSet(resources, "/WEB-INF/classes",
+                    buildClasses.getAbsolutePath(), "/"));
+            resourcesAdded = true;
+        }
+
+        if (resourcesAdded) {
             ctx.setResources(resources);
         } else {
-            System.out.println("WARNING: additionWebInfClasses does not exist! Running directory: " + new File(".").getAbsolutePath());
+            System.out.println("WARNING: Neither target/classes nor build/classes exists! Running directory: " + new File(".").getAbsolutePath());
         }
 
         // Enable JarScanner to scan all directories and classpath for annotations
