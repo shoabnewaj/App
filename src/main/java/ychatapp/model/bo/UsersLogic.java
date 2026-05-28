@@ -21,7 +21,9 @@ public class UsersLogic {
 
     // ২. লগইন লজিক
     public static UsersBeans login(UsersBeans ub) {
-        return new UsersDAO().loginCheck(ub.getEmail(), hashValue(ub.getPass()));
+        String hashed = hashValue(ub.getPass());
+        ub.setHashedPass(hashed);
+        return new UsersDAO().loginCheck(ub.getEmail(), hashed);
     }
 
     // ৩. প্রোফাইল আপডেট লজিক (Error solved here)

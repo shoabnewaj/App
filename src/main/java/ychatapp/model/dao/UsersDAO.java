@@ -105,17 +105,28 @@ public class UsersDAO {
  
     // 🛠️ Update User
     public boolean updateUser(UsersBeans ub) {
-        String sql = "UPDATE users SET name=?, email=?, password=?, profile_pic=? WHERE id=?";
+        String pass = ub.getHashedPass();
+        String sql;
+        boolean updatePass = (pass != null && !pass.isEmpty());
+        if (updatePass) {
+            sql = "UPDATE users SET name=?, email=?, password=?, profile_pic=? WHERE id=?";
+        } else {
+            sql = "UPDATE users SET name=?, email=?, profile_pic=? WHERE id=?";
+        }
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, ub.getName());
             ps.setString(2, ub.getEmail());
-            String pass = ub.getHashedPass();
-            if (pass != null && !pass.startsWith("$2a$")) {
-                pass = org.mindrot.jbcrypt.BCrypt.hashpw(pass, org.mindrot.jbcrypt.BCrypt.gensalt());
+            if (updatePass) {
+                if (!pass.startsWith("$2a$")) {
+                    pass = org.mindrot.jbcrypt.BCrypt.hashpw(pass, org.mindrot.jbcrypt.BCrypt.gensalt());
+                }
+                ps.setString(3, pass);
+                ps.setString(4, ub.getProfile_pic());
+                ps.setInt(5, ub.getId());
+            } else {
+                ps.setString(3, ub.getProfile_pic());
+                ps.setInt(4, ub.getId());
             }
-            ps.setString(3, pass);
-            ps.setString(4, ub.getProfile_pic());
-            ps.setInt(5, ub.getId());
             return ps.executeUpdate() > 0;
         } catch (Exception e) { e.printStackTrace(); return false; }
     }
