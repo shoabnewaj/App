@@ -1,4 +1,4 @@
-const CACHE_NAME = "ychat-v1";
+const CACHE_NAME = "ychat-v3";
 
 const urlsToCache = [
   "/",
@@ -51,5 +51,91 @@ self.addEventListener("fetch", event => {
         // offline fallback
         return caches.match(event.request);
       })
+  );
+});
+
+// Push Notifications
+self.addEventListener("push", event => {
+  let data = { title: "yChat", body: "You have a new message or update!", icon: "favicon.ico", url: "/" };
+  if (event.data) {
+    try {
+      data = Object.assign(data, event.data.json());
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+  const options = {
+    body: data.body,
+    icon: data.icon || "favicon.ico",
+    badge: "favicon.ico",
+    vibrate: [100, 50, 100],
+    data: {
+      url: data.url || "/"
+    }
+  };
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Notification Click -> Focus or open window
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  const targetUrl = (event.notification.data && event.notification.data.url) ? event.notification.data.url : "/";
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(clientList => {
+      for (let i = 0; i < clientList.length; i++) {
+        const client = clientList[i];
+        if (client.url && "focus" in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
+
+// Push Notifications
+self.addEventListener("push", event => {
+  let data = { title: "yChat", body: "You have a new message or update!", icon: "favicon.ico", url: "/" };
+  if (event.data) {
+    try {
+      data = Object.assign(data, event.data.json());
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+  const options = {
+    body: data.body,
+    icon: data.icon || "favicon.ico",
+    badge: "favicon.ico",
+    vibrate: [100, 50, 100],
+    data: {
+      url: data.url || "/"
+    }
+  };
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Notification Click -> Focus or open window
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  const targetUrl = (event.notification.data && event.notification.data.url) ? event.notification.data.url : "/";
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(clientList => {
+      for (let i = 0; i < clientList.length; i++) {
+        const client = clientList[i];
+        if (client.url && "focus" in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
   );
 });

@@ -47,6 +47,7 @@ window.onload = function() {
 
         // NOTIFICATION
         else if (data.startsWith("NOTIF|")) {
+            window.dispatchEvent(new Event("ychat:notification"));
             let msg = data.split("|")[1];
             let list = document.querySelector(".notification-list");
 

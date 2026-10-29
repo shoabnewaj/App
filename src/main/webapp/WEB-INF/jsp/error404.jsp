@@ -54,7 +54,7 @@
             The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
         </p>
 
-        <a href="<%=request.getContextPath()%>/main.jsp" class="btn-gradient inline-flex items-center gap-2 text-white font-semibold px-8 py-4 rounded-2xl shadow-lg">
+        <a href="<%=request.getContextPath()%>/UsersPostServlet" class="btn-gradient inline-flex items-center gap-2 text-white font-semibold px-8 py-4 rounded-2xl shadow-lg">
             <i class="fa-solid fa-house-chimney"></i>
             Take Me Home
         </a>

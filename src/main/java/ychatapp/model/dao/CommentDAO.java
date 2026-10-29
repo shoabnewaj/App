@@ -69,6 +69,24 @@ public class CommentDAO {
         return -1;
     }
 
+    public int getPostIdForComment(int commentId) {
+        String sql = "SELECT post_id FROM comments WHERE id=?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, commentId);
+            try (ResultSet rs = ps.executeQuery()) { if (rs.next()) return rs.getInt(1); }
+        } catch (Exception e) { e.printStackTrace(); }
+        return -1;
+    }
+
+    public int getPostIdForReply(int replyId) {
+        String sql = "SELECT c.post_id FROM replies r JOIN comments c ON c.id=r.comment_id WHERE r.id=?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, replyId);
+            try (ResultSet rs = ps.executeQuery()) { if (rs.next()) return rs.getInt(1); }
+        } catch (Exception e) { e.printStackTrace(); }
+        return -1;
+    }
+
     // ================= COMMENT REACTION (comment_interactions) =================
     public void handleInteraction(int commentId, int userId, String type) {
         String normalizedType = type.toUpperCase();

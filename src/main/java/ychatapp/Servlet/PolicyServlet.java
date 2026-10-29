@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpSession;
 import ychatapp.model.beans.UsersBeans;
 import ychatapp.model.dao.DBConnection;
 
-@WebServlet("/PolicyServlet")
+@WebServlet({"/PolicyServlet", "/policy", "/policy.jsp"})
 public class PolicyServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

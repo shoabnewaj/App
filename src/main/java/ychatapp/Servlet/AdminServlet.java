@@ -17,7 +17,7 @@ import ychatapp.model.beans.UserClaimBeans;
 import ychatapp.model.dao.UsersDAO;
 import ychatapp.model.dao.DBConnection;
 
-@WebServlet("/AdminServlet")
+@WebServlet({"/AdminServlet", "/admin"})
 public class AdminServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -33,14 +33,20 @@ public class AdminServlet extends HttpServlet {
             return;
         }
 
-        // 🔒 admin authorization check
-        String email = ub.getEmail();
-        boolean isAdmin = "admin@gmail.com".equalsIgnoreCase(email) 
+        // 白 admin authorization check
+        boolean isAdmin = ub.isAdmin();
+        if (!isAdmin) {
+            String email = ub.getEmail();
+            if (email != null) {
+                isAdmin = "admin@gmail.com".equalsIgnoreCase(email) 
                        || "shoabnewaj81@gmail.com".equalsIgnoreCase(email)
                        || "newaj@xxx.jp".equalsIgnoreCase(email);
+            }
+        }
         
         if (!isAdmin) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied: You do not have admin privileges.");
+            request.setAttribute("userEmail", ub.getEmail());
+            request.getRequestDispatcher("/WEB-INF/jsp/admin_access_denied.jsp").forward(request, response);
             return;
         }
 
@@ -99,6 +105,228 @@ public class AdminServlet extends HttpServlet {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+            response.sendRedirect("AdminServlet?msg=error");
+            return;
+        } else if ("ban_user".equalsIgnoreCase(action)) {
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    int userId = Integer.parseInt(userIdParam);
+                    try (PreparedStatement ps = conn.prepareStatement("UPDATE users SET is_banned = 1 WHERE id = ?")) {
+                        ps.setInt(1, userId);
+                        ps.executeUpdate();
+                    }
+                    response.sendRedirect("AdminServlet?msg=user_banned");
+                    return;
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+            response.sendRedirect("AdminServlet?msg=error");
+            return;
+        } else if ("unban_user".equalsIgnoreCase(action)) {
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    int userId = Integer.parseInt(userIdParam);
+                    try (PreparedStatement ps = conn.prepareStatement("UPDATE users SET is_banned = 0 WHERE id = ?")) {
+                        ps.setInt(1, userId);
+                        ps.executeUpdate();
+                    }
+                    response.sendRedirect("AdminServlet?msg=user_unbanned");
+                    return;
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+            response.sendRedirect("AdminServlet?msg=error");
+            return;
+        } else if ("verify_user".equalsIgnoreCase(action)) {
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    int userId = Integer.parseInt(userIdParam);
+                    try (PreparedStatement ps = conn.prepareStatement("UPDATE users SET is_verified = 1 WHERE id = ?")) {
+                        ps.setInt(1, userId);
+                        ps.executeUpdate();
+                    }
+                    response.sendRedirect("AdminServlet?msg=user_verified");
+                    return;
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+            response.sendRedirect("AdminServlet?msg=error");
+            return;
+        } else if ("unverify_user".equalsIgnoreCase(action)) {
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    int userId = Integer.parseInt(userIdParam);
+                    try (PreparedStatement ps = conn.prepareStatement("UPDATE users SET is_verified = 0 WHERE id = ?")) {
+                        ps.setInt(1, userId);
+                        ps.executeUpdate();
+                    }
+                    response.sendRedirect("AdminServlet?msg=user_unverified");
+                    return;
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+            response.sendRedirect("AdminServlet?msg=error");
+            return;
+        } else if ("make_admin".equalsIgnoreCase(action)) {
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    int userId = Integer.parseInt(userIdParam);
+                    try (PreparedStatement ps = conn.prepareStatement("UPDATE users SET role = 'ADMIN' WHERE id = ?")) {
+                        ps.setInt(1, userId);
+                        ps.executeUpdate();
+                    }
+                    response.sendRedirect("AdminServlet?msg=role_updated");
+                    return;
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+            response.sendRedirect("AdminServlet?msg=error");
+            return;
+        } else if ("remove_admin".equalsIgnoreCase(action)) {
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    int userId = Integer.parseInt(userIdParam);
+                    // Protect: cannot demote yourself
+                    if (userId == ub.getId()) {
+                        response.sendRedirect("AdminServlet?msg=error");
+                        return;
+                    }
+                    try (PreparedStatement ps = conn.prepareStatement("UPDATE users SET role = 'USER' WHERE id = ?")) {
+                        ps.setInt(1, userId);
+                        ps.executeUpdate();
+                    }
+                    response.sendRedirect("AdminServlet?msg=role_updated");
+                    return;
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+            response.sendRedirect("AdminServlet?msg=error");
+            return;
+        } else if ("delete_post".equalsIgnoreCase(action)) {
+            String postIdParam = request.getParameter("postId");
+            if (postIdParam != null && !postIdParam.isEmpty()) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    int postId = Integer.parseInt(postIdParam);
+                    // Delete related data first
+                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM comments WHERE post_id = ?")) { ps.setInt(1, postId); ps.executeUpdate(); }
+                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM post_interactions WHERE post_id = ?")) { ps.setInt(1, postId); ps.executeUpdate(); }
+                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM saved_posts WHERE post_id = ?")) { ps.setInt(1, postId); ps.executeUpdate(); }
+                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM posts WHERE id = ?")) { ps.setInt(1, postId); ps.executeUpdate(); }
+                    response.sendRedirect("AdminServlet?msg=post_deleted");
+                    return;
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+            response.sendRedirect("AdminServlet?msg=error");
+            return;
+        } else if ("ban_user".equalsIgnoreCase(action)) {
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    int userId = Integer.parseInt(userIdParam);
+                    try (PreparedStatement ps = conn.prepareStatement("UPDATE users SET is_banned = 1 WHERE id = ?")) {
+                        ps.setInt(1, userId);
+                        ps.executeUpdate();
+                    }
+                    response.sendRedirect("AdminServlet?msg=user_banned");
+                    return;
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+            response.sendRedirect("AdminServlet?msg=error");
+            return;
+        } else if ("unban_user".equalsIgnoreCase(action)) {
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    int userId = Integer.parseInt(userIdParam);
+                    try (PreparedStatement ps = conn.prepareStatement("UPDATE users SET is_banned = 0 WHERE id = ?")) {
+                        ps.setInt(1, userId);
+                        ps.executeUpdate();
+                    }
+                    response.sendRedirect("AdminServlet?msg=user_unbanned");
+                    return;
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+            response.sendRedirect("AdminServlet?msg=error");
+            return;
+        } else if ("verify_user".equalsIgnoreCase(action)) {
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    int userId = Integer.parseInt(userIdParam);
+                    try (PreparedStatement ps = conn.prepareStatement("UPDATE users SET is_verified = 1 WHERE id = ?")) {
+                        ps.setInt(1, userId);
+                        ps.executeUpdate();
+                    }
+                    response.sendRedirect("AdminServlet?msg=user_verified");
+                    return;
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+            response.sendRedirect("AdminServlet?msg=error");
+            return;
+        } else if ("unverify_user".equalsIgnoreCase(action)) {
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    int userId = Integer.parseInt(userIdParam);
+                    try (PreparedStatement ps = conn.prepareStatement("UPDATE users SET is_verified = 0 WHERE id = ?")) {
+                        ps.setInt(1, userId);
+                        ps.executeUpdate();
+                    }
+                    response.sendRedirect("AdminServlet?msg=user_unverified");
+                    return;
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+            response.sendRedirect("AdminServlet?msg=error");
+            return;
+        } else if ("make_admin".equalsIgnoreCase(action)) {
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    int userId = Integer.parseInt(userIdParam);
+                    try (PreparedStatement ps = conn.prepareStatement("UPDATE users SET role = 'ADMIN' WHERE id = ?")) {
+                        ps.setInt(1, userId);
+                        ps.executeUpdate();
+                    }
+                    response.sendRedirect("AdminServlet?msg=role_updated");
+                    return;
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+            response.sendRedirect("AdminServlet?msg=error");
+            return;
+        } else if ("remove_admin".equalsIgnoreCase(action)) {
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    int userId = Integer.parseInt(userIdParam);
+                    // Protect: cannot demote yourself
+                    if (userId == ub.getId()) {
+                        response.sendRedirect("AdminServlet?msg=error");
+                        return;
+                    }
+                    try (PreparedStatement ps = conn.prepareStatement("UPDATE users SET role = 'USER' WHERE id = ?")) {
+                        ps.setInt(1, userId);
+                        ps.executeUpdate();
+                    }
+                    response.sendRedirect("AdminServlet?msg=role_updated");
+                    return;
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+            response.sendRedirect("AdminServlet?msg=error");
+            return;
+        } else if ("delete_post".equalsIgnoreCase(action)) {
+            String postIdParam = request.getParameter("postId");
+            if (postIdParam != null && !postIdParam.isEmpty()) {
+                try (Connection conn = DBConnection.getConnection()) {
+                    int postId = Integer.parseInt(postIdParam);
+                    // Delete related data first
+                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM comments WHERE post_id = ?")) { ps.setInt(1, postId); ps.executeUpdate(); }
+                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM post_interactions WHERE post_id = ?")) { ps.setInt(1, postId); ps.executeUpdate(); }
+                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM saved_posts WHERE post_id = ?")) { ps.setInt(1, postId); ps.executeUpdate(); }
+                    try (PreparedStatement ps = conn.prepareStatement("DELETE FROM posts WHERE id = ?")) { ps.setInt(1, postId); ps.executeUpdate(); }
+                    response.sendRedirect("AdminServlet?msg=post_deleted");
+                    return;
+                } catch (Exception e) { e.printStackTrace(); }
             }
             response.sendRedirect("AdminServlet?msg=error");
             return;
@@ -163,8 +391,33 @@ public class AdminServlet extends HttpServlet {
             e.printStackTrace();
         }
 
+        // Fetch recent posts for admin management (latest 50)
+        List<java.util.Map<String, Object>> recentPosts = new java.util.ArrayList<>();
+        try (Connection conn = DBConnection.getConnection()) {
+            String postSql = "SELECT p.id, p.content, p.created_at, p.post_type, u.name AS user_name, u.id AS user_id " +
+                             "FROM posts p LEFT JOIN users u ON p.user_id = u.id " +
+                             "ORDER BY p.created_at DESC LIMIT 50";
+            try (PreparedStatement ps = conn.prepareStatement(postSql);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    java.util.Map<String, Object> postMap = new java.util.LinkedHashMap<>();
+                    postMap.put("id", rs.getInt("id"));
+                    postMap.put("content", rs.getString("content"));
+                    postMap.put("created_at", rs.getTimestamp("created_at"));
+                    postMap.put("post_type", rs.getString("post_type"));
+                    postMap.put("user_name", rs.getString("user_name"));
+                    postMap.put("user_id", rs.getInt("user_id"));
+                    recentPosts.add(postMap);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         request.setAttribute("allUsers", allUsers);
         request.setAttribute("allClaims", allClaims);
+        request.setAttribute("recentPosts", recentPosts);
+        request.setAttribute("allPayments", new ychatapp.model.dao.PaymentDAO().getAllPayments());
         request.setAttribute("totalUsers", totalUsers);
         request.setAttribute("totalPosts", totalPosts);
         request.setAttribute("totalReels", totalReels);
@@ -179,4 +432,3 @@ public class AdminServlet extends HttpServlet {
         doGet(request, response);
     }
 }
-

@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="<%=request.getContextPath()%>/js/notification-badge.js" data-context-path="<%=request.getContextPath()%>" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Y-Chat Watch</title>
@@ -125,7 +126,18 @@
 
         <!-- Right Side: Video Feed -->
         <div class="space-y-6">
-            <c:choose>
+            <section class="glass-card rounded-3xl p-5" aria-labelledby="liveBroadcastHeading">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 id="liveBroadcastHeading" class="text-lg font-bold text-gray-800">🔴 Live now</h2>
+                    <span id="liveBroadcastStatus" class="text-xs text-gray-500">Checking live broadcasts…</span>
+                </div>
+                <div id="liveBroadcastList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <p class="text-sm text-gray-500">Loading live broadcasts…</p>
+                </div>
+            </section>            <section class="glass-card rounded-3xl p-5">
+                <h2 class="text-lg font-bold text-gray-800 mb-3">🔖 Saved lives</h2>
+                <div id="savedLiveList" class="space-y-3"><p class="text-sm text-gray-500">Loading saved lives…</p></div>
+            </section>            <c:choose>
                 <c:when test="${empty videos}">
                     <div class="glass-card text-center p-16 rounded-3xl">
                         <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
@@ -141,7 +153,7 @@
                             <!-- Video Player Section -->
                             <div class="bg-black flex-1 flex items-center justify-center relative min-h-[350px] md:min-h-0 md:w-3/5">
                                 <video class="w-full h-full max-h-[500px]" controls preload="metadata">
-                                    <source src="img/${post.getFile_name()}" type="video/mp4">
+                                    <source src="img/${post.getFile_name()}">
                                     Your browser does not support the video tag.
                                 </video>
                             </div>
@@ -405,6 +417,338 @@
             })
             .catch(err => console.error(err));
         }
-    </script>
+
+        const liveContextPath = '${pageContext.request.contextPath}';
+        const liveViewerUsername = "${ub.getName()}";
+        const liveViewerRtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        let liveViewerSocket = null;
+        const liveViewerPeers = new Map();
+        const liveViewerPendingIce = new Map();
+        const liveViewerCards = new Map();
+        let autoWatchTargetId = Number(new URLSearchParams(location.search).get('watchId')) || 0;
+        let autoWatchTriggered = false;
+        const liveViewerProfilePic = "${ub.getProfile_pic()}";
+
+        function connectViewerSocket() {
+            if (liveViewerSocket && liveViewerSocket.readyState === WebSocket.OPEN) return Promise.resolve();
+            if (liveViewerSocket && liveViewerSocket.readyState === WebSocket.CONNECTING) {
+                return new Promise((resolve, reject) => {
+                    const timer = setTimeout(() => reject(new Error('Live socket timed out.')), 8000);
+                    liveViewerSocket.addEventListener('open', () => { clearTimeout(timer); resolve(); }, { once: true });
+                    liveViewerSocket.addEventListener('error', () => { clearTimeout(timer); reject(new Error('Live socket failed.')); }, { once: true });
+                });
+            }
+            const protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
+            liveViewerSocket = new WebSocket(protocol + location.host + liveContextPath + '/ws/user/' + encodeURIComponent(liveViewerUsername));
+            liveViewerSocket.onmessage = handleViewerSignal;
+            return new Promise((resolve, reject) => {
+                const timer = setTimeout(() => reject(new Error('Live socket timed out.')), 8000);
+                liveViewerSocket.onopen = () => { clearTimeout(timer); resolve(); };
+                liveViewerSocket.onerror = () => { clearTimeout(timer); reject(new Error('Live socket failed.')); };
+            });
+        }
+
+        function sendViewerSignal(type, target, payload) {
+            if (liveViewerSocket && liveViewerSocket.readyState === WebSocket.OPEN) {
+                liveViewerSocket.send(type + '|' + target + '|' + JSON.stringify(payload || {}));
+                return true;
+            }
+            return false;
+        }
+
+        async function handleViewerSignal(event) {
+            const parts = event.data.split('|');
+            const type = parts[0];
+            if (type === 'LIVE_CHAT' || type === 'LIVE_REACTION') {
+                const room = parts[1], actor = parts[2], text = parts.slice(3).join('|');
+                let payload = {};
+                try { payload = text ? JSON.parse(text) : {}; } catch (e) { return; }
+                appendLiveViewerActivity(room, type, actor, payload);
+                return;
+            }
+            const streamer = parts[1], text = parts.slice(2).join('|');
+            let payload = {};
+            try { payload = text ? JSON.parse(text) : {}; } catch (e) { return; }
+            const peer = liveViewerPeers.get(streamer);
+            if (type === 'LIVE_OFFER' && peer && payload.sdp) {
+                await peer.setRemoteDescription(new RTCSessionDescription(payload));
+                const queued = liveViewerPendingIce.get(streamer) || [];
+                for (const candidate of queued) await peer.addIceCandidate(new RTCIceCandidate(candidate));
+                liveViewerPendingIce.delete(streamer);
+                const answer = await peer.createAnswer();
+                await peer.setLocalDescription(answer);
+                sendViewerSignal('LIVE_ANSWER', streamer, peer.localDescription);
+            } else if (type === 'LIVE_ICE' && peer && payload.candidate) {
+                if (!peer.remoteDescription) {
+                    const queued = liveViewerPendingIce.get(streamer) || [];
+                    queued.push(payload.candidate);
+                    liveViewerPendingIce.set(streamer, queued);
+                } else {
+                    try { await peer.addIceCandidate(new RTCIceCandidate(payload.candidate)); }
+                    catch (error) { console.warn('Could not add broadcaster ICE candidate:', error); }
+                }
+            } else if (type === 'LIVE_ENDED') closeLiveViewer(streamer, 'This live broadcast has ended.');
+            else if (type === 'LIVE_BLOCKED') closeLiveViewer(streamer, 'The host removed you from this live broadcast.');
+        }
+
+        function appendLiveViewerActivity(streamer, type, actor, payload) {
+            const card = liveViewerCards.get(streamer);
+            const box = card && card.querySelector('[data-live-chat]');
+            if (!box) return;
+            const line = document.createElement('p');
+            line.className = 'text-xs text-gray-700 py-1';
+            line.textContent = type === 'LIVE_CHAT' ? actor + ': ' + (payload.text || '') : actor + ' reacted with ' + (payload.emoji || '👍');
+            box.appendChild(line);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function sendViewerLiveComment(streamer, input) {
+            const text = input.value.trim();
+            if (!text) return;
+            if (!sendViewerSignal('LIVE_CHAT', streamer, { text, profilePic: liveViewerProfilePic })) {
+                alert('Live connection is unavailable. Please reconnect.');
+                return;
+            }
+            input.value = '';
+        }
+
+        async function toggleLiveBookmark(stream, button) {
+            button.disabled = true;
+            try {
+                const action = stream.saved ? 'unsave' : 'save';
+                const response = await fetch(liveContextPath + '/LiveServlet?action=' + action + '&streamerId=' + encodeURIComponent(stream.streamerId), { method: 'POST' });
+                const result = await response.json();
+                if (!response.ok || !result.success) throw new Error(result.error || 'Could not save live.');
+                stream.saved = result.saved;
+                button.textContent = stream.saved ? 'Unsave' : 'Save';
+                await refreshSavedLives();
+            } catch (error) {
+                alert(error.message || 'Could not save live.');
+            } finally { button.disabled = false; }
+        }
+
+        async function shareLiveBroadcast(stream) {
+            const url = new URL('VideosServlet', location.href);
+            url.searchParams.set('watchId', stream.streamerId);
+            const shareData = { title: stream.title || 'Live on Y-ChatApp', text: stream.streamer + ' is live now', url: url.href };
+            try {
+                if (navigator.share) await navigator.share(shareData);
+                else { await navigator.clipboard.writeText(url.href); alert('Live link copied. Send it to a friend.'); }
+            } catch (error) { if (error.name !== 'AbortError') alert('Could not share the live link.'); }
+        }
+
+        async function refreshSavedLives() {
+            const container = document.getElementById('savedLiveList');
+            try {
+                const response = await fetch(liveContextPath + '/LiveServlet?action=saved', { cache: 'no-store' });
+                const data = await response.json();
+                const entries = data.savedLives || [];
+                container.replaceChildren();
+                if (!entries.length) {
+                    const empty = document.createElement('p');
+                    empty.className = 'text-sm text-gray-500';
+                    empty.textContent = 'No saved live broadcasters yet.';
+                    container.appendChild(empty);
+                    return;
+                }
+                entries.forEach(entry => {
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center justify-between gap-3 rounded-xl bg-white/50 p-3';
+                    const text = document.createElement('div');
+                    const name = document.createElement('p');
+                    name.className = 'font-bold text-gray-800';
+                    name.textContent = entry.streamer;
+                    const title = document.createElement('p');
+                    title.className = 'text-xs text-gray-600';
+                    title.textContent = entry.title;
+                    text.append(name, title);
+                    row.appendChild(text);
+                    if (entry.isLive) {
+                        const watch = document.createElement('button');
+                        watch.className = 'rounded-full bg-blue-600 text-white px-4 py-2 text-xs font-bold';
+                        watch.textContent = 'Watch live';
+                        watch.addEventListener('click', () => watchLiveBroadcast(entry.streamer));
+                        row.appendChild(watch);
+                    } else {
+                        const offline = document.createElement('span');
+                        offline.className = 'text-xs text-gray-500';
+                        offline.textContent = 'Offline';
+                        row.appendChild(offline);
+                    }
+                    container.appendChild(row);
+                });
+            } catch (error) {
+                container.textContent = 'Saved live streams could not be loaded.';
+            }
+        }
+
+        async function watchLiveBroadcast(streamer) {
+            const card = liveViewerCards.get(streamer);
+            if (!card) return;
+            const status = card.querySelector('[data-live-status]');
+            const watchButton = card.querySelector('[data-watch-live]');
+            if (liveViewerPeers.has(streamer)) return;
+            watchButton.disabled = true;
+            status.textContent = 'Connecting…';
+            try {
+                await connectViewerSocket();
+                const peer = new RTCPeerConnection(liveViewerRtcConfig);
+                liveViewerPeers.set(streamer, peer);
+                peer.ontrack = event => {
+                    const video = card.querySelector('video');
+                    video.srcObject = event.streams[0];
+                    video.classList.remove('hidden');
+                    video.play().catch(() => {});
+                    status.textContent = 'Live';
+                };
+                peer.onicecandidate = event => { if (event.candidate) sendViewerSignal('LIVE_ICE', streamer, { candidate: event.candidate }); };
+                peer.onconnectionstatechange = () => { if (peer.connectionState === 'failed') closeLiveViewer(streamer, 'Connection failed. Try again.'); };
+                sendViewerSignal('LIVE_JOIN_REQUEST', streamer, {});
+            } catch (error) {
+                console.error('Could not join live broadcast:', error);
+                status.textContent = error.message || 'Could not connect.';
+                watchButton.disabled = false;
+            }
+        }
+        function closeLiveViewer(streamer, message) {
+            const peer = liveViewerPeers.get(streamer);
+            if (peer) peer.close();
+            liveViewerPeers.delete(streamer);
+            const card = liveViewerCards.get(streamer);
+            if (card) {
+                const video = card.querySelector('video');
+                if (video.srcObject) video.srcObject.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                video.classList.add('hidden');
+                card.querySelector('[data-live-status]').textContent = message || 'Disconnected';
+                const button = card.querySelector('[data-watch-live]');
+                button.disabled = false;
+                button.textContent = 'Watch live';
+            }
+            if (liveViewerSocket && liveViewerSocket.readyState === WebSocket.OPEN) sendViewerSignal('LIVE_LEAVE', streamer, {});
+        }
+
+        function renderLiveBroadcasts(streams) {
+            const container = document.getElementById('liveBroadcastList');
+            const status = document.getElementById('liveBroadcastStatus');
+            streams = streams.filter(stream => stream.streamer !== liveViewerUsername);
+            const current = new Set(streams.map(stream => stream.streamer));
+            for (const [name, card] of liveViewerCards.entries()) {
+                if (!current.has(name)) {
+                    closeLiveViewer(name, 'This live broadcast has ended.');
+                    card.remove();
+                    liveViewerCards.delete(name);
+                }
+            }
+            if (!streams.length) {
+                container.innerHTML = '<p class="text-sm text-gray-500">There are no live broadcasts right now.</p>';
+                status.textContent = 'No active broadcasts';
+                return;
+            }
+            status.textContent = streams.length + (streams.length === 1 ? ' broadcast' : ' broadcasts');
+            if (!liveViewerCards.size) container.innerHTML = '';
+            streams.forEach(stream => {
+                const existingCard = liveViewerCards.get(stream.streamer);
+                if (existingCard) {
+                    const countLabel = existingCard.querySelector('[data-live-viewer-count]');
+                    if (countLabel) countLabel.textContent = (Number(stream.viewersCount) || 0) + ' watching';
+                    return;
+                }
+                const card = document.createElement('article');
+                card.className = 'rounded-2xl overflow-hidden bg-black text-white';
+                const video = document.createElement('video');
+                video.className = 'hidden w-full aspect-video object-contain bg-black';
+                video.autoplay = true;
+                video.muted = true;
+                video.controls = true;
+                video.playsInline = true;
+                const activity = document.createElement('div');
+                activity.className = 'max-h-28 overflow-y-auto bg-white p-3';
+                activity.dataset.liveChat = 'true';
+                const commentRow = document.createElement('div');
+                commentRow.className = 'flex gap-2 p-3 bg-white';
+                const commentInput = document.createElement('input');
+                commentInput.type = 'text';
+                commentInput.maxLength = 500;
+                commentInput.placeholder = 'Write a live comment…';
+                commentInput.className = 'min-w-0 flex-1 rounded-full border px-3 py-2 text-xs text-gray-800';
+                commentInput.addEventListener('keydown', event => { if (event.key === 'Enter') sendViewerLiveComment(stream.streamer, commentInput); });
+                const commentButton = document.createElement('button');
+                commentButton.type = 'button';
+                commentButton.className = 'rounded-full bg-blue-600 text-white px-3 py-2 text-xs font-bold';
+                commentButton.textContent = 'Comment';
+                commentButton.addEventListener('click', () => sendViewerLiveComment(stream.streamer, commentInput));
+                commentRow.append(commentInput, commentButton);
+                const details = document.createElement('div');
+                details.className = 'flex items-center justify-between gap-3 p-4';
+                const info = document.createElement('div');
+                const name = document.createElement('p');
+                name.className = 'font-bold';
+                name.textContent = stream.streamer;
+                const title = document.createElement('p');
+                title.className = 'text-sm text-gray-300';
+                title.textContent = stream.title || 'Live Broadcast';
+                const countLabel = document.createElement('p');
+                countLabel.className = 'text-xs text-gray-300 mt-1';
+                countLabel.dataset.liveViewerCount = 'true';
+                countLabel.textContent = (Number(stream.viewersCount) || 0) + ' watching';
+                const viewerStatus = document.createElement('p');
+                viewerStatus.className = 'text-xs text-gray-400';
+                viewerStatus.dataset.liveStatus = 'true';
+                viewerStatus.textContent = 'Ready to watch';
+                info.append(name, title, countLabel, viewerStatus);
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'shrink-0 rounded-full bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm font-bold disabled:opacity-50';
+                button.textContent = 'Watch live';
+                button.dataset.watchLive = 'true';
+                button.addEventListener('click', () => watchLiveBroadcast(stream.streamer));
+                const actions = document.createElement('div');
+                actions.className = 'flex flex-wrap gap-2 px-4 pb-3';
+                const share = document.createElement('button');
+                share.type = 'button'; share.className = 'rounded-full bg-gray-200 text-gray-800 px-3 py-2 text-xs font-bold'; share.textContent = 'Share';
+                share.addEventListener('click', () => shareLiveBroadcast(stream));
+                const save = document.createElement('button');
+                save.type = 'button'; save.className = 'rounded-full bg-amber-400 text-gray-900 px-3 py-2 text-xs font-bold'; save.textContent = stream.saved ? 'Unsave' : 'Save';
+                save.addEventListener('click', () => toggleLiveBookmark(stream, save));
+                actions.append(share, save);
+                const reactions = document.createElement('div');
+                reactions.className = 'flex flex-wrap gap-2 px-4 pb-3';
+                [['Like','👍'],['Love','❤️'],['Care','🥰'],['Haha','😆'],['Wow','😮'],['Sad','😢'],['Angry','😡'],['Dislike','👎']].forEach(([name, emoji]) => {
+                    const reaction = document.createElement('button');
+                    reaction.type = 'button'; reaction.className = 'rounded-full bg-white/20 px-2 py-1 text-sm hover:bg-white/35'; reaction.title = name; reaction.textContent = emoji;
+                    reaction.addEventListener('click', () => sendViewerSignal('LIVE_REACTION', stream.streamer, { emoji }));
+                    reactions.appendChild(reaction);
+                });
+                details.append(info, button);
+                card.append(video, details, actions, reactions, activity, commentRow);
+                container.appendChild(card);
+                liveViewerCards.set(stream.streamer, card);
+            });
+        }
+
+        async function refreshLiveBroadcasts() {
+            try {
+                const response = await fetch(liveContextPath + '/LiveServlet?action=list', { cache: 'no-store' });
+                if (!response.ok) throw new Error('Could not load live broadcasts.');
+                const data = await response.json();
+                renderLiveBroadcasts(data.streams || []);
+                const target = (data.streams || []).find(stream => Number(stream.streamerId) === autoWatchTargetId);
+                if (target && !autoWatchTriggered) { autoWatchTriggered = true; setTimeout(() => watchLiveBroadcast(target.streamer), 150); }
+            } catch (error) {
+                document.getElementById('liveBroadcastStatus').textContent = 'Unable to check broadcasts';
+                console.warn(error);
+            }
+        }
+        refreshLiveBroadcasts();
+        refreshSavedLives();
+        setInterval(refreshLiveBroadcasts, 5000);
+        window.addEventListener('pagehide', () => {
+            liveViewerPeers.forEach((peer, streamer) => {
+                peer.close();
+                sendViewerSignal('LIVE_LEAVE', streamer, {});
+            });
+        });
+        </script>
 </body>
 </html>

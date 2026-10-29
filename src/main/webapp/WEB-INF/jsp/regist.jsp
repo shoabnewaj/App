@@ -25,6 +25,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            padding: 30px 0;
         }
 
         @keyframes gradient {
@@ -55,7 +56,7 @@
 </head>
 <body>
 
-<div class="flex flex-col md:flex-row items-center justify-center gap-12 max-w-[900px] w-[95%] p-4">
+<div class="flex flex-col md:flex-row items-center justify-center gap-12 max-w-[960px] w-[95%] p-4">
     <!-- Left Section -->
     <div class="text-white text-center md:text-left md:max-w-[400px]">
         <h1 class="text-6xl font-extrabold tracking-tight mb-4 drop-shadow-md">Y-Chat</h1>
@@ -63,7 +64,7 @@
     </div>
 
     <!-- Right Section (Card) -->
-    <div class="glass-card w-full max-w-[400px] p-8 rounded-3xl relative overflow-hidden">
+    <div class="glass-card w-full max-w-[460px] p-8 rounded-3xl relative overflow-hidden">
         <!-- Glow Ornaments -->
         <div class="absolute -top-10 -right-10 w-24 h-24 bg-pink-300 rounded-full blur-2xl opacity-40"></div>
         <div class="absolute -bottom-10 -left-10 w-24 h-24 bg-blue-300 rounded-full blur-2xl opacity-40"></div>
@@ -88,6 +89,55 @@
                 <div class="text-red-500 text-xs font-semibold mt-1 pl-1">${errorMsg_pass}</div>
             </div>
 
+            <!-- Country & City Grid -->
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs font-bold text-gray-600 block mb-1">Country</label>
+                    <div class="relative">
+                        <i class="fa fa-earth-americas absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                        <input type="text" name="country" placeholder="e.g. Bangladesh" required
+                               class="w-full pl-8 pr-3 py-2.5 rounded-xl border border-gray-300/80 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white/70 transition-all text-xs">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-600 block mb-1">City</label>
+                    <div class="relative">
+                        <i class="fa fa-city absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                        <input type="text" name="city" placeholder="e.g. Dhaka" required
+                               class="w-full pl-8 pr-3 py-2.5 rounded-xl border border-gray-300/80 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white/70 transition-all text-xs">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gender (Male / Female / Another) -->
+            <div>
+                <label class="text-xs font-bold text-gray-600 block mb-1">Gender</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <label class="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-gray-300/80 bg-white/70 cursor-pointer hover:border-blue-500 transition-all text-xs font-bold text-gray-700 select-none">
+                        <input type="radio" name="gender" value="male" required class="accent-blue-600">
+                        <span>Male</span>
+                    </label>
+                    <label class="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-gray-300/80 bg-white/70 cursor-pointer hover:border-pink-500 transition-all text-xs font-bold text-gray-700 select-none">
+                        <input type="radio" name="gender" value="female" required class="accent-pink-600">
+                        <span>Female</span>
+                    </label>
+                    <label class="flex items-center justify-center gap-1.5 p-2 rounded-xl border border-gray-300/80 bg-white/70 cursor-pointer hover:border-purple-500 transition-all text-xs font-bold text-gray-700 select-none">
+                        <input type="radio" name="gender" value="another" required class="accent-purple-600">
+                        <span>Another</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Birthday -->
+            <div>
+                <label class="text-xs font-bold text-gray-600 block mb-1">Birthday</label>
+                <div class="relative">
+                    <i class="fa fa-cake-candles absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                    <input type="date" name="birthday" required
+                           class="w-full pl-8 pr-3 py-2.5 rounded-xl border border-gray-300/80 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white/70 transition-all text-xs text-gray-700">
+                </div>
+            </div>
+
             <!-- Beautiful File Upload Input -->
             <div class="space-y-2">
                 <label class="text-xs font-bold text-gray-600 uppercase tracking-wider block">Profile Picture (Optional)</label>
@@ -110,16 +160,119 @@
 
             <div class="text-red-500 text-xs font-semibold text-center">${errorMsg}</div>
 
+            <!-- Privacy Policy & Terms Agreement Checkbox -->
+            <div class="flex items-start gap-2 pt-1 text-left">
+                <input type="checkbox" id="agree_terms" name="agree_terms" required
+                       class="mt-1 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600">
+                <label for="agree_terms" class="text-xs text-gray-700 cursor-pointer select-none leading-relaxed">
+                    I agree to the 
+                    <button type="button" onclick="openPolicyModal('privacy')" class="text-blue-600 font-bold hover:underline inline p-0 m-0 bg-transparent border-none cursor-pointer">Privacy Policy</button> 
+                    and 
+                    <button type="button" onclick="openPolicyModal('terms')" class="text-blue-600 font-bold hover:underline inline p-0 m-0 bg-transparent border-none cursor-pointer">Terms of Service</button>
+                </label>
+            </div>
+
             <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3.5 rounded-2xl shadow-md hover:shadow-lg active:scale-95 transition-all duration-150 text-sm">
                 Create Account
             </button>
         </form>
 
-        <div class="w-full h-[1px] bg-gray-200/60 my-6 relative z-10"></div>
+        <div class="w-full h-[1px] bg-gray-200/60 my-5 relative z-10"></div>
 
-        <a href="UsersLoginServlet" class="block text-center text-sm font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors relative z-10">
-            ← Back to Login
-        </a>
+        <div class="flex items-center justify-between text-xs font-semibold text-gray-600 relative z-10">
+            <a href="UsersLoginServlet" class="text-blue-600 hover:text-blue-700 hover:underline transition-colors">
+                竊・Back to Login
+            </a>
+            <a href="PolicyServlet" target="_blank" class="text-gray-500 hover:text-blue-600 hover:underline transition-colors flex items-center gap-1.5">
+                <i class="fa fa-shield-halved text-xs text-blue-500"></i> Privacy &amp; Policy
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Privacy Policy & Terms Modal -->
+<div id="policyModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white/95 backdrop-blur-md w-full max-w-lg rounded-3xl shadow-2xl border border-white/60 p-6 flex flex-col max-h-[85vh] relative">
+        <!-- Close Button -->
+        <button type="button" onclick="closePolicyModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-800 flex items-center justify-center transition-colors">
+            <i class="fa fa-times"></i>
+        </button>
+
+        <!-- Header -->
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                <i class="fa fa-shield-halved"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-gray-800">Policy &amp; Terms</h3>
+                <p class="text-xs text-gray-500">Y-ChatApp Community Guidelines</p>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex gap-2 p-1 bg-gray-100/80 rounded-2xl mb-4 text-xs font-bold">
+            <button type="button" id="modalPrivacyTabBtn" onclick="switchModalTab('privacy')"
+                    class="flex-1 py-2 px-3 rounded-xl transition-all bg-white text-blue-600 shadow-sm">
+                <i class="fa fa-lock mr-1"></i> Privacy Policy
+            </button>
+            <button type="button" id="modalTermsTabBtn" onclick="switchModalTab('terms')"
+                    class="flex-1 py-2 px-3 rounded-xl transition-all text-gray-500 hover:text-gray-800">
+                <i class="fa fa-file-contract mr-1"></i> Terms of Service
+            </button>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="overflow-y-auto pr-2 space-y-4 text-xs text-gray-600 flex-1 max-h-[45vh] leading-relaxed">
+            <!-- Privacy Tab Content -->
+            <div id="modalPrivacyContent" class="space-y-3">
+                <div class="p-3 bg-blue-50/50 rounded-xl border border-blue-100/50">
+                    <h4 class="font-bold text-gray-800 text-sm mb-1">Privacy Policy / 爬ｪ爰財ｦｰ爬ｾ爬・ｦｭ爰・ｦｸ爬ｿ 爬ｨ爰爬､爬ｿ</h4>
+                    <p class="text-gray-600">At Y-ChatApp, we prioritize your privacy. This policy outlines how we collect, use, and safeguard your data.</p>
+                </div>
+                <div>
+                    <h5 class="font-bold text-gray-800">1. Information Collection / 爬､爬･爰財ｦｯ 爬ｸ爬もｦ伶ｧ財ｦｰ爬ｹ</h5>
+                    <p>We collect essential account details such as your name, email address, and profile picture to provide a personalized user profile and chat experience.</p>
+                </div>
+                <div>
+                    <h5 class="font-bold text-gray-800">2. Real-Time Communication / 爬ｲ爬ｾ爬・ｦｭ 爬壟ｧ財ｦｯ爬ｾ爬・爬｡爰・ｦ游ｦｾ</h5>
+                    <p>All message data and WebRTC connection metadata are used solely to establish real-time messaging, video calls, and notification delivery via secure WebSocket channels.</p>
+                </div>
+                <div>
+                    <h5 class="font-bold text-gray-800">3. Data Protection / 爬､爬･爰財ｦｯ 爬ｸ爰≒ｦｰ爬歩ｧ財ｦｷ爬ｾ</h5>
+                    <p>Your passwords are encrypted using industry-standard hashing algorithms (SHA-256 / BCrypt). We never sell or share your personal data with third-party advertisers.</p>
+                </div>
+            </div>
+
+            <!-- Terms Tab Content -->
+            <div id="modalTermsContent" class="space-y-3 hidden">
+                <div class="p-3 bg-indigo-50/50 rounded-xl border border-indigo-100/50">
+                    <h4 class="font-bold text-gray-800 text-sm mb-1">Terms of Service / 爬ｬ爰財ｦｯ爬ｬ爬ｹ爬ｾ爬ｰ爰・ｦｰ 爬ｶ爬ｰ爰財ｦ､爬ｾ爬ｬ爬ｲ爰</h4>
+                    <p class="text-gray-600">By creating an account on Y-ChatApp, you agree to comply with our community standards and conditions.</p>
+                </div>
+                <div>
+                    <h5 class="font-bold text-gray-800">1. Acceptable Behavior / 爬伶ｧ財ｦｰ爬ｹ爬｣爬ｯ爰金ｦ伶ｧ財ｦｯ 爬・ｦ壟ｦｰ爬｣</h5>
+                    <p>Users must not engage in abusive behavior, harassment, hate speech, spamming, or uploading malicious code to the service.</p>
+                </div>
+                <div>
+                    <h5 class="font-bold text-gray-800">2. Account Termination / 爬・ｧ財ｦｯ爬ｾ爬歩ｦｾ爬霞ｦｨ爰財ｦ・爬ｬ爬ｾ爬､爬ｿ爬ｲ爬歩ｦｰ爬｣</h5>
+                    <p>We reserve the right to suspend or permanently remove accounts that violate community rules or perform harmful activities.</p>
+                </div>
+                <div>
+                    <h5 class="font-bold text-gray-800">3. Disclaimer of Warranties / 爬ｦ爬ｾ爰游ｦｮ爰≒ｦ歩ｧ財ｦ､爬ｿ</h5>
+                    <p>Y-ChatApp is provided "as is" and "as available". We continuously maintain uptime and security for seamless communication.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-3">
+            <a href="PolicyServlet" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold flex items-center gap-1">
+                Full Page <i class="fa fa-arrow-up-right-from-square text-[10px]"></i>
+            </a>
+            <button type="button" onclick="acceptPolicyAndClose()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-md transition-all active:scale-95">
+                I Agree &amp; Accept
+            </button>
+        </div>
     </div>
 </div>
 
@@ -148,7 +301,54 @@
             previewContainer.classList.remove('flex');
         }
     }
-</script>
 
+    function openPolicyModal(tab) {
+        const modal = document.getElementById('policyModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        switchModalTab(tab || 'privacy');
+    }
+
+    function closePolicyModal() {
+        const modal = document.getElementById('policyModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function switchModalTab(tab) {
+        const privacyBtn = document.getElementById('modalPrivacyTabBtn');
+        const termsBtn = document.getElementById('modalTermsTabBtn');
+        const privacyContent = document.getElementById('modalPrivacyContent');
+        const termsContent = document.getElementById('modalTermsContent');
+
+        if (tab === 'privacy') {
+            privacyContent.classList.remove('hidden');
+            termsContent.classList.add('hidden');
+            privacyBtn.className = "flex-1 py-2 px-3 rounded-xl transition-all bg-white text-blue-600 shadow-sm";
+            termsBtn.className = "flex-1 py-2 px-3 rounded-xl transition-all text-gray-500 hover:text-gray-800";
+        } else {
+            privacyContent.classList.add('hidden');
+            termsContent.classList.remove('hidden');
+            privacyBtn.className = "flex-1 py-2 px-3 rounded-xl transition-all text-gray-500 hover:text-gray-800";
+            termsBtn.className = "flex-1 py-2 px-3 rounded-xl transition-all bg-white text-blue-600 shadow-sm";
+        }
+    }
+
+    function acceptPolicyAndClose() {
+        const agreeCheckbox = document.getElementById('agree_terms');
+        if (agreeCheckbox) {
+            agreeCheckbox.checked = true;
+        }
+        closePolicyModal();
+    }
+
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('policyModal');
+        if (e.target === modal) {
+            closePolicyModal();
+        }
+    });
+</script>
+<script src="js/theme.js"></script>
 </body>
 </html>

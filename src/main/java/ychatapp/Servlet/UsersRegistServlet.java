@@ -32,8 +32,12 @@ public class UsersRegistServlet extends HttpServlet {
         String email = req.getParameter("email");
         String pass = req.getParameter("pass");
         String name = req.getParameter("name");
+        String country = req.getParameter("country");
+        String city = req.getParameter("city");
+        String gender = req.getParameter("gender");
+        String birthday = req.getParameter("birthday");
 
-        // ✅ image upload
+        // image upload
         Part part = req.getPart("profile_pic"); // JSP input name
         String user_img = null;
 
@@ -52,17 +56,22 @@ public class UsersRegistServlet extends HttpServlet {
             }
         }
 
-        // ✅ FIXED constructor usage
         UsersBeans ub = new UsersBeans();
         ub.setEmail(email);
         ub.setPass(pass);
         ub.setName(name);
-        
-        // ✅ ভুল ২: profile_pic এর বদলে user_img হবে
-        // ✅ ভুল ৩: Beans ক্লাসে মেথড চেক করুন: setProfile_pic (P বড় হাতের হতে পারে)
-        ub.setProfile_pic(user_img); 
+        ub.setProfile_pic(user_img);
+        ub.setCountry(country);
+        ub.setCity(city);
+        ub.setGender(gender);
+        ub.setBirthday(birthday); 
 
         if (UsersLogic.userRegist(req, ub)) {
+            final String recipientEmail = email;
+            final String userName = name;
+            ychatapp.model.bo.GeminiService.runAsync(() -> {
+                ychatapp.model.bo.EmailService.sendRegistrationConfirmationEmail(recipientEmail, userName);
+            });
             req.getRequestDispatcher("/WEB-INF/jsp/registDone.jsp").forward(req, res);
         } else {
             req.setAttribute("error", "Registration Failed");

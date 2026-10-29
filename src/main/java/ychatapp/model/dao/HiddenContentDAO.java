@@ -57,16 +57,17 @@ public class HiddenContentDAO {
         Set<Integer> hiddenComments = getHiddenItemIds(userId, "COMMENT");
         Set<Integer> hiddenReplies = getHiddenItemIds(userId, "REPLY");
 
-        posts.removeIf(post -> hiddenPosts.contains(post.getId()));
+        Set<Integer> blockedUsers = new BlockDAO().getBlockedUserIds(userId);
+        posts.removeIf(post -> hiddenPosts.contains(post.getId()) || blockedUsers.contains(post.getUserId()));
 
         for (UsersPost post : posts) {
             List<CommentBeans> comments = post.getComments();
             if (comments != null) {
-                comments.removeIf(cmt -> hiddenComments.contains(cmt.getId()));
+                comments.removeIf(cmt -> hiddenComments.contains(cmt.getId()) || blockedUsers.contains(cmt.getUserId()));
                 for (CommentBeans cmt : comments) {
                     List<Reply> replies = cmt.getReplies();
                     if (replies != null) {
-                        replies.removeIf(reply -> hiddenReplies.contains(reply.getId()));
+                        replies.removeIf(reply -> hiddenReplies.contains(reply.getId()) || blockedUsers.contains(reply.getUserId()));
                     }
                 }
             }

@@ -14,7 +14,7 @@ import ychatapp.model.bo.UsersLogic;
 
 
 
-@WebServlet("/EditProfileServlet")
+@WebServlet({"/EditProfileServlet", "/editProfile"})
 public class EditProfileServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -47,6 +47,10 @@ public class EditProfileServlet extends HttpServlet {
         String name = req.getParameter("name");
         String email = req.getParameter("email");
         String pass = req.getParameter("pass");
+        String country = req.getParameter("country");
+        String city = req.getParameter("city");
+        String gender = req.getParameter("gender");
+        String birthday = req.getParameter("birthday");
 
         if (name != null && !name.trim().isEmpty()) {
             ub.setName(name);
@@ -54,14 +58,35 @@ public class EditProfileServlet extends HttpServlet {
         if (email != null && !email.trim().isEmpty()) {
             ub.setEmail(email);
         }
+        if (country != null) {
+            ub.setCountry(country.trim());
+        }
+        if (city != null) {
+            ub.setCity(city.trim());
+        }
+        if (gender != null && !gender.trim().isEmpty()) {
+            ub.setGender(gender.trim());
+        }
+        if (birthday != null && !birthday.trim().isEmpty()) {
+            ub.setBirthday(birthday.trim());
+        }
+        boolean passChanged = false;
         if (pass != null && !pass.trim().isEmpty()) {
             ub.setPass(pass);
+            passChanged = true;
         } else {
             ub.setPass(null); // Keep old password
         }
 
         if (UsersLogic.updateProfile(ub)) {
             session.setAttribute("ub", ub); // Update session with new bean info
+            if (passChanged) {
+                final String userEmail = ub.getEmail();
+                final String userName = ub.getName();
+                ychatapp.model.bo.GeminiService.runAsync(() -> {
+                    ychatapp.model.bo.EmailService.sendPasswordChangeConfirmationEmail(userEmail, userName);
+                });
+            }
             res.sendRedirect("UsersProfileServlet?update=success");
         } else {
             res.sendRedirect("UsersProfileServlet?update=fail");

@@ -77,6 +77,7 @@
                         <div class="relative group">
                             <i class="fa fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
                             <input type="email" name="email" id="email" placeholder="name@company.com" required
+                                value="${not empty savedEmail ? savedEmail : ''}"
                                 class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-slate-700">
                         </div>
                     </div>
@@ -92,7 +93,7 @@
 
                     <div class="flex items-center justify-between py-2">
                         <label class="flex items-center gap-2 cursor-pointer group">
-                            <input type="checkbox" name="remember" class="w-5 h-5 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500 transition-all cursor-pointer">
+                            <input type="checkbox" name="remember" ${not empty savedEmail ? 'checked' : ''} class="w-5 h-5 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500 transition-all cursor-pointer">
                             <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">Remember me</span>
                         </label>
                         <a href="ForgotPasswordServlet" class="text-sm font-semibold text-blue-600 hover:text-blue-700">Forgot password?</a>
@@ -104,16 +105,53 @@
                     </button>
                 </form>
 
+                <!-- Two-Factor Authentication (2FA) Modal Section -->
+                <div id="twoFactorSection" class="hidden space-y-5">
+                    <div class="text-center mb-4">
+                        <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+                            <i class="fa fa-shield-halved"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900">Two-Factor Authentication</h3>
+                        <p class="text-xs text-slate-500 mt-1">A 6-digit security code has been sent to your registered email address.</p>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-sm font-semibold text-slate-700 ml-1">Enter 6-Digit OTP</label>
+                        <div class="relative group">
+                            <i class="fa fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
+                            <input type="text" id="twoFactorOtp" maxlength="6" placeholder="123456" autocomplete="one-time-code"
+                                class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-slate-800 tracking-widest text-center text-xl font-bold">
+                        </div>
+                    </div>
+
+                    <button type="button" id="verify2FABtn" class="w-full btn-gradient py-4 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/30 flex items-center justify-center gap-3">
+                        <span>Verify &amp; Continue</span>
+                        <i class="fa fa-check text-sm"></i>
+                    </button>
+
+                    <div class="text-center">
+                        <button type="button" id="cancel2FABtn" class="text-sm text-slate-500 hover:text-slate-800 font-medium">
+                            <i class="fa fa-arrow-left mr-1"></i> Back to Login
+                        </button>
+                    </div>
+                </div>
+
                 <div class="mt-8 flex items-center gap-4">
                     <div class="flex-1 h-px bg-slate-100"></div>
                     <span class="text-sm text-slate-400 font-medium italic">OR</span>
                     <div class="flex-1 h-px bg-slate-100"></div>
                 </div>
 
-                <div class="mt-8 text-center">
+                <div class="mt-8 text-center space-y-3">
                     <p class="text-slate-600">Don't have an account? 
                         <a href="UsersRegistServlet" class="text-blue-600 font-bold hover:underline">Create an account</a>
                     </p>
+                    <div>
+                        <a href="PolicyServlet" class="text-xs text-slate-400 hover:text-blue-600 hover:underline transition-colors inline-flex items-center gap-1.5">
+                            <i class="fa fa-shield-halved text-xs text-blue-500"></i> Privacy Policy &amp; Terms
+                        </a>
+                    </div>
+
                 </div>
 
             </div>
@@ -127,13 +165,17 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const loginForm = document.getElementById('loginForm');
+        const twoFactorSection = document.getElementById('twoFactorSection');
+        const twoFactorOtp = document.getElementById('twoFactorOtp');
+        const verify2FABtn = document.getElementById('verify2FABtn');
+        const cancel2FABtn = document.getElementById('cancel2FABtn');
+        const errorBox = document.getElementById('errorBox');
+        const errorMessage = document.getElementById('errorMessage');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            const submitBtn = document.getElementById('submitBtn');
-            const errorBox = document.getElementById('errorBox');
-            const errorMessage = document.getElementById('errorMessage');
-            const loadingOverlay = document.getElementById('loadingOverlay');
             
             errorBox.classList.add('hidden');
             loadingOverlay.classList.remove('hidden');
@@ -152,10 +194,15 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
+                loadingOverlay.classList.add('hidden');
+                if (data.requires2FA) {
+                    loginForm.classList.add('hidden');
+                    twoFactorSection.classList.remove('hidden');
+                    twoFactorOtp.value = '';
+                    twoFactorOtp.focus();
+                } else if (data.success) {
                     window.location.href = data.redirect;
                 } else {
-                    loadingOverlay.classList.add('hidden');
                     errorMessage.textContent = data.message;
                     errorBox.classList.remove('hidden');
                 }
@@ -166,7 +213,53 @@
                 errorBox.classList.remove('hidden');
             });
         });
-    </script>
 
+        // Verify 2FA OTP
+        verify2FABtn.addEventListener('click', function() {
+            const otpVal = twoFactorOtp.value.trim();
+            if (!otpVal || otpVal.length < 6) {
+                errorMessage.textContent = "Please enter the valid 6-digit OTP.";
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            errorBox.classList.add('hidden');
+            loadingOverlay.classList.remove('hidden');
+
+            const params = new URLSearchParams();
+            params.append('action', 'verify2FA');
+            params.append('otp', otpVal);
+
+            fetch('UsersLoginServlet', {
+                method: 'POST',
+                body: params,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadingOverlay.classList.add('hidden');
+                if (data.success) {
+                    window.location.href = data.redirect || 'UsersPostServlet';
+                } else {
+                    errorMessage.textContent = data.message || "Invalid or expired OTP code.";
+                    errorBox.classList.remove('hidden');
+                }
+            })
+            .catch(error => {
+                loadingOverlay.classList.add('hidden');
+                errorMessage.textContent = "Error verifying 2FA OTP. Please try again.";
+                errorBox.classList.remove('hidden');
+            });
+        });
+
+        cancel2FABtn.addEventListener('click', function() {
+            twoFactorSection.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+            errorBox.classList.add('hidden');
+        });
+    </script>
+    <script src="js/theme.js"></script>
 </body>
 </html>

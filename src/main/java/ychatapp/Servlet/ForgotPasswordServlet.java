@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ychatapp.model.bo.UsersLogic;
 
-@WebServlet("/ForgotPasswordServlet")
+@WebServlet({"/ForgotPasswordServlet", "/forgotPassword", "/forgot_password"})
 public class ForgotPasswordServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -30,7 +30,11 @@ public class ForgotPasswordServlet extends HttpServlet {
         boolean success = UsersLogic.resetPasswordByEmail(email, newPass);
 
         if (success) {
-            request.setAttribute("successMsg", "Password reset successfully. Please login.");
+            final String targetEmail = email;
+            ychatapp.model.bo.GeminiService.runAsync(() -> {
+                ychatapp.model.bo.EmailService.sendPasswordChangeConfirmationEmail(targetEmail, "Valued User");
+            });
+            request.setAttribute("successMsg", "Password reset successfully. A security confirmation email has been sent. Please login.");
             request.getRequestDispatcher("/WEB-INF/jsp/login.jsp").forward(request, response);
         } else {
             request.setAttribute("errorMsg", "Email not found or error occurred.");

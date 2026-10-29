@@ -44,6 +44,11 @@ public class InteractionServlet extends HttpServlet {
         return val != null ? val.trim() : null;
     }
 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doPost(request, response);
+    }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -66,6 +71,10 @@ public class InteractionServlet extends HttpServlet {
             int postId = Integer.parseInt(postIdStr);
 
             HttpSession session = request.getSession(false);
+            if (session == null) {
+                out.write("{\"error\":\"not_logged_in\"}");
+                return;
+            }
             UsersBeans ub = (UsersBeans) session.getAttribute("ub");
 
             if (ub == null) {
@@ -92,6 +101,7 @@ public class InteractionServlet extends HttpServlet {
                 // Get updated count to return
                 UsersPost updatedPost = dao.getPostById(postId);
                 
+                if (updatedPost != null) ychatapp.websocket.PostRealtime.publish(updatedPost.getUserId(), postId, "REACTION", ub.getName());
                 // Add reaction notification
                 if (updatedPost != null && userId != updatedPost.getUserId()) {
                     new ychatapp.model.dao.NotificationDAO().addNotification(
@@ -118,8 +128,8 @@ public class InteractionServlet extends HttpServlet {
                 return;
             }
 
-            // SHARE
-            if ("SHARE".equalsIgnoreCase(action)) {
+            // SHARE OR REPOST / QUOTE POST
+            if ("SHARE".equalsIgnoreCase(action) || "REPOST".equalsIgnoreCase(action)) {
 
                 UsersPost post = dao.getPostById(postId);
 
@@ -128,20 +138,28 @@ public class InteractionServlet extends HttpServlet {
                     return;
                 }
 
-                dao.sharePost(
-                        userId,
-                        post.getContent(),
-                        post.getName(),
-                        post.getFile_name(),
-                        post.getPost_type(),
-                        postId
-                );
+                String commentary = getFieldValue(request, "commentary");
+                if (commentary == null) commentary = getFieldValue(request, "quoteText");
+
+                if ("REPOST".equalsIgnoreCase(action) || (commentary != null && !commentary.trim().isEmpty())) {
+                    dao.repost(userId, postId, commentary);
+                } else {
+                    dao.sharePost(
+                            userId,
+                            post.getContent(),
+                            post.getName(),
+                            post.getFile_name(),
+                            post.getPost_type(),
+                            postId
+                    );
+                }
                 
+                ychatapp.websocket.PostRealtime.publish(post.getUserId(), postId, "SHARE", ub.getName());
                 // Add share notification
                 if (userId != post.getUserId()) {
                     new ychatapp.model.dao.NotificationDAO().addNotification(
                         post.getUserId(),
-                        ub.getName() + " shared your post: \"" + 
+                        ub.getName() + " reposted your post: \"" + 
                         (post.getContent() != null && post.getContent().length() > 20 ? 
                          post.getContent().substring(0, 20) + "..." : post.getContent()) + "\""
                     );

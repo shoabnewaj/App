@@ -72,7 +72,7 @@
             </div>
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-xl border border-white/10">
-                    <img src="${pageContext.request.contextPath}/uploads/${not empty ub.getProfile_pic() ? ub.getProfile_pic() : 'default.png'}" 
+                    <img src="${pageContext.request.contextPath}/img/${not empty ub.getProfile_pic() ? ub.getProfile_pic() : 'default.png'}" 
                          class="w-7 h-7 rounded-full object-cover border border-white/20" alt="Admin">
                     <span class="text-sm font-semibold text-white/90"><c:out value="${ub.getName()}"/></span>
                 </div>
@@ -164,6 +164,26 @@
                     <i class="fa-solid fa-circle-xmark"></i> An error occurred. Please try again.
                 </div>
             </c:if>
+            <c:if test="${param.msg == 'user_banned'}">
+                <div class="bg-orange-500/20 border border-orange-500/40 text-orange-200 px-4 py-3 rounded-xl mb-6 flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-ban"></i> User banned successfully.
+                </div>
+            </c:if>
+            <c:if test="${param.msg == 'user_unbanned'}">
+                <div class="bg-green-500/20 border border-green-500/40 text-green-200 px-4 py-3 rounded-xl mb-6 flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-circle-check"></i> User unbanned successfully.
+                </div>
+            </c:if>
+            <c:if test="${param.msg == 'role_updated'}">
+                <div class="bg-blue-500/20 border border-blue-500/40 text-blue-200 px-4 py-3 rounded-xl mb-6 flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-shield-halved"></i> User role updated successfully.
+                </div>
+            </c:if>
+            <c:if test="${param.msg == 'post_deleted'}">
+                <div class="bg-rose-500/20 border border-rose-500/40 text-rose-200 px-4 py-3 rounded-xl mb-6 flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-trash-can"></i> Post deleted successfully.
+                </div>
+            </c:if>
 
             <!-- Table -->
             <div class="overflow-x-auto rounded-xl border border-white/10">
@@ -174,37 +194,117 @@
                             <th class="py-4 px-6">Name</th>
                             <th class="py-4 px-6">Email</th>
                             <th class="py-4 px-6">Role</th>
+                            <th class="py-4 px-6">Status</th>
                             <th class="py-4 px-6 text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <c:forEach var="u" items="${allUsers}">
-                            <tr class="border-b border-white/10 hover:bg-white/5 transition user-row">
+                            <tr class="border-b border-white/10 hover:bg-white/5 transition user-row ${u.is_banned ? 'opacity-60' : ''}">
                                 <td class="py-4 px-6 text-white font-semibold">#<c:out value="${u.id}"/></td>
                                 <td class="py-4 px-6">
                                     <div class="flex items-center gap-3">
-                                        <img src="${pageContext.request.contextPath}/uploads/${not empty u.profile_pic ? u.profile_pic : 'default.png'}" 
+                                        <img src="${pageContext.request.contextPath}/img/${not empty u.profile_pic ? u.profile_pic : 'default.png'}" 
                                              class="w-10 h-10 rounded-full object-cover border border-white/20" alt="Profile">
-                                        <span class="text-white font-medium search-name"><c:out value="${u.name}"/></span>
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6 text-white/80 search-email"><c:out value="${u.email}"/></td>
-                                <td class="py-4 px-6 text-white/60">
-                                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-200 border border-blue-500/30">
-                                        USER
-                                    </span>
-                                </td>
-                                <td class="py-4 px-6 text-center">
-                                    <div class="flex justify-center gap-2">
-                                        <!-- View Profile -->
-                                        <a href="${pageContext.request.contextPath}/UsersProfileServlet?userId=${u.id}" 
-                                           class="bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 text-blue-200 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors">
-                                            <i class="fa-solid fa-user"></i> Profile
-                                        </a>
+                                         <span class="text-white font-medium search-name flex items-center gap-1.5">
+                                             <c:out value="${u.name}"/>
+                                             <c:if test="${u.isVerified()}">
+                                                 <i class="fa-solid fa-circle-check text-blue-400 text-xs" title="Verified Account"></i>
+                                             </c:if>
+                                         </span>
+                                     </div>
+                                 </td>
+                                 <td class="py-4 px-6 text-white/80 search-email"><c:out value="${u.email}"/></td>
+                                 <td class="py-4 px-6 text-white/60">
+                                     <c:choose>
+                                         <c:when test="${u.isAdmin() or u.role == 'ADMIN'}">
+                                             <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 inline-flex items-center gap-1">
+                                                 <i class="fa-solid fa-shield-halved text-[10px]"></i> ADMIN
+                                             </span>
+                                         </c:when>
+                                         <c:otherwise>
+                                             <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-200 border border-blue-500/30">
+                                                 USER
+                                             </span>
+                                         </c:otherwise>
+                                     </c:choose>
+                                 </td>
+                                 <td class="py-4 px-6">
+                                     <c:choose>
+                                         <c:when test="${u.is_banned}">
+                                             <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/40 inline-flex items-center gap-1">
+                                                 <i class="fa-solid fa-ban text-[10px]"></i> BANNED
+                                             </span>
+                                         </c:when>
+                                         <c:otherwise>
+                                             <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-200 border border-green-500/30">
+                                                 ACTIVE
+                                             </span>
+                                         </c:otherwise>
+                                     </c:choose>
+                                 </td>
+                                 <td class="py-4 px-6 text-center">
+                                     <div class="flex justify-center flex-wrap gap-1.5">
+                                         <!-- View Profile -->
+                                         <a href="${pageContext.request.contextPath}/UsersProfileServlet?userId=${u.id}" 
+                                            class="bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 text-blue-200 px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors">
+                                             <i class="fa-solid fa-user"></i> Profile
+                                         </a>
+                                         <!-- Verify / Unverify Badge Toggle -->
+                                         <c:choose>
+                                             <c:when test="${u.isVerified()}">
+                                                 <a href="AdminServlet?action=unverify_user&userId=${u.id}"
+                                                    onclick="return confirm('Revoke Verified Blue Badge from ${u.name}?')"
+                                                    class="px-2.5 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/40 transition text-xs flex items-center gap-1" title="Revoke Blue Tick">
+                                                     <i class="fa-solid fa-circle-xmark"></i> Unverify
+                                                 </a>
+                                             </c:when>
+                                             <c:otherwise>
+                                                 <a href="AdminServlet?action=verify_user&userId=${u.id}"
+                                                    onclick="return confirm('Grant Verified Blue Badge to ${u.name}?')"
+                                                    class="px-2.5 py-1.5 rounded-lg bg-blue-600/30 hover:bg-blue-600 text-blue-200 hover:text-white border border-blue-500/40 transition text-xs flex items-center gap-1" title="Grant Blue Tick">
+                                                     <i class="fa-solid fa-circle-check text-blue-400"></i> Verify
+                                                 </a>
+                                             </c:otherwise>
+                                         </c:choose>
+                                         <!-- Ban / Unban -->
+                                         <c:choose>
+                                             <c:when test="${u.is_banned}">
+                                                 <a href="AdminServlet?action=unban_user&userId=${u.id}"
+                                                    onclick="return confirm('Unban user ${u.name}?')"
+                                                    class="px-2.5 py-1.5 rounded-lg bg-green-500/20 hover:bg-green-500 text-green-200 hover:text-white border border-green-500/30 transition text-xs flex items-center gap-1">
+                                                     <i class="fa-solid fa-circle-check"></i> Unban
+                                                 </a>
+                                             </c:when>
+                                             <c:otherwise>
+                                                 <a href="AdminServlet?action=ban_user&userId=${u.id}"
+                                                    onclick="return confirm('Ban user ${u.name}? They will not be able to login.')"
+                                                    class="px-2.5 py-1.5 rounded-lg bg-orange-500/20 hover:bg-orange-500 text-orange-200 hover:text-white border border-orange-500/30 transition text-xs flex items-center gap-1">
+                                                     <i class="fa-solid fa-ban"></i> Ban
+                                                 </a>
+                                             </c:otherwise>
+                                         </c:choose>
+                                        <!-- Make Admin / Remove Admin -->
+                                        <c:choose>
+                                            <c:when test="${u.isAdmin() or u.role == 'ADMIN'}">
+                                                <a href="AdminServlet?action=remove_admin&userId=${u.id}"
+                                                   onclick="return confirm('Remove admin role from ${u.name}?')"
+                                                   class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500 text-amber-200 hover:text-white border border-amber-500/30 transition text-xs flex items-center gap-1">
+                                                    <i class="fa-solid fa-shield-halved"></i> Demote
+                                                </a>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <a href="AdminServlet?action=make_admin&userId=${u.id}"
+                                                   onclick="return confirm('Give admin role to ${u.name}?')"
+                                                   class="px-2.5 py-1.5 rounded-lg bg-purple-500/20 hover:bg-purple-500 text-purple-200 hover:text-white border border-purple-500/30 transition text-xs flex items-center gap-1">
+                                                    <i class="fa-solid fa-shield-halved"></i> Make Admin
+                                                </a>
+                                            </c:otherwise>
+                                        </c:choose>
                                         <!-- Delete User -->
                                         <a href="AdminServlet?action=delete&userId=${u.id}" 
                                            onclick="return confirmDelete('${u.name}')" 
-                                           class="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500 text-rose-200 hover:text-white border border-rose-500/30 transition text-sm flex items-center gap-1">
+                                           class="px-2.5 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500 text-rose-200 hover:text-white border border-rose-500/30 transition text-xs flex items-center gap-1">
                                             <i class="fa-solid fa-trash-can"></i> Delete
                                         </a>
                                     </div>
@@ -213,7 +313,7 @@
                         </c:forEach>
                         <c:if test="${empty allUsers}">
                             <tr>
-                                <td colspan="5" class="py-8 text-center text-white/50">
+                                <td colspan="6" class="py-8 text-center text-white/50">
                                     No registered users found.
                                 </td>
                             </tr>
@@ -222,6 +322,7 @@
                 </table>
             </div>
         </main>
+
 
         <!-- CLAIMS CONTAINER -->
         <main class="glass-panel rounded-2xl p-6 mt-8">
@@ -331,6 +432,272 @@
                 </table>
             </div>
         </main>
+
+        <!-- PAYMENT TRANSACTIONS LOG CONTAINER -->
+        <main class="glass-panel rounded-2xl p-6 mt-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-credit-card text-blue-400"></i> bKash / Nagad / Card Payment Transactions
+                </h2>
+            </div>
+
+            <div class="overflow-x-auto rounded-xl border border-white/10">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-white/10 text-white/80 text-xs font-semibold uppercase tracking-wider border-b border-white/10">
+                            <th class="py-4 px-6">Trx ID</th>
+                            <th class="py-4 px-6">User</th>
+                            <th class="py-4 px-6">Amount</th>
+                            <th class="py-4 px-6">Method</th>
+                            <th class="py-4 px-6">Purpose</th>
+                            <th class="py-4 px-6">Status</th>
+                            <th class="py-4 px-6">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="pay" items="${allPayments}">
+                            <tr class="border-b border-white/10 hover:bg-white/5 transition">
+                                <td class="py-4 px-6 font-mono text-xs text-blue-300 font-bold"><c:out value="${pay.transactionId}"/></td>
+                                <td class="py-4 px-6 font-semibold text-white"><c:out value="${pay.userName}"/></td>
+                                <td class="py-4 px-6 text-emerald-400 font-extrabold"><c:out value="${pay.currency}"/> <c:out value="${pay.amount}"/></td>
+                                <td class="py-4 px-6">
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-200 border border-purple-500/30">
+                                        <c:out value="${pay.paymentMethod}"/>
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6 text-white/80 text-xs font-bold"><c:out value="${pay.purpose}"/></td>
+                                <td class="py-4 px-6">
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/20 text-green-300 border border-green-500/30">
+                                        <c:out value="${pay.status}"/>
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6 text-white/60 text-xs"><c:out value="${pay.createdAt}"/></td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty allPayments}">
+                            <tr>
+                                <td colspan="7" class="py-8 text-center text-white/50">
+                                    No payment transactions recorded yet.
+                                </td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- POST MANAGEMENT CONTAINER -->
+        <main class="glass-panel rounded-2xl p-6 mt-8 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-file-lines text-emerald-400"></i> Recent Posts Management
+                    <span class="text-xs text-white/40 font-normal ml-2">(Latest 50 posts)</span>
+                </h2>
+                <!-- Post Search -->
+                <div class="relative w-full md:w-80">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-white/50">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="postSearch" placeholder="Search by user or content..." 
+                           class="w-full bg-slate-950/40 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-xl border border-white/10">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-white/10 text-white/80 text-xs font-semibold uppercase tracking-wider border-b border-white/10">
+                            <th class="py-4 px-6">ID</th>
+                            <th class="py-4 px-6">User</th>
+                            <th class="py-4 px-6">Content</th>
+                            <th class="py-4 px-6">Type</th>
+                            <th class="py-4 px-6">Date</th>
+                            <th class="py-4 px-6 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="post" items="${recentPosts}">
+                            <tr class="border-b border-white/10 hover:bg-white/5 transition post-row">
+                                <td class="py-3 px-6 text-white font-semibold">#<c:out value="${post.id}"/></td>
+                                <td class="py-3 px-6 text-white font-medium post-user"><c:out value="${post.user_name}"/></td>
+                                <td class="py-3 px-6 text-white/70 text-sm max-w-xs truncate post-content" title="${post.content}">
+                                    <c:choose>
+                                        <c:when test="${not empty post.content}">
+                                            <c:out value="${post.content}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="italic text-white/30">[Media only]</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="py-3 px-6">
+                                    <c:choose>
+                                        <c:when test="${post.post_type == 'REEL'}">
+                                            <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30">
+                                                <i class="fa-solid fa-video text-[10px]"></i> REEL
+                                            </span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-200 border border-blue-500/30">
+                                                POST
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="py-3 px-6 text-white/50 text-xs"><c:out value="${post.created_at}"/></td>
+                                <td class="py-3 px-6 text-center">
+                                    <a href="AdminServlet?action=delete_post&postId=${post.id}"
+                                       onclick="return confirm('Delete this post by ${post.user_name}? This cannot be undone.')"
+                                       class="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500 text-rose-200 hover:text-white border border-rose-500/30 transition text-xs flex items-center gap-1 mx-auto w-fit">
+                                        <i class="fa-solid fa-trash-can"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty recentPosts}">
+                            <tr>
+                                <td colspan="6" class="py-8 text-center text-white/50">
+                                    No posts found.
+                                </td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- PAYMENT TRANSACTIONS LOG CONTAINER -->
+        <main class="glass-panel rounded-2xl p-6 mt-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-credit-card text-blue-400"></i> bKash / Nagad / Card Payment Transactions
+                </h2>
+            </div>
+
+            <div class="overflow-x-auto rounded-xl border border-white/10">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-white/10 text-white/80 text-xs font-semibold uppercase tracking-wider border-b border-white/10">
+                            <th class="py-4 px-6">Trx ID</th>
+                            <th class="py-4 px-6">User</th>
+                            <th class="py-4 px-6">Amount</th>
+                            <th class="py-4 px-6">Method</th>
+                            <th class="py-4 px-6">Purpose</th>
+                            <th class="py-4 px-6">Status</th>
+                            <th class="py-4 px-6">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="pay" items="${allPayments}">
+                            <tr class="border-b border-white/10 hover:bg-white/5 transition">
+                                <td class="py-4 px-6 font-mono text-xs text-blue-300 font-bold"><c:out value="${pay.transactionId}"/></td>
+                                <td class="py-4 px-6 font-semibold text-white"><c:out value="${pay.userName}"/></td>
+                                <td class="py-4 px-6 text-emerald-400 font-extrabold">爰ｳ <c:out value="${pay.amount}"/></td>
+                                <td class="py-4 px-6">
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-200 border border-purple-500/30">
+                                        <c:out value="${pay.paymentMethod}"/>
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6 text-white/80 text-xs font-bold"><c:out value="${pay.purpose}"/></td>
+                                <td class="py-4 px-6">
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/20 text-green-300 border border-green-500/30">
+                                        <c:out value="${pay.status}"/>
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6 text-white/60 text-xs"><c:out value="${pay.createdAt}"/></td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty allPayments}">
+                            <tr>
+                                <td colspan="7" class="py-8 text-center text-white/50">
+                                    No payment transactions recorded yet.
+                                </td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- POST MANAGEMENT CONTAINER -->
+        <main class="glass-panel rounded-2xl p-6 mt-8 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-file-lines text-emerald-400"></i> Recent Posts Management
+                    <span class="text-xs text-white/40 font-normal ml-2">(Latest 50 posts)</span>
+                </h2>
+                <!-- Post Search -->
+                <div class="relative w-full md:w-80">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-white/50">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="postSearch" placeholder="Search by user or content..." 
+                           class="w-full bg-slate-950/40 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-xl border border-white/10">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-white/10 text-white/80 text-xs font-semibold uppercase tracking-wider border-b border-white/10">
+                            <th class="py-4 px-6">ID</th>
+                            <th class="py-4 px-6">User</th>
+                            <th class="py-4 px-6">Content</th>
+                            <th class="py-4 px-6">Type</th>
+                            <th class="py-4 px-6">Date</th>
+                            <th class="py-4 px-6 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="post" items="${recentPosts}">
+                            <tr class="border-b border-white/10 hover:bg-white/5 transition post-row">
+                                <td class="py-3 px-6 text-white font-semibold">#<c:out value="${post.id}"/></td>
+                                <td class="py-3 px-6 text-white font-medium post-user"><c:out value="${post.user_name}"/></td>
+                                <td class="py-3 px-6 text-white/70 text-sm max-w-xs truncate post-content" title="${post.content}">
+                                    <c:choose>
+                                        <c:when test="${not empty post.content}">
+                                            <c:out value="${post.content}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="italic text-white/30">[Media only]</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="py-3 px-6">
+                                    <c:choose>
+                                        <c:when test="${post.post_type == 'REEL'}">
+                                            <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30">
+                                                <i class="fa-solid fa-video text-[10px]"></i> REEL
+                                            </span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-200 border border-blue-500/30">
+                                                POST
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="py-3 px-6 text-white/50 text-xs"><c:out value="${post.created_at}"/></td>
+                                <td class="py-3 px-6 text-center">
+                                    <a href="AdminServlet?action=delete_post&postId=${post.id}"
+                                       onclick="return confirm('Delete this post by ${post.user_name}? This cannot be undone.')"
+                                       class="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500 text-rose-200 hover:text-white border border-rose-500/30 transition text-xs flex items-center gap-1 mx-auto w-fit">
+                                        <i class="fa-solid fa-trash-can"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty recentPosts}">
+                            <tr>
+                                <td colspan="6" class="py-8 text-center text-white/50">
+                                    No posts found.
+                                </td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
+        </main>
     </div>
 
     <!-- Confirmation & Real-time Search Scripts -->
@@ -339,7 +706,7 @@
             return confirm("Warning: Deleting user '" + userName + "' will also permanently delete their posts, comments, likes, and messages. This action CANNOT be undone. Are you sure you want to proceed?");
         }
 
-        // Live client-side search/filter
+        // Live client-side search/filter for users
         document.getElementById('userSearch').addEventListener('input', function(e) {
             const query = e.target.value.toLowerCase().trim();
             const rows = document.querySelectorAll('.user-row');
@@ -355,7 +722,23 @@
                 }
             });
         });
+
+        // Live client-side search/filter for posts
+        document.getElementById('postSearch').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('.post-row');
+            rows.forEach(row => {
+                const user = row.querySelector('.post-user') ? row.querySelector('.post-user').textContent.toLowerCase() : '';
+                const content = row.querySelector('.post-content') ? row.querySelector('.post-content').textContent.toLowerCase() : '';
+                if (user.includes(query) || content.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
     </script>
+
+<script src="js/theme.js"></script>
 </body>
 </html>
-

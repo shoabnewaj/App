@@ -61,17 +61,26 @@ public class UsersProfileServlet extends HttpServlet {
             int followerCount = userDAO.getProfileCount(profileUser.getId(), "FOLLOWERS");
             int followingCount = userDAO.getProfileCount(profileUser.getId(), "FOLLOWING");
 
+            boolean canViewProfile = new ychatapp.model.dao.ProfilePrivacyDAO().canViewProfile(profileUser.getId(), ub.getId());
+            if (!canViewProfile) {
+                req.setAttribute("profileName", profileUser.getName());
+                req.getRequestDispatcher("/WEB-INF/jsp/profile_private.jsp").forward(req, res);
+                return;
+            }
+
             // 📝 user posts
             List<UsersPost> userPosts = postDAO.getPostsByUserId(profileUser.getId());
             if (userPosts == null) {
                 userPosts = new java.util.ArrayList<>();
-            } else {
+            } else if (canViewProfile) {
                 new ychatapp.model.dao.HiddenContentDAO().filterHiddenContent(userPosts, ub.getId());
+            } else {
+                userPosts.clear();
             }
             
             // 👥 friends list
             List<UsersBeans> friendsList = userDAO.getFriends(profileUser.getId());
-            if (friendsList == null) friendsList = new java.util.ArrayList<>();
+            if (friendsList == null || !canViewProfile) friendsList = new java.util.ArrayList<>();
             
             System.out.println(">>> Loading Profile for: " + profileUser.getName() + " (ID: " + profileUser.getId() + ")");
             System.out.println(">>> Found Posts: " + userPosts.size());
@@ -83,6 +92,7 @@ public class UsersProfileServlet extends HttpServlet {
 
             // 🔗 set attributes
             req.setAttribute("profileUser", profileUser);
+            req.setAttribute("profileRestricted", !canViewProfile);
             req.setAttribute("friendsCount", friendsCount);
             req.setAttribute("followerCount", followerCount);
             req.setAttribute("followingCount", followingCount);

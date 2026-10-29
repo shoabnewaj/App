@@ -11,7 +11,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import ychatapp.model.beans.UsersBeans;
+import ychatapp.model.beans.NotificationBeans;
 import ychatapp.model.dao.NotificationDAO;
+import ychatapp.model.dao.MessageDAO;
 
 @WebServlet("/NotificationServlet")
 public class NotificationServlet extends HttpServlet {
@@ -27,7 +29,16 @@ public class NotificationServlet extends HttpServlet {
             return;
         }
 
+        String action = req.getParameter("action");
         NotificationDAO dao = new NotificationDAO();
+        if ("count".equalsIgnoreCase(action)) {
+            res.setContentType("application/json;charset=UTF-8");
+            res.setHeader("Cache-Control", "no-store");
+            int unreadMessages = new MessageDAO().getUnreadMessageCount(ub.getName());
+            res.getWriter().write("{\"unreadCount\":" + dao.getUnreadCount(ub.getId())
+                    + ",\"unreadMessages\":" + unreadMessages + "}");
+            return;
+        }
         int userId = ub.getId();
 
         // ১. পেজে ঢোকা মাত্রই সব নোটিফিকেশনকে 'Read' করে দাও
@@ -37,7 +48,7 @@ public class NotificationServlet extends HttpServlet {
         session.setAttribute("unreadCount", 0);
 
         // ৩. লিস্ট নিয়ে পেজে পাঠিয়ে দাও
-        List<String> notifications = dao.getNotifications(userId);
+        List<NotificationBeans> notifications = dao.getNotifications(userId);
         req.setAttribute("notifications", notifications);
 
         req.getRequestDispatcher("/WEB-INF/jsp/notifications.jsp").forward(req, res);

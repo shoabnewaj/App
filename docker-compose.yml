@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. MySQL 8 Database Service
+  # ----------------------------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    container_name: ychatapp_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ychat_secret_root_2026
+      MYSQL_DATABASE: ychatapp
+      MYSQL_USER: ychat_user
+      MYSQL_PASSWORD: ychat_pass_2026
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./schema_production.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pychat_secret_root_2026"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ----------------------------------------------------------------------------
+  # 2. Y-ChatApp Java Tomcat Web Application
+  # ----------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ychatapp_server
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MYSQLHOST: mysql
+      MYSQLPORT: "3306"
+      MYSQLDATABASE: ychatapp
+      MYSQLUSER: ychat_user
+      MYSQLPASSWORD: ychat_pass_2026
+      PORT: "8080"
+    ports:
+      - "80:8080"
+      - "8080:8080"
+
+volumes:
+  mysql_data:

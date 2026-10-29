@@ -49,7 +49,8 @@
             border-radius: 2rem;
             box-shadow: 0 20px 40px rgba(31, 38, 135, 0.08);
             width: 100%;
-            max-width: 420px;
+            max-width: 480px;
+            margin: 30px 15px;
             box-sizing: border-box;
             animation: fadeIn 0.6s ease-out;
         }
@@ -84,7 +85,7 @@
             margin-bottom: 8px;
         }
         
-        input {
+        input, select {
             width: 100%;
             padding: 14px 16px;
             border: 1px solid rgba(0, 0, 0, 0.08);
@@ -98,7 +99,7 @@
             outline: none;
         }
         
-        input:focus {
+        input:focus, select:focus {
             border-color: #3b82f6;
             background: white;
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
@@ -159,6 +160,35 @@
                 <label><i class="fa-regular fa-envelope mr-1.5"></i>Email Address</label>
                 <input type="email" name="email" value="${ub.getEmail()}" required placeholder="Enter email address">
             </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="input-group">
+                    <label><i class="fa-solid fa-earth-americas mr-1.5"></i>Country</label>
+                    <input type="text" name="country" value="${ub.getCountry()}" placeholder="e.g. Bangladesh">
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fa-solid fa-city mr-1.5"></i>City</label>
+                    <input type="text" name="city" value="${ub.getCity()}" placeholder="e.g. Dhaka">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="input-group">
+                    <label><i class="fa-solid fa-venus-mars mr-1.5"></i>Gender</label>
+                    <select name="gender">
+                        <option value="">Select Gender</option>
+                        <option value="male" ${ub.getGender() == 'male' ? 'selected' : ''}>Male</option>
+                        <option value="female" ${ub.getGender() == 'female' ? 'selected' : ''}>Female</option>
+                        <option value="another" ${ub.getGender() == 'another' ? 'selected' : ''}>Another</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label><i class="fa-solid fa-cake-candles mr-1.5"></i>Birthday</label>
+                    <input type="date" name="birthday" value="${ub.getBirthday()}">
+                </div>
+            </div>
             
             <div class="input-group">
                 <label><i class="fa-solid fa-key mr-1.5"></i>New Password</label>
@@ -170,5 +200,7 @@
         
         <a href="UsersProfileServlet?userId=${ub.getId()}" class="cancel-link"><i class="fa-solid fa-arrow-left mr-1.5"></i>Cancel & Back</a>
     </div>
+
+<script src="js/theme.js"></script>
 </body>
 </html>

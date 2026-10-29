@@ -4,7 +4,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="<%=request.getContextPath()%>/js/notification-badge.js" data-context-path="<%=request.getContextPath()%>" defer></script>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Y-ChatApp | Friends</title>
 
     <link rel="icon" type="image/png" href="<%=request.getContextPath()%>/icons/icon-192.png">
@@ -223,7 +225,7 @@
 
 
     <!-- Mobile Bottom Navigation Bar (Visible only on mobile/tablet) -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 h-[65px] bg-white/80 backdrop-blur-md border-t border-gray-200 z-[9999] flex justify-around items-center px-4 rounded-t-3xl shadow-2xl">
+    <nav id="mobileBottomNav" class="md:hidden fixed bottom-0 left-0 right-0 h-[65px] bg-white/95 backdrop-blur-md border-t border-gray-200 z-[99999] flex justify-around items-center px-4 rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.15)]">
         <a href="UsersPostServlet" class="flex flex-col items-center gap-1 text-gray-500 hover:text-blue-500 transition">
             <i class="fa fa-house text-xl"></i>
             <span class="text-[10px] font-bold">Home</span>

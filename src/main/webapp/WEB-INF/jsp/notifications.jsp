@@ -4,7 +4,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="<%=request.getContextPath()%>/js/notification-badge.js" data-context-path="<%=request.getContextPath()%>" defer></script>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notifications | Y-ChatApp</title>
     <link rel="icon" type="image/png" href="<%=request.getContextPath()%>/icons/icon-192.png">
     <style>
@@ -20,6 +22,14 @@
         .notif-left { display: flex; align-items: center; gap: 15px; }
         .notif-icon { font-size: 20px; width: 45px; height: 45px; background: #f3e8ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .delete-btn { color: #ff3b30; text-decoration: none; font-size: 20px; padding: 5px; cursor: pointer; }
+        @media (max-width: 768px) {
+            body { flex-direction: column; height: auto; min-height: 100vh; overflow-y: auto; }
+            .sidebar { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid #ddd; padding: 15px; }
+            .sidebar .menu { display: flex; flex-wrap: wrap; gap: 6px; }
+            .sidebar .menu a { margin-bottom: 0; padding: 8px 12px; font-size: 14px; }
+            .main { margin-left: 0; padding: 15px; width: 100%; }
+            .notif-container { padding: 15px; }
+        }
     </style>
 </head>
 <body>
@@ -51,26 +61,31 @@
             <c:otherwise>
                 <c:forEach var="message" items="${notifications}">
                     <div class="notif-item">
-                        <div class="notif-left">
+                        <a class="notif-left" href="${message.type eq 'LIVE' and message.senderId gt 0 ? 'VideosServlet?watchId=' : 'NotificationServlet'}${message.type eq 'LIVE' and message.senderId gt 0 ? message.senderId : ''}" style="color:inherit;text-decoration:none;flex:1;">
                             <div class="notif-icon">
                                 <c:choose>
-                                    <c:when test="${message.contains('reacted')}">❤️</c:when>
-                                    <c:when test="${message.contains('liked')}">👍</c:when>
-                                    <c:when test="${message.contains('friend request')}">👥</c:when>
-                                    <c:when test="${message.contains('accepted')}">🤝</c:when>
-                                    <c:when test="${message.contains('message')}">💬</c:when>
-                                    <c:when test="${message.contains('commented')}">📝</c:when>
-                                    <c:when test="${message.contains('replied')}">↩️</c:when>
-                                    <c:when test="${message.contains('shared')}">🔄</c:when>
+                                    <c:when test="${message.type eq 'LIVE'}">🔴</c:when>
+                                    <c:otherwise>
+                                    <c:choose>
+                                    <c:when test="${message.message.contains('reacted')}">❤️</c:when>
+                                    <c:when test="${message.message.contains('liked')}">👍</c:when>
+                                    <c:when test="${message.message.contains('friend request')}">👥</c:when>
+                                    <c:when test="${message.message.contains('accepted')}">🤝</c:when>
+                                    <c:when test="${message.message.contains('message')}">💬</c:when>
+                                    <c:when test="${message.message.contains('commented')}">📝</c:when>
+                                    <c:when test="${message.message.contains('replied')}">↩️</c:when>
+                                    <c:when test="${message.message.contains('shared')}">🔄</c:when>
                                     <c:otherwise>🔔</c:otherwise>
+                                </c:choose>
+                                    </c:otherwise>
                                 </c:choose>
                             </div>
                             <div>
-                                <p style="color: #333; font-size: 15px;">${message}</p>
-                                <small style="color: #999;">Just now</small>
+                                <p style="color: #333; font-size: 15px;">${message.message}</p>
+                                <small style="color: #999;" title="${message.createdAt}">${message.timeAgo}</small>
                             </div>
-                        </div>
-                        <a href="NotificationServlet?action=delete&msg=${message}" class="delete-btn" onclick="return confirm('Delete this notification?')">×</a>
+                        </a>
+                        <a href="NotificationServlet?action=delete&amp;msg=${message.id}" class="delete-btn" onclick="return confirm('Delete this notification?')">×</a>
                     </div>
                 </c:forEach>
             </c:otherwise>

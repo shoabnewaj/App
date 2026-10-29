@@ -31,7 +31,7 @@ public class MarketServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("ub") == null) {
-            res.sendRedirect("login.jsp");
+            res.sendRedirect("UsersLoginServlet");
             return;
         }
 
@@ -44,7 +44,7 @@ public class MarketServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("ub") == null) {
-            res.sendRedirect("login.jsp");
+            res.sendRedirect("UsersLoginServlet");
             return;
         }
 

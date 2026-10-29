@@ -1,6 +1,7 @@
 package ychatapp.model.beans;
 
 import java.util.List;
+import ychatapp.model.beans.PollOption;
 
 public class UsersPost {
 
@@ -23,6 +24,14 @@ public class UsersPost {
     // Comments list
     private List<CommentBeans> comments;
 
+    // Poll options list
+    private List<PollOption> pollOptions;
+    private String pollQuestion;
+
+    // Repost / Quote Post fields
+    private int originalPostId;
+    private UsersPost originalPost;
+
     public UsersPost() {}
 
     public UsersPost(int id, String name, int userId, String content, String file_name, String post_type, String feeling) {
@@ -38,12 +47,19 @@ public class UsersPost {
     // ===== Getters =====
     public int getId() { return id; }
     public String getName() { return name; }
+    public String getUser_name() { return name; }
+    public String getUserName() { return name; }
     public int getUserId() { return userId; }
     public String getContent() { return content; }
     public String getFile_name() { return file_name; }
+    public String getFileName() { return file_name; }
     public String getPost_type() { return post_type; }
+    public String getPostType() { return post_type; }
     public String getProfile_pic() { return profile_pic; }
+    public String getProfilePic() { return profile_pic; }
     public String getTime() { return time; }
+    public String getCreatedAt() { return time; }
+    public String getCreated_at() { return time; }
     public String getFeeling() { return feeling; }
     public int getCommentCount() { return commentCount; }
     public int getShareCount() { return shareCount; }
@@ -84,4 +100,35 @@ public class UsersPost {
     public void setDislikes(int dislikes) { this.dislikes = dislikes; }
 
     public void setComments(List<CommentBeans> comments) { this.comments = comments; }
+
+    public List<PollOption> getPollOptions() { return pollOptions; }
+    public String getPollQuestion() { return pollQuestion; }
+    public void setPollQuestion(String pollQuestion) { this.pollQuestion = pollQuestion; }
+    public void setPollOptions(List<PollOption> pollOptions) { this.pollOptions = pollOptions; }
+
+    public int getOriginalPostId() { return originalPostId; }
+    public void setOriginalPostId(int originalPostId) { this.originalPostId = originalPostId; }
+
+    public UsersPost getOriginalPost() { return originalPost; }
+    public void setOriginalPost(UsersPost originalPost) { this.originalPost = originalPost; }
+
+    public String getFormattedContent() {
+        if (content == null) return "";
+        String escaped = content.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+        return escaped.replaceAll("#([\\p{L}\\p{N}_]+)", "<a href=\"UsersPostServlet?tag=$1\" class=\"text-indigo-600 font-semibold hover:underline\">#$1</a>");
+    }
+
+    private boolean is_verified = false;
+
+    public boolean isVerified() {
+        return is_verified;
+    }
+
+    public boolean getIs_verified() {
+        return is_verified;
+    }
+
+    public void setIs_verified(boolean is_verified) {
+        this.is_verified = is_verified;
+    }
 }

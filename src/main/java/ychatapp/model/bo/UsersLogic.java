@@ -21,12 +21,14 @@ public class UsersLogic {
 
     // ২. লগইন লজিক
     public static UsersBeans login(UsersBeans ub) {
-        String hashed = hashValue(ub.getPass());
+        if (ub == null || ub.getEmail() == null || ub.getPass() == null) return null;
+        String rawPass = ub.getPass();
+        String hashed = hashValue(rawPass);
         ub.setHashedPass(hashed);
-        return new UsersDAO().loginCheck(ub.getEmail(), hashed);
+        return new UsersDAO().loginCheck(ub.getEmail(), rawPass, hashed);
     }
 
-    // ৩. প্রোফাইল আপডেট লজিক (Error solved here)
+    // ৩. প্রোফাইল আপডেট লজিক
     public static boolean updateProfile(UsersBeans ub) {
         if (ub.getPass() != null && !ub.getPass().isEmpty()) {
             ub.setHashedPass(hashValue(ub.getPass()));
@@ -39,7 +41,7 @@ public class UsersLogic {
     }
 
     // SHA-256 Hashing Method
-    private static String hashValue(String pass) {
+    public static String hashValue(String pass) {
         if (pass == null || pass.isEmpty()) return null;
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");

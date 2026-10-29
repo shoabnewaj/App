@@ -1,0 +1,2765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Y-ChatApp Promo Showcase & Video Tour</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #9333ea;
+            --primary-light: #c084fc;
+            --primary-dark: #7e22ce;
+            --bg-dark: #09090e;
+            --panel-bg: rgba(18, 18, 28, 0.6);
+            --border-glow: rgba(147, 51, 234, 0.25);
+            --text-light: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Noto Sans Bengali', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Glowing background orbs */
+        .glow-orb {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            filter: blur(140px);
+            z-index: -1;
+            opacity: 0.35;
+            pointer-events: none;
+            animation: floatGlow 12s infinite alternate ease-in-out;
+        }
+        .glow-orb-1 {
+            background: radial-gradient(circle, var(--primary) 0%, rgba(0,0,0,0) 70%);
+            top: -10%;
+            left: 10%;
+        }
+        .glow-orb-2 {
+            background: radial-gradient(circle, #2563eb 0%, rgba(0,0,0,0) 70%);
+            bottom: 5%;
+            right: 10%;
+            animation-delay: -6s;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 40px) scale(1.15); }
+        }
+
+        header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(9, 9, 14, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), #3b82f6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
+        }
+
+        .logo-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 22px;
+            background: linear-gradient(to right, #ffffff, var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-record-tip {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-record-tip:hover {
+            background: white;
+            color: black;
+            transform: translateY(-2px);
+        }
+
+        /* Main Showcase Area */
+        .showcase-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            padding: 30px 40px 100px;
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            align-items: center;
+        }
+
+        /* PHONE MOCKUP */
+        .phone-column {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .phone-wrapper {
+            position: relative;
+            width: 330px;
+            height: 670px;
+            background: #000;
+            border-radius: 44px;
+            padding: 10px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75),
+                        0 0 40px var(--border-glow);
+            border: 4px solid rgba(255, 255, 255, 0.12);
+            transition: transform 0.3s;
+        }
+
+        /* Dynamic Island / Notch */
+        .dynamic-island {
+            position: absolute;
+            top: 17px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 25px;
+            background: #000;
+            border-radius: 15px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 10px;
+        }
+        .camera-hole {
+            width: 8px;
+            height: 8px;
+            background: #111;
+            border-radius: 50%;
+        }
+
+        /* Phone Screen Frame */
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #f0f2f5;
+            border-radius: 36px;
+            overflow: hidden;
+            position: relative;
+            color: #1c1e21;
+        }
+
+        /* Custom virtual cursor */
+        .virtual-cursor {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(147, 51, 234, 0.6);
+            border: 2px solid white;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%) scale(1);
+            transition: left 0.5s ease-in-out, top 0.5s ease-in-out, transform 0.15s;
+            box-shadow: 0 0 10px rgba(147, 51, 234, 0.5);
+            display: none;
+        }
+        .virtual-cursor.clicking {
+            transform: translate(-50%, -50%) scale(0.75);
+            background: rgba(59, 130, 246, 0.9);
+        }
+        .click-ripple {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--primary-light);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            pointer-events: none;
+            z-index: 9998;
+            animation: rippleEffect 0.4s ease-out forwards;
+        }
+        @keyframes rippleEffect {
+            0% { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+
+        /* Screen Reflection overlay */
+        .screen-reflection {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 50%);
+            pointer-events: none;
+            z-index: 800;
+        }
+
+        /* SCENE STYLING */
+        .app-scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            display: none;
+            flex-direction: column;
+            transition: opacity 0.5s ease-in-out;
+            z-index: 10;
+        }
+        .app-scene.active {
+            opacity: 1;
+            display: flex;
+        }
+
+        /* NARRATION PANEL */
+        .narrator-column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .narrator-card {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 30px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .scene-badge {
+            align-self: flex-start;
+            background: rgba(147, 51, 234, 0.15);
+            border: 1px solid var(--primary-light);
+            color: var(--primary-light);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+            animation: pulseBadge 2s infinite alternate;
+        }
+        @keyframes pulseBadge {
+            0% { box-shadow: 0 0 5px rgba(168, 85, 247, 0.2); }
+            100% { box-shadow: 0 0 15px rgba(168, 85, 247, 0.5); }
+        }
+
+        .caption-bengali {
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.5;
+            color: #ffffff;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary-light);
+            padding-left: 15px;
+        }
+
+        .caption-english {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.6;
+            color: #9ca3af;
+            padding-left: 19px;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 25px;
+        }
+        .tech-tag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* PLAYBACK CONTROLS */
+        .controls-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(9, 9, 14, 0.9);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 15px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 999;
+        }
+
+        .timeline-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .time-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: monospace;
+            min-width: 45px;
+        }
+
+        .progress-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.15);
+            outline: none;
+            cursor: pointer;
+            position: relative;
+        }
+        .progress-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            border: 2px solid white;
+            box-shadow: 0 0 10px var(--primary);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .progress-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .media-btn-group {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .media-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.1s;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .media-btn:hover {
+            color: var(--primary-light);
+            transform: scale(1.1);
+        }
+        .media-btn:active {
+            transform: scale(0.95);
+        }
+        .media-btn.play-btn {
+            background: white;
+            color: black;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.3);
+        }
+        .media-btn.play-btn:hover {
+            color: black;
+            background: var(--primary-light);
+            transform: scale(1.1);
+        }
+
+        .config-btn-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .speed-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .speed-btn.active {
+            background: var(--primary);
+            border-color: var(--primary-light);
+        }
+
+        .audio-btn.active i {
+            color: var(--primary-light);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        /* RECORDING INSTRUCTIONS OVERLAY */
+        .instructions-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .instructions-modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #12121c;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 28px;
+            padding: 35px;
+            max-width: 550px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .modal-close:hover {
+            color: white;
+        }
+        .modal-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: white;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 12px;
+        }
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .step-item {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        .step-number {
+            width: 26px;
+            height: 26px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .step-text h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 3px;
+        }
+        .step-text p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* ==============================================================
+           APP INTERFACE SIMULATION COMPONENTS (INSIDE THE PHONE Viewport)
+           ============================================================== */
+
+        /* 1. Splash Screen */
+        .scene-splash {
+            background: linear-gradient(135deg, #7c3aed 0%, #1e1b4b 100%);
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        .splash-logo {
+            width: 90px;
+            height: 90px;
+            background: white;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+            color: #7c3aed;
+            font-weight: 900;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            animation: pulseLogo 2.5s infinite ease-in-out;
+            position: relative;
+        }
+        .splash-logo i {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        @keyframes pulseLogo {
+            0% { transform: scale(1); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+            50% { transform: scale(1.08); box-shadow: 0 20px 40px rgba(124, 58, 237, 0.4); }
+            100% { transform: scale(1); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        }
+        .splash-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            margin-top: 20px;
+            letter-spacing: -0.5px;
+        }
+        .splash-loader {
+            margin-top: 40px;
+            display: flex;
+            gap: 6px;
+        }
+        .loader-dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+            animation: splashLoaderDot 1s infinite alternate;
+        }
+        .loader-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loader-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes splashLoaderDot {
+            0% { transform: translateY(0); background: rgba(255,255,255,0.4); }
+            100% { transform: translateY(-8px); background: #ffffff; }
+        }
+
+        /* 2. Login Screen */
+        .scene-login {
+            background: #ffffff;
+            padding: 30px 24px;
+            justify-content: center;
+        }
+        .login-logo {
+            font-size: 40px;
+            color: #7c3aed;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .login-title {
+            font-size: 20px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #111;
+        }
+        .form-group {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .form-group label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #555;
+            letter-spacing: 0.5px;
+        }
+        .form-group input {
+            padding: 12px 14px;
+            border: 1.5px solid #ddd;
+            border-radius: 12px;
+            font-size: 13px;
+            outline: none;
+            color: #222;
+        }
+        .form-group input:focus {
+            border-color: #7c3aed;
+        }
+        .login-btn {
+            background: linear-gradient(135deg, #7c3aed, #9333ea);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(124,58,237,0.3);
+        }
+
+        /* App Navbar / Header Simulation */
+        .app-header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 35px 15px 12px; /* Extra top padding for notch */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+        .app-header-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 18px;
+            color: #7c3aed;
+        }
+        .app-header-icons {
+            display: flex;
+            gap: 12px;
+            color: #4b5563;
+            font-size: 16px;
+        }
+        .app-header-icons i {
+            cursor: pointer;
+        }
+
+        /* App Footer Tabs Simulation */
+        .app-tabs {
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            padding: 8px 5px 15px;
+            font-size: 18px;
+            color: #6b7280;
+            text-align: center;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+        .app-tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .app-tab-item span {
+            font-size: 9px;
+            font-weight: 600;
+        }
+        .app-tab-item.active {
+            color: #7c3aed;
+        }
+
+        /* 3. Feed Screen */
+        .scene-feed {
+            background: #f0f2f5;
+        }
+        .feed-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            scrollbar-width: none;
+        }
+        .feed-scroll::-webkit-scrollbar { display: none; }
+
+        /* Stories Bar */
+        .stories-bar {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 5px 0 10px;
+            scrollbar-width: none;
+            flex-shrink: 0;
+        }
+        .stories-bar::-webkit-scrollbar { display: none; }
+        .story-item {
+            width: 52px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .story-avatar-wrap {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: 2px solid #3b82f6;
+            padding: 2px;
+            position: relative;
+        }
+        .story-avatar-wrap.live {
+            border-color: #ef4444;
+            animation: liveRingBorder 1s infinite alternate;
+        }
+        @keyframes liveRingBorder {
+            0% { border-color: #ef4444; }
+            100% { border-color: #fca5a5; }
+        }
+        .story-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #c084fc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .story-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .story-badge {
+            position: absolute;
+            bottom: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ef4444;
+            color: white;
+            font-size: 7px;
+            font-weight: 800;
+            padding: 1px 4px;
+            border-radius: 4px;
+        }
+        .story-name {
+            font-size: 9px;
+            color: #4b5563;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Post Card */
+        .post-card {
+            background: white;
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .post-author-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #7c3aed;
+            color: white;
+            font-weight: 700;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .post-author-info h4 {
+            font-size: 11px;
+            font-weight: 700;
+            color: #111;
+        }
+        .post-author-info span {
+            font-size: 8px;
+            color: #6b7280;
+        }
+        .post-text {
+            font-size: 11px;
+            color: #374151;
+            line-height: 1.4;
+        }
+        .post-image {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .post-image-placeholder {
+            color: #3b82f6;
+            font-size: 24px;
+            opacity: 0.6;
+        }
+        .post-actions {
+            display: flex;
+            border-top: 1px solid #f3f4f6;
+            padding-top: 8px;
+            justify-content: space-around;
+            font-size: 12px;
+            color: #4b5563;
+        }
+        .post-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .post-action-btn.liked {
+            color: #ef4444;
+        }
+        .post-action-btn.liked i {
+            animation: heartBurst 0.35s ease-out;
+        }
+        @keyframes heartBurst {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+
+        /* 4. Live Stream Screen */
+        .scene-live {
+            background: #000000;
+            color: white;
+        }
+        .live-video-sim {
+            flex: 1;
+            position: relative;
+            background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .live-sim-canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        .live-overlay-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 35px 15px 15px; /* Account for top bar */
+        }
+        .live-badge-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .live-badge-red {
+            background: #ef4444;
+            color: white;
+            font-size: 8px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 6px;
+            animation: liveFlash 1s infinite alternate;
+        }
+        @keyframes liveFlash {
+            0% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        .live-viewers-count {
+            background: rgba(0,0,0,0.5);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 8px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .live-chat-panel {
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 150px;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+        .live-chat-panel::-webkit-scrollbar { display: none; }
+        .live-chat-msg {
+            display: flex;
+            gap: 6px;
+            align-items: flex-start;
+            animation: slideInChat 0.3s ease-out forwards;
+        }
+        @keyframes slideInChat {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .live-chat-avatar {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #7c3aed;
+            font-size: 7px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .live-chat-bubble {
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 4px 8px;
+            max-width: 80%;
+        }
+        .live-chat-bubble b {
+            font-size: 8px;
+            color: var(--primary-light);
+            display: block;
+        }
+        .live-chat-bubble p {
+            font-size: 9px;
+            color: white;
+        }
+        .floating-emoji-container {
+            position: absolute;
+            bottom: 60px;
+            right: 20px;
+            width: 60px;
+            height: 200px;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 10;
+        }
+        .live-input-area {
+            background: rgba(0,0,0,0.4);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .live-input-area input {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 15px;
+            padding: 6px 12px;
+            font-size: 11px;
+            outline: none;
+        }
+
+        /* 5. Chat Screen */
+        .scene-chat {
+            background: #f3f4f6;
+        }
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-top-bar {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chat-user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chat-user-details h4 {
+            font-size: 11px;
+            font-weight: 700;
+            color: #111;
+        }
+        .chat-user-details span {
+            font-size: 8px;
+            color: #10b981;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            scrollbar-width: none;
+        }
+        .chat-messages::-webkit-scrollbar { display: none; }
+        .chat-bubble {
+            max-width: 75%;
+            padding: 8px 12px;
+            border-radius: 14px;
+            font-size: 10.5px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            animation: scaleInBubble 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes scaleInBubble {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .chat-bubble.sent {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+        .chat-bubble.received {
+            align-self: flex-start;
+            background: #e4e6eb;
+            color: black;
+            border-bottom-left-radius: 2px;
+        }
+        .chat-attachment-img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .chat-bottom-input {
+            background: white;
+            padding: 8px 12px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            position: relative;
+        }
+        .chat-bottom-input input {
+            flex: 1;
+            border: 1px solid #d1d5db;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            outline: none;
+        }
+        .chat-emoji-btn, .chat-attach-btn {
+            color: #6b7280;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .chat-send-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        /* Emoji Picker Simulation Popup */
+        .sim-emoji-picker {
+            position: absolute;
+            bottom: 45px;
+            left: 10px;
+            width: 180px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            display: none;
+            flex-direction: column;
+            padding: 8px;
+            z-index: 200;
+        }
+        .sim-emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            font-size: 16px;
+            text-align: center;
+        }
+        .sim-emoji-item {
+            cursor: pointer;
+            padding: 2px;
+            border-radius: 4px;
+            transition: background 0.1s;
+        }
+        .sim-emoji-item:hover {
+            background: #ede9fe;
+        }
+
+        /* 6. Video Call Screen */
+        .scene-call {
+            background: #09090b;
+        }
+        .call-sim-overlay {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 35px 15px 15px;
+        }
+        /* Ringing state */
+        .call-ringing-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 10;
+        }
+        .call-ringing-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .ringing-pulsing-rings {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid rgba(168, 85, 247, 0.4);
+            animation: ringingRing 2s infinite ease-out;
+            pointer-events: none;
+        }
+        .ringing-pulsing-rings:nth-child(2) { animation-delay: 0.6s; }
+        @keyframes ringingRing {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+        .call-ringing-name {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+        .call-ringing-status {
+            font-size: 10px;
+            color: var(--primary-light);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        .call-ringing-actions {
+            margin-top: 40px;
+            display: flex;
+            gap: 30px;
+        }
+        .call-ringing-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .call-ringing-btn.accept { background: #10b981; }
+        .call-ringing-btn.decline { background: #ef4444; }
+
+        /* Connected state */
+        .call-connected-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            z-index: 15;
+            background: #000;
+        }
+        .call-remote-video {
+            flex: 1;
+            position: relative;
+            background: #111827;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .remote-video-sim-canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .call-local-video {
+            position: absolute;
+            top: 45px;
+            right: 15px;
+            width: 70px;
+            height: 100px;
+            background: #1f2937;
+            border-radius: 8px;
+            border: 1.5px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            z-index: 20;
+            overflow: hidden;
+        }
+        .local-video-sim-canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .call-connected-controls {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 25;
+        }
+        .call-active-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .call-active-btn.active {
+            background: #eab308;
+        }
+        .call-active-btn.decline {
+            background: #ef4444;
+            border-color: #f87171;
+        }
+        /* Voice Wave bars simulation overlay */
+        .call-voice-waves {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 4px;
+            height: 25px;
+            align-items: center;
+            z-index: 20;
+        }
+        .call-voice-wave-bar {
+            width: 3px;
+            height: 100%;
+            background: var(--primary-light);
+            border-radius: 2px;
+            animation: voiceWavePulse 1.2s infinite ease-in-out;
+        }
+        @keyframes voiceWavePulse {
+            0%, 100% { transform: scaleY(0.2); }
+            50% { transform: scaleY(1); }
+        }
+
+        /* 7. Marketplace Screen */
+        .scene-market {
+            background: #f3f4f6;
+        }
+        .market-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            scrollbar-width: none;
+        }
+        .market-scroll::-webkit-scrollbar { display: none; }
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .market-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        .market-img {
+            width: 100%;
+            height: 75px;
+            background: linear-gradient(135deg, #ddd6fe, #c7d2fe);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #7c3aed;
+        }
+        .market-info {
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .market-price {
+            font-size: 11px;
+            font-weight: 800;
+            color: #7c3aed;
+        }
+        .market-title {
+            font-size: 9px;
+            font-weight: 600;
+            color: #374151;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 8. Dashboard Screen */
+        .scene-dashboard {
+            background: #f9fafb;
+        }
+        .dashboard-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            scrollbar-width: none;
+        }
+        .dashboard-scroll::-webkit-scrollbar { display: none; }
+        .dashboard-card {
+            background: white;
+            border-radius: 14px;
+            padding: 12px;
+            border: 1px solid #f3f4f6;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .dashboard-card h3 {
+            font-size: 11px;
+            font-weight: 700;
+            color: #374151;
+        }
+        .chart-container {
+            width: 100%;
+            height: 100px;
+            position: relative;
+        }
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 9. Outro Scene */
+        .scene-outro {
+            background: linear-gradient(135deg, #1e1b4b 0%, #7c3aed 100%);
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .outro-logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            color: #7c3aed;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            font-weight: 900;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            margin-bottom: 25px;
+        }
+        .outro-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .outro-tagline {
+            font-size: 12px;
+            color: #ddd6fe;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        .outro-bullet {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            margin-bottom: 8px;
+            color: #f3f4f6;
+            font-weight: 500;
+        }
+        .outro-bullet i {
+            color: #10b981;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Glow Orbs -->
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo-container">
+            <div class="logo-icon"><i class="fa-solid fa-comments"></i></div>
+            <div class="logo-title">Y-ChatApp Promo</div>
+        </div>
+        <button class="btn-record-tip" onclick="toggleInstructions(true)">
+            <i class="fa-solid fa-video"></i> Record this Screen
+        </button>
+    </header>
+
+    <!-- Main Content Grid -->
+    <div class="showcase-container">
+        
+        <!-- Left: Phone Simulator -->
+        <div class="phone-column">
+            <div class="phone-wrapper" id="phoneWrapper">
+                <!-- Virtual Cursor -->
+                <div class="virtual-cursor" id="virtualCursor"></div>
+
+                <!-- Dynamic Island / Notch -->
+                <div class="dynamic-island">
+                    <div class="camera-hole"></div>
+                </div>
+
+                <!-- Reflection overlay -->
+                <div class="screen-reflection"></div>
+
+                <!-- iPhone Screen Viewport -->
+                <div class="phone-screen" id="phoneScreen">
+                    
+                    <!-- SCENE 1: Splash Screen -->
+                    <div class="app-scene scene-splash active" id="scene-splash">
+                        <div class="splash-logo"><i class="fa-solid fa-comments"></i></div>
+                        <h1 class="splash-title">Y-ChatApp</h1>
+                        <div class="splash-loader">
+                            <div class="loader-dot"></div>
+                            <div class="loader-dot"></div>
+                            <div class="loader-dot"></div>
+                        </div>
+                    </div>
+
+                    <!-- SCENE 2: Login Screen -->
+                    <div class="app-scene scene-login" id="scene-login">
+                        <div class="login-logo"><i class="fa-solid fa-circle-user"></i></div>
+                        <h2 class="login-title">Log In to Account</h2>
+                        
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="text" id="simEmail" placeholder="email@domain.com" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="simPass" placeholder="••••••••" disabled>
+                        </div>
+                        <button class="login-btn" id="simLoginBtn">Sign In</button>
+                    </div>
+
+                    <!-- SCENE 3: Social Feed (Home) -->
+                    <div class="app-scene scene-feed" id="scene-feed">
+                        <!-- App simulation header -->
+                        <div class="app-header">
+                            <span class="app-header-title">Y-ChatApp</span>
+                            <div class="app-header-icons">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <i class="fa-solid fa-bell"></i>
+                            </div>
+                        </div>
+
+                        <!-- Scrollable Feed -->
+                        <div class="feed-scroll" id="feedScroll">
+                            <!-- Story Circle items -->
+                            <div class="stories-bar">
+                                <div class="story-item">
+                                    <div class="story-avatar-wrap live">
+                                        <div class="story-avatar">朝</div>
+                                        <span class="story-badge">LIVE</span>
+                                    </div>
+                                    <span class="story-name">朝香 あゆみ</span>
+                                </div>
+                                <div class="story-item">
+                                    <div class="story-avatar-wrap">
+                                        <div class="story-avatar">湊</div>
+                                    </div>
+                                    <span class="story-name">湊 雄輔</span>
+                                </div>
+                                <div class="story-item">
+                                    <div class="story-avatar-wrap">
+                                        <div class="story-avatar">菅</div>
+                                    </div>
+                                    <span class="story-name">菅原 拓真</span>
+                                </div>
+                                <div class="story-item">
+                                    <div class="story-avatar-wrap">
+                                        <div class="story-avatar">G</div>
+                                    </div>
+                                    <span class="story-name">Gemini AI</span>
+                                </div>
+                            </div>
+
+                            <!-- Post 1 -->
+                            <div class="post-card">
+                                <div class="post-author">
+                                    <div class="post-author-avatar">湊</div>
+                                    <div class="post-author-info">
+                                        <h4>湊 雄輔 (Minato)</h4>
+                                        <span>2 hours ago</span>
+                                    </div>
+                                </div>
+                                <p class="post-text">Beautiful weather today! Perfect time to code some awesome Spring Boot features. ☀️💻</p>
+                                <div class="post-image">
+                                    <i class="fa-solid fa-code post-image-placeholder"></i>
+                                </div>
+                                <div class="post-actions">
+                                    <span class="post-action-btn" id="simLikeBtn"><i class="fa-regular fa-heart"></i> Like</span>
+                                    <span class="post-action-btn"><i class="fa-regular fa-comment"></i> Comment</span>
+                                    <span class="post-action-btn"><i class="fa-solid fa-share"></i> Share</span>
+                                </div>
+                            </div>
+
+                            <!-- Post 2 -->
+                            <div class="post-card">
+                                <div class="post-author">
+                                    <div class="post-author-avatar" style="background:#2563eb;">朝</div>
+                                    <div class="post-author-info">
+                                        <h4>朝香 あゆみ (Asaka)</h4>
+                                        <span>5 hours ago</span>
+                                    </div>
+                                </div>
+                                <p class="post-text">Check out the new marketplace listings! Lots of cool tech stuff sold here. 🛍️</p>
+                                <div class="post-actions">
+                                    <span class="post-action-btn"><i class="fa-regular fa-heart"></i> Like</span>
+                                    <span class="post-action-btn" id="simCommentBtn"><i class="fa-regular fa-comment"></i> Comment</span>
+                                    <span class="post-action-btn"><i class="fa-solid fa-share"></i> Share</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Navigation simulation -->
+                        <div class="app-tabs">
+                            <div class="app-tab-item active"><i class="fa-solid fa-house"></i><span>Home</span></div>
+                            <div class="app-tab-item"><i class="fa-solid fa-users"></i><span>Friends</span></div>
+                            <div class="app-tab-item"><i class="fa-solid fa-message"></i><span>Chat</span></div>
+                            <div class="app-tab-item"><i class="fa-solid fa-store"></i><span>Market</span></div>
+                            <div class="app-tab-item"><i class="fa-solid fa-chart-simple"></i><span>Dashboard</span></div>
+                        </div>
+                    </div>
+
+                    <!-- SCENE 4: Live Stream Mockup -->
+                    <div class="app-scene scene-live" id="scene-live">
+                        <div class="live-video-sim">
+                            <!-- Visualizer canvas to represent real stream feed -->
+                            <canvas class="live-sim-canvas" id="liveSimCanvas"></canvas>
+                            
+                            <!-- Heart rise canvas -->
+                            <div class="floating-emoji-container" id="liveFloatingEmojis"></div>
+
+                            <div class="live-overlay-content">
+                                <div class="live-badge-row">
+                                    <span class="live-badge-red">LIVE</span>
+                                    <span class="live-viewers-count"><i class="fa-solid fa-eye"></i> <span id="simViewerCount">142</span></span>
+                                </div>
+
+                                <div class="live-chat-panel" id="liveChatPanel">
+                                    <!-- Populated dynamically via JS -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="live-input-area">
+                            <input type="text" placeholder="Comment live..." disabled>
+                            <i class="fa-regular fa-heart" style="font-size:18px; color:#ef4444;"></i>
+                        </div>
+                    </div>
+
+                    <!-- SCENE 5: Chat / Messenger Simulation -->
+                    <div class="app-scene scene-chat" id="scene-chat">
+                        <div class="app-header">
+                            <span class="app-header-title">Chats</span>
+                            <div class="app-header-icons">
+                                <i class="fa-solid fa-circle-plus"></i>
+                            </div>
+                        </div>
+
+                        <div class="chat-area">
+                            <div class="chat-top-bar">
+                                <div class="chat-user-info">
+                                    <div class="chat-user-avatar" id="simChatAvatar">G</div>
+                                    <div class="chat-user-details">
+                                        <h4 id="simChatName">Gemini AI</h4>
+                                        <span id="simChatStatus">AI chatbot online</span>
+                                    </div>
+                                </div>
+                                <div class="app-header-icons" style="font-size:14px; gap:16px;">
+                                    <i class="fa-solid fa-phone" id="simVoiceCallIcon"></i>
+                                    <i class="fa-solid fa-video" id="simVideoCallIcon"></i>
+                                </div>
+                            </div>
+
+                            <div class="chat-messages" id="chatMessages">
+                                <!-- Preloaded messages -->
+                                <div class="chat-bubble received">Hello, I am Gemini AI! How can I assist you with Y-ChatApp today?</div>
+                            </div>
+
+                            <div class="chat-bottom-input">
+                                <i class="fa-solid fa-paperclip chat-attach-btn" id="simAttachIcon"></i>
+                                <i class="fa-regular fa-face-smile chat-emoji-btn" id="simEmojiIcon"></i>
+                                <input type="text" id="chatInputField" placeholder="Type a message..." disabled>
+                                <button class="chat-send-btn" id="simSendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+
+                                <!-- Emoji picker overlay mockup -->
+                                <div class="sim-emoji-picker" id="simEmojiPicker">
+                                    <div class="sim-emoji-grid">
+                                        <span class="sim-emoji-item">😊</span>
+                                        <span class="sim-emoji-item">🧙</span>
+                                        <span class="sim-emoji-item">🐱</span>
+                                        <span class="sim-emoji-item" id="simHeartEmoji">❤️</span>
+                                        <span class="sim-emoji-item">🍕</span>
+                                        <span class="sim-emoji-item">👋</span>
+                                        <span class="sim-emoji-item">✨</span>
+                                        <span class="sim-emoji-item">🔥</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bottom tabs -->
+                        <div class="app-tabs">
+                            <div class="app-tab-item"><i class="fa-solid fa-house"></i><span>Home</span></div>
+                            <div class="app-tab-item"><i class="fa-solid fa-users"></i><span>Friends</span></div>
+                            <div class="app-tab-item active"><i class="fa-solid fa-message"></i><span>Chat</span></div>
+                            <div class="app-tab-item"><i class="fa-solid fa-store"></i><span>Market</span></div>
+                            <div class="app-tab-item"><i class="fa-solid fa-chart-simple"></i><span>Dashboard</span></div>
+                        </div>
+                    </div>
+
+                    <!-- SCENE 6: Video Call Mockup -->
+                    <div class="app-scene scene-call" id="scene-call">
+                        <!-- Ringing overlay -->
+                        <div class="call-ringing-panel" id="callRingingPanel">
+                            <div class="call-ringing-avatar">
+                                <div class="ringing-pulsing-rings"></div>
+                                <div class="ringing-pulsing-rings"></div>
+                                湊
+                            </div>
+                            <h3 class="call-ringing-name">湊 雄輔 (Minato)</h3>
+                            <span class="call-ringing-status">Incoming Video Call...</span>
+                            
+                            <div class="call-ringing-actions">
+                                <button class="call-ringing-btn decline"><i class="fa-solid fa-phone-slash"></i></button>
+                                <button class="call-ringing-btn accept" id="simAcceptCallBtn"><i class="fa-solid fa-phone"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Active call panel -->
+                        <div class="call-connected-panel" id="callConnectedPanel">
+                            <div class="call-remote-video">
+                                <canvas class="remote-video-sim-canvas" id="remoteCallCanvas"></canvas>
+                                <div class="call-voice-waves">
+                                    <div class="call-voice-wave-bar"></div>
+                                    <div class="call-voice-wave-bar" style="animation-delay:0.2s"></div>
+                                    <div class="call-voice-wave-bar" style="animation-delay:0.4s"></div>
+                                    <div class="call-voice-wave-bar" style="animation-delay:0.1s"></div>
+                                    <div class="call-voice-wave-bar" style="animation-delay:0.3s"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="call-local-video">
+                                <canvas class="local-video-sim-canvas" id="localCallCanvas"></canvas>
+                            </div>
+
+                            <div class="call-connected-controls">
+                                <div class="call-active-btn" id="simCallMicBtn"><i class="fa-solid fa-microphone"></i></div>
+                                <div class="call-active-btn" id="simCallCamBtn"><i class="fa-solid fa-video"></i></div>
+                                <div class="call-active-btn decline"><i class="fa-solid fa-phone-slash"></i></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SCENE 7: Marketplace Screen -->
+                    <div class="app-scene scene-market" id="scene-market">
+                        <div class="app-header">
+                            <span class="app-header-title">Marketplace</span>
+                            <div class="app-header-icons">
+                                <i class="fa-solid fa-circle-plus"></i>
+                                <i class="fa-solid fa-tag"></i>
+                            </div>
+                        </div>
+
+                        <div class="market-scroll">
+                            <div class="market-grid">
+                                <div class="market-card">
+                                    <div class="market-img"><i class="fa-solid fa-laptop"></i></div>
+                                    <div class="market-info">
+                                        <span class="market-price">¥85,000</span>
+                                        <span class="market-title">MacBook Air M1</span>
+                                    </div>
+                                </div>
+                                <div class="market-card">
+                                    <div class="market-img" style="background:linear-gradient(135deg,#fed7aa,#fde047);"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                                    <div class="market-info">
+                                        <span class="market-price">¥45,000</span>
+                                        <span class="market-title">iPhone 12 Pro</span>
+                                    </div>
+                                </div>
+                                <div class="market-card">
+                                    <div class="market-img" style="background:linear-gradient(135deg,#a7f3d0,#6ee7b7);"><i class="fa-solid fa-headphones"></i></div>
+                                    <div class="market-info">
+                                        <span class="market-price">¥12,000</span>
+                                        <span class="market-title">Sony WH-1000XM4</span>
+                                    </div>
+                                </div>
+                                <div class="market-card">
+                                    <div class="market-img" style="background:linear-gradient(135deg,#fbcfe8,#f9a8d4);"><i class="fa-solid fa-gamepad"></i></div>
+                                    <div class="market-info">
+                                        <span class="market-price">¥38,000</span>
+                                        <span class="market-title">Nintendo Switch</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="app-tabs">
+                            <div class="app-tab-item"><i class="fa-solid fa-house"></i><span>Home</span></div>
+                            <div class="app-tab-item"><i class="fa-solid fa-users"></i><span>Friends</span></div>
+                            <div class="app-tab-item"><i class="fa-solid fa-message"></i><span>Chat</span></div>
+                            <div class="app-tab-item active"><i class="fa-solid fa-store"></i><span>Market</span></div>
+                            <div class="app-tab-item"><i class="fa-solid fa-chart-simple"></i><span>Dashboard</span></div>
+                        </div>
+                    </div>
+
+                    <!-- SCENE 8: Dashboard Screen -->
+                    <div class="app-scene scene-dashboard" id="scene-dashboard">
+                        <div class="app-header">
+                            <span class="app-header-title">AI Dashboard</span>
+                            <div class="app-header-icons">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-scroll">
+                            <div class="dashboard-card">
+                                <h3>Weekly Messaging Activity</h3>
+                                <div class="chart-container">
+                                    <svg class="chart-svg" id="dashboardChartSvg"></svg>
+                                </div>
+                            </div>
+                            <div class="dashboard-card">
+                                <h3>Gemini AI Analytics</h3>
+                                <p style="font-size:9.5px; color:#4b5563; line-height:1.4;">
+                                    Based on active conversations: Chat volume increased by <b>24%</b> this week. Key topics include <i>Java Programming</i>, <i>Spring Boot Setup</i>, and <i>WebRTC Config</i>.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="app-tabs">
+                            <div class="app-tab-item"><i class="fa-solid fa-house"></i><span>Home</span></div>
+                            <div class="app-tab-item"><i class="fa-solid fa-users"></i><span>Friends</span></div>
+                            <div class="app-tab-item"><i class="fa-solid fa-message"></i><span>Chat</span></div>
+                            <div class="app-tab-item"><i class="fa-solid fa-store"></i><span>Market</span></div>
+                            <div class="app-tab-item active"><i class="fa-solid fa-chart-simple"></i><span>Dashboard</span></div>
+                        </div>
+                    </div>
+
+                    <!-- SCENE 9: Outro Branding -->
+                    <div class="app-scene scene-outro" id="scene-outro">
+                        <div class="outro-logo"><i class="fa-solid fa-comments"></i></div>
+                        <h2 class="outro-title">Y-ChatApp</h2>
+                        <p class="outro-tagline">Real-Time Messaging, Calling, and Social Networking Redefined</p>
+                        
+                        <div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px; margin-bottom:20px;">
+                            <div class="outro-bullet"><i class="fa-solid fa-circle-check"></i> Real-time Chat (WebSockets)</div>
+                            <div class="outro-bullet"><i class="fa-solid fa-circle-check"></i> WebRTC Voice & Video Calling</div>
+                            <div class="outro-bullet"><i class="fa-solid fa-circle-check"></i> Integrated Gemini AI Chatbot</div>
+                            <div class="outro-bullet"><i class="fa-solid fa-circle-check"></i> Stories & Live Broadcasts</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Subtitles and Narrator Panel -->
+        <div class="narrator-column">
+            
+            <!-- Bilingual Subtitles Card -->
+            <div class="narrator-card">
+                <span class="scene-badge" id="narratorSceneBadge">Scene 1: Splash</span>
+                
+                <h2 class="caption-bengali" id="subtitleBengali">
+                    ওয়াই-চ্যাটঅ্যাপ প্রোমো ট্যুরে আপনাকে স্বাগতম। এটি একটি সম্পূর্ণ সামাজিক চ্যাট এবং কলিং অ্যাপ্লিকেশন।
+                </h2>
+                <p class="caption-english" id="subtitleEnglish">
+                    Welcome to the Y-ChatApp Promo Tour. This is a fully featured social chat and calling application.
+                </p>
+            </div>
+
+            <!-- Technology / Features Showcase Card -->
+            <div class="narrator-card" style="min-height: 150px; justify-content: flex-start; padding-top: 25px;">
+                <h3 style="font-family:'Outfit'; font-size:18px; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px;">
+                    Active System Stack
+                </h3>
+                <p id="featureTechDesc" style="font-size:14px; color:#cbd5e1; line-height:1.5;">
+                    Simulated application running on embedded Jakarta Servlet, WebSocket server, and WebRTC streaming protocols.
+                </p>
+                <div class="tech-tags" id="techTagsContainer">
+                    <span class="tech-tag">Java Servlet</span>
+                    <span class="tech-tag">WebSocket</span>
+                    <span class="tech-tag">WebRTC</span>
+                    <span class="tech-tag">Jakarta JSP</span>
+                    <span class="tech-tag">Gemini API</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Bottom Controls Overlay -->
+    <div class="controls-bar">
+        <div class="timeline-container">
+            <span class="time-label" id="timeCurrent">0:00</span>
+            <input type="range" class="progress-slider" id="progressSlider" min="0" max="800" value="0">
+            <span class="time-label" id="timeTotal">1:20</span>
+        </div>
+
+        <div class="control-buttons">
+            <!-- Left Group: Media buttons -->
+            <div class="media-btn-group">
+                <button class="media-btn" id="btnRestart" title="Restart"><i class="fa-solid fa-backward-step"></i></button>
+                <button class="media-btn play-btn" id="btnPlayPause" title="Play"><i class="fa-solid fa-play"></i></button>
+                <button class="media-btn audio-btn" id="btnAudioToggle" title="Toggle Synth Music"><i class="fa-solid fa-volume-xmark"></i></button>
+            </div>
+
+            <!-- Center/Right: Speed controls -->
+            <div class="config-btn-group">
+                <button class="speed-btn active" data-speed="1">1.0x</button>
+                <button class="speed-btn" data-speed="1.5">1.5x</button>
+                <button class="speed-btn" data-speed="2">2.0x</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions Popup Modal -->
+    <div class="instructions-modal" id="instructionsModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="toggleInstructions(false)">&times;</button>
+            <h3 class="modal-title">How to Record this Promo Video</h3>
+            
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-text">
+                        <h4>Configure the Settings</h4>
+                        <p>Turn on the synthetic background music using the audio button at the bottom. Adjust playback speed if needed.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-text">
+                        <h4>Open Screen Recorder</h4>
+                        <p>On Windows, press <b>Win + G</b> to open the Game Bar, or launch <b>OBS Studio</b> to record your screen.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-text">
+                        <h4>Capture Window</h4>
+                        <p>Set the capture source to record this browser window, select the area containing the virtual phone, and click record.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-text">
+                        <h4>Restart and Play</h4>
+                        <p>Click the Restart button on the controls bar to return to the beginning (0:00) and click Play to start the walkthrough. Let it run until 1:20.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="login-btn" onclick="toggleInstructions(false)" style="width:100%; margin-top:10px;">Got It!</button>
+        </div>
+    </div>
+
+    <!-- ==============================================================
+         SIMULATION CONTROLLER JAVASCRIPT
+         ============================================================== -->
+    <script>
+        // --- 1. Sound Synthesizer (Web Audio API) ---
+        let audioCtx = null;
+        let isMusicPlaying = false;
+        let melodyInterval = null;
+        let musicGain = null;
+
+        function initSynth() {
+            if (audioCtx) return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            musicGain = audioCtx.createGain();
+            musicGain.gain.setValueAtTime(0.08, audioCtx.currentTime); // Gentle volume
+            musicGain.connect(audioCtx.destination);
+        }
+
+        function playTone(freq, duration, type = 'sine', delay = 0) {
+            if (!audioCtx || audioCtx.state === 'suspended') return;
+            
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+            
+            gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime + delay);
+            gainNode.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + delay + 0.05);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + duration);
+            
+            osc.connect(gainNode);
+            gainNode.connect(musicGain);
+            
+            osc.start(audioCtx.currentTime + delay);
+            osc.stop(audioCtx.currentTime + delay + duration);
+        }
+
+        // Chord progression: Cmaj7 -> Am9 -> Fmaj7 -> G11
+        const chordProgressions = [
+            [261.63, 329.63, 392.00, 493.88], // Cmaj7 (C4, E4, G4, B4)
+            [220.00, 261.63, 329.63, 392.00, 440.00], // Am9 (A3, C4, E4, G4, A4)
+            [174.61, 261.63, 329.63, 349.23], // Fmaj7 (F3, C4, E4, F4)
+            [196.00, 293.66, 349.23, 440.00]  // G11 (G3, D4, F4, A4)
+        ];
+
+        let chordIndex = 0;
+        function playBackgroundLoop() {
+            if (!isMusicPlaying) return;
+            initSynth();
+            
+            // Play Chord Pad (soft triangle wave)
+            const chords = chordProgressions[chordIndex];
+            chords.forEach((freq) => {
+                playTone(freq, 2.8, 'triangle');
+            });
+            
+            // Play a soft high arpeggio melody
+            const melodyNotes = [chords[2] * 2, chords[3] * 2, chords[1] * 2, chords[0] * 2];
+            melodyNotes.forEach((freq, idx) => {
+                playTone(freq, 0.4, 'sine', idx * 0.7);
+            });
+            
+            chordIndex = (chordIndex + 1) % chordProgressions.length;
+            melodyInterval = setTimeout(playBackgroundLoop, 3000);
+        }
+
+        function toggleMusic() {
+            const btn = document.getElementById('btnAudioToggle');
+            if (isMusicPlaying) {
+                isMusicPlaying = false;
+                clearTimeout(melodyInterval);
+                btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+                btn.classList.remove('active');
+                if (audioCtx) audioCtx.suspend();
+            } else {
+                isMusicPlaying = true;
+                btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+                btn.classList.add('active');
+                initSynth();
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                playBackgroundLoop();
+            }
+        }
+
+
+        // --- 2. Live Stream Canvas Visualizer & WebRTC Calls Simulation ---
+        let liveCanvasInterval = null;
+        function startLiveCanvasSim() {
+            const canvas = document.getElementById('liveSimCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let angle = 0;
+
+            function draw() {
+                if (document.getElementById('scene-live').style.display !== 'flex') return;
+                
+                // Draw cool neon linear gradient background
+                let grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                grad.addColorStop(0, 'hsl(' + angle + ', 70%, 15%)');
+                grad.addColorStop(1, 'hsl(' + ((angle + 120) % 360) + ', 70%, 5%)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Audio wave visualization lines
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                for (let x = 0; x < canvas.width; x += 10) {
+                    let y = (canvas.height * 0.6) + Math.sin(x * 0.02 + angle * 0.08) * 25;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+
+                // Live Camera simulator visual details
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.font = '12px system-ui, sans-serif';
+                ctx.fillText('朝香 あゆみ (Asaka) - Live Broadcast', 20, 40);
+
+                angle += 2;
+                requestAnimationFrame(draw);
+            }
+            canvas.width = 300;
+            canvas.height = 400;
+            requestAnimationFrame(draw);
+        }
+
+        // Active video call WebRTC canvases
+        let callCanvasesInterval = null;
+        function startCallCanvasesSim() {
+            const remoteCanvas = document.getElementById('remoteCallCanvas');
+            const localCanvas = document.getElementById('localCallCanvas');
+            if (!remoteCanvas || !localCanvas) return;
+            
+            const rCtx = remoteCanvas.getContext('2d');
+            const lCtx = localCanvas.getContext('2d');
+            let angle = 0;
+
+            function drawCall() {
+                if (document.getElementById('callConnectedPanel').style.display !== 'flex') return;
+
+                // Remote user view (Minato coding)
+                let rGrad = rCtx.createLinearGradient(0, 0, remoteCanvas.width, remoteCanvas.height);
+                rGrad.addColorStop(0, '#1e1b4b');
+                rGrad.addColorStop(1, '#0f172a');
+                rCtx.fillStyle = rGrad;
+                rCtx.fillRect(0, 0, remoteCanvas.width, remoteCanvas.height);
+
+                // Draw pulsing circle representing remote user
+                rCtx.fillStyle = '#9333ea';
+                rCtx.beginPath();
+                rCtx.arc(remoteCanvas.width / 2, remoteCanvas.height / 2, 40 + Math.sin(angle * 0.1) * 8, 0, Math.PI * 2);
+                rCtx.fill();
+                rCtx.fillStyle = '#ffffff';
+                rCtx.font = 'bold 24px system-ui';
+                rCtx.textAlign = 'center';
+                rCtx.textBaseline = 'middle';
+                rCtx.fillText('湊', remoteCanvas.width / 2, remoteCanvas.height / 2);
+
+                // Local user view
+                let lGrad = lCtx.createLinearGradient(0, 0, localCanvas.width, localCanvas.height);
+                lGrad.addColorStop(0, '#0284c7');
+                lGrad.addColorStop(1, '#0369a1');
+                lCtx.fillStyle = lGrad;
+                lCtx.fillRect(0, 0, localCanvas.width, localCanvas.height);
+
+                lCtx.fillStyle = '#ffffff';
+                lCtx.beginPath();
+                lCtx.arc(localCanvas.width / 2, localCanvas.height / 2, 18, 0, Math.PI * 2);
+                lCtx.fill();
+                lCtx.fillStyle = '#0284c7';
+                lCtx.font = 'bold 12px system-ui';
+                lCtx.fillText('Me', localCanvas.width / 2, localCanvas.height / 2);
+
+                angle += 1;
+                requestAnimationFrame(drawCall);
+            }
+            remoteCanvas.width = 300;
+            remoteCanvas.height = 400;
+            localCanvas.width = 70;
+            localCanvas.height = 100;
+            requestAnimationFrame(drawCall);
+        }
+
+
+        // --- 3. Scene Timeline Controller ---
+        let timelineIndex = 0;
+        let isPlaying = false;
+        let timer = null;
+        let playbackSpeed = 1;
+
+        // Timeline values correspond to: 0.1s increments (max = 800)
+        // Duration: 80 seconds
+        const scenes = [
+            {
+                start: 0,
+                end: 50,
+                id: 'scene-splash',
+                badge: 'Scene 1: Launch Splash',
+                bengali: 'Y-ChatApp-এ আপনাকে স্বাগতম! এটি একটি প্রিমিয়াম সোশ্যাল নেটওয়ার্কিং ও রিয়েল-টাইম কলিং প্ল্যাটফর্ম।',
+                english: 'Welcome to Y-ChatApp! A premium social networking, real-time messaging, and interactive calling platform.',
+                tech: ['Jakarta Servlet API', 'Embedded Tomcat', 'HTML5 & Vanilla CSS'],
+                setup: () => {
+                    hideAllScenes();
+                    document.getElementById('scene-splash').classList.add('active');
+                }
+            },
+            {
+                start: 50,
+                end: 130,
+                id: 'scene-login',
+                badge: 'Scene 2: Security & Log In',
+                bengali: 'প্রথমে, আমরা সুরক্ষিত BCrypt পাসওয়ার্ড হ্যাশিং সহ ব্যবহারকারীর অ্যাকাউন্টে লগইন প্রক্রিয়াটি দেখতে পাচ্ছি।',
+                english: 'First, let us log in securely. The app utilizes BCrypt password hashing protection for user accounts.',
+                tech: ['BCrypt Security', 'Servlet Session Control', 'Jakarta JSP forms'],
+                setup: () => {
+                    hideAllScenes();
+                    document.getElementById('scene-login').classList.add('active');
+                    // Reset fields
+                    document.getElementById('simEmail').value = '';
+                    document.getElementById('simPass').value = '';
+                    document.getElementById('simLoginBtn').style.background = 'linear-gradient(135deg, #7c3aed, #9333ea)';
+                },
+                animate: (t) => {
+                    // Type Email
+                    const emailInput = document.getElementById('simEmail');
+                    const emailText = 'minato@xxx.jp';
+                    const passInput = document.getElementById('simPass');
+                    const passText = '123456';
+                    
+                    const progress = t - 50; // 0 to 80
+                    
+                    // Virtual cursor movement
+                    const cursor = document.getElementById('virtualCursor');
+                    cursor.style.display = 'block';
+
+                    if (progress < 30) {
+                        // Move to email and type
+                        positionCursor(emailInput);
+                        const chars = Math.floor((progress / 30) * emailText.length);
+                        emailInput.value = emailText.substring(0, chars);
+                    } else if (progress >= 30 && progress < 60) {
+                        // Move to password and type
+                        positionCursor(passInput);
+                        const chars = Math.floor(((progress - 30) / 30) * passText.length);
+                        passInput.value = '•'.repeat(chars);
+                    } else if (progress >= 60 && progress < 72) {
+                        // Hover login button
+                        const loginBtn = document.getElementById('simLoginBtn');
+                        positionCursor(loginBtn);
+                    } else if (progress >= 72) {
+                        // Click login button
+                        const loginBtn = document.getElementById('simLoginBtn');
+                        positionCursor(loginBtn);
+                        cursor.classList.add('clicking');
+                        loginBtn.style.background = '#7e22ce'; // highlight click
+                    }
+                }
+            },
+            {
+                start: 130,
+                end: 260,
+                id: 'scene-feed',
+                badge: 'Scene 3: Social Feed',
+                bengali: 'লগইন করার পর, ব্যবহারকারী তাদের নিউজ ফিড দেখতে পারেন, পোস্ট স্ক্রোল করতে পারেন, লাইক ও কমেন্ট করতে পারেন।',
+                english: 'Upon logging in, users arrive at their social feed. They can scroll posts, view stories, like, and comment.',
+                tech: ['Jakarta JSTL', 'HikariCP Database Pool', 'CSS Flexbox Layout'],
+                setup: () => {
+                    hideAllScenes();
+                    document.getElementById('scene-feed').classList.add('active');
+                    document.getElementById('feedScroll').scrollTop = 0;
+                    document.getElementById('simLikeBtn').classList.remove('liked');
+                    document.getElementById('simLikeBtn').innerHTML = '<i class="fa-regular fa-heart"></i> Like';
+                },
+                animate: (t) => {
+                    const progress = t - 130; // 0 to 130
+                    const scrollContainer = document.getElementById('feedScroll');
+                    const likeBtn = document.getElementById('simLikeBtn');
+                    const cursor = document.getElementById('virtualCursor');
+                    cursor.style.display = 'block';
+
+                    if (progress < 50) {
+                        // Scroll down feed
+                        scrollContainer.scrollTop = (progress / 50) * 120;
+                        cursor.style.left = '50%';
+                        cursor.style.top = '60%';
+                    } else if (progress >= 50 && progress < 90) {
+                        // Hover over Like button
+                        positionCursor(likeBtn);
+                    } else if (progress >= 90 && progress < 105) {
+                        // Click Like button
+                        positionCursor(likeBtn);
+                        cursor.classList.add('clicking');
+                        likeBtn.classList.add('liked');
+                        likeBtn.innerHTML = '<i class="fa-solid fa-heart"></i> Liked';
+                    } else if (progress >= 105) {
+                        // Release click and hover to stories
+                        cursor.classList.remove('clicking');
+                        const story = document.querySelector('.story-item');
+                        positionCursor(story);
+                    }
+                }
+            },
+            {
+                start: 260,
+                end: 380,
+                id: 'scene-live',
+                badge: 'Scene 4: WebRTC Live Stream',
+                bengali: 'রিয়েল-টাইম ওয়েবআরটিসি সংযোগের মাধ্যমে ব্যবহারকারীরা একে অপরের লাইভ ব্রডকাস্ট দেখতে পারেন এবং রিঅ্যাকশন দিতে পারেন।',
+                english: 'Users can join WebRTC-enabled live broadcasts, communicate in real-time, and trigger animated reactions.',
+                tech: ['WebRTC Media Server', 'WebSockets Signaling', 'HTML5 AudioContext'],
+                setup: () => {
+                    hideAllScenes();
+                    document.getElementById('scene-live').classList.add('active');
+                    document.getElementById('liveChatPanel').innerHTML = '';
+                    startLiveCanvasSim();
+                    
+                    // Add initial live chat messages
+                    setTimeout(() => addLiveChatMessage('朝香 あゆみ', 'Hey everyone! Welcome to my live stream!', true), 200);
+                    setTimeout(() => addLiveChatMessage('湊 雄輔', 'Wow, video quality is super smooth! 👏', false), 1500);
+                    setTimeout(() => addLiveChatMessage('菅原 拓真', 'WebRTC streaming in action! Awesome.', false), 3500);
+                },
+                animate: (t) => {
+                    const progress = t - 260; // 0 to 120
+                    const cursor = document.getElementById('virtualCursor');
+                    cursor.style.display = 'none'; // hide cursor for video watch
+
+                    // Simulate emoji reactions popping up
+                    if (progress % 20 === 0) {
+                        triggerFloatingHeart();
+                    }
+                    if (progress === 80) {
+                        addLiveChatMessage('朝香 あゆみ', 'Thanks for the hearts! ❤️', true);
+                    }
+                }
+            },
+            {
+                start: 380,
+                end: 530,
+                id: 'scene-chat',
+                badge: 'Scene 5: Real-Time Messenger',
+                bengali: 'অ্যাপ্লিকেশনটিতে রয়েছে একটি প্রিমিয়াম মেসেঞ্জার যেখানে Gemini AI চ্যাটবটের সাথে যুক্ত হয়ে ইনস্ট্যান্ট উত্তর পাওয়া যায়।',
+                english: 'A premium messenger connects you instantly. You can chat in real-time or get assistance from Gemini AI.',
+                tech: ['Jakarta WebSocket API', 'Google Gemini AI Integrator', 'Gson JSON Serializer'],
+                setup: () => {
+                    hideAllScenes();
+                    document.getElementById('scene-chat').classList.add('active');
+                    document.getElementById('chatMessages').innerHTML = `
+                        <div class="chat-bubble received">Hello, I am Gemini AI! How can I assist you with Y-ChatApp today?</div>
+                    `;
+                    document.getElementById('chatInputField').value = '';
+                    document.getElementById('simEmojiPicker').style.display = 'none';
+                },
+                animate: (t) => {
+                    const progress = t - 380; // 0 to 150
+                    const chatBox = document.getElementById('chatMessages');
+                    const inputField = document.getElementById('chatInputField');
+                    const sendBtn = document.getElementById('simSendBtn');
+                    const emojiIcon = document.getElementById('simEmojiIcon');
+                    const emojiPicker = document.getElementById('simEmojiPicker');
+                    const heartEmoji = document.getElementById('simHeartEmoji');
+                    const cursor = document.getElementById('virtualCursor');
+                    cursor.style.display = 'block';
+
+                    const messageText = 'Write a welcome post';
+
+                    if (progress < 40) {
+                        // Move to input field and type message
+                        positionCursor(inputField);
+                        const chars = Math.min(Math.floor((progress / 30) * messageText.length), messageText.length);
+                        inputField.value = messageText.substring(0, chars);
+                    } else if (progress >= 40 && progress < 60) {
+                        // Hover and click Send
+                        positionCursor(sendBtn);
+                        if (progress === 50) {
+                            cursor.classList.add('clicking');
+                            // Append user sent message
+                            appendChatMessage('Write a welcome post', 'sent');
+                            inputField.value = '';
+                        }
+                    } else if (progress >= 60 && progress < 100) {
+                        cursor.classList.remove('clicking');
+                        // Wait for Gemini reply animation
+                        positionCursor(chatBox);
+                        if (progress === 80 && chatBox.children.length === 2) {
+                            appendChatMessage('Welcome to Y-ChatApp! Connect and chat seamlessly with friends and AI! ✨', 'received');
+                        }
+                    } else if (progress >= 100 && progress < 115) {
+                        // Hover and click Emoji picker
+                        positionCursor(emojiIcon);
+                        if (progress === 110) {
+                            cursor.classList.add('clicking');
+                            emojiPicker.style.display = 'flex';
+                        }
+                    } else if (progress >= 115 && progress < 135) {
+                        cursor.classList.remove('clicking');
+                        // Hover and click heart emoji
+                        positionCursor(heartEmoji);
+                        if (progress === 125) {
+                            cursor.classList.add('clicking');
+                            inputField.value = '❤️';
+                        }
+                    } else if (progress >= 135) {
+                        cursor.classList.remove('clicking');
+                        emojiPicker.style.display = 'none';
+                        // Hover and click video call button to transition to next scene
+                        const videoCallIcon = document.getElementById('simVideoCallIcon');
+                        positionCursor(videoCallIcon);
+                    }
+                }
+            },
+            {
+                start: 530,
+                end: 680,
+                id: 'scene-call',
+                badge: 'Scene 6: WebRTC Call System',
+                bengali: 'এছাড়াও রয়েছে হাই-ডেফিনিশন ভয়েস এবং ভিডিও কলিং ফিচার, যা পিয়ার-টু-পিয়ার ওয়েবআরটিসি প্রযুক্তি ব্যবহার করে চলে।',
+                english: 'Enjoy crisp voice and video calling. The system uses secure peer-to-peer WebRTC connections.',
+                tech: ['WebRTC RTCPeerConnection', 'ICE Candidates Exchange', 'Voice Wave Synthesizer'],
+                setup: () => {
+                    hideAllScenes();
+                    document.getElementById('scene-call').classList.add('active');
+                    document.getElementById('callRingingPanel').style.display = 'flex';
+                    document.getElementById('callConnectedPanel').style.display = 'none';
+                },
+                animate: (t) => {
+                    const progress = t - 530; // 0 to 150
+                    const acceptBtn = document.getElementById('simAcceptCallBtn');
+                    const cursor = document.getElementById('virtualCursor');
+                    cursor.style.display = 'block';
+
+                    if (progress < 40) {
+                        // Let it ring, move cursor towards accept button
+                        positionCursor(acceptBtn);
+                    } else if (progress >= 40 && progress < 55) {
+                        // Click accept button
+                        positionCursor(acceptBtn);
+                        cursor.classList.add('clicking');
+                        if (progress === 50) {
+                            document.getElementById('callRingingPanel').style.display = 'none';
+                            document.getElementById('callConnectedPanel').style.display = 'flex';
+                            startCallCanvasesSim();
+                        }
+                    } else if (progress >= 55) {
+                        // Call active. Hide cursor, let it run.
+                        cursor.classList.remove('clicking');
+                        cursor.style.display = 'none';
+                    }
+                }
+            },
+            {
+                start: 680,
+                end: 750,
+                id: 'scene-dashboard', // Transition through Marketplace and AI Dashboard
+                badge: 'Scene 7: Services & Analytics',
+                bengali: 'এর সাথে রয়েছে কেনাবেচার মার্কেটপ্লেস এবং অ্যাডভান্সড এআই অ্যাক্টিভিটি অ্যানালিটিক্স ড্যাশবোর্ড।',
+                english: 'The app also integrates an online product marketplace and a powerful AI activity analytics dashboard.',
+                tech: ['Embedded SQL Queries', 'SVG Data Visualization', 'Spring MVC Architecture'],
+                setup: () => {
+                    hideAllScenes();
+                    // Let's toggle between Marketplace (680-715) and Dashboard (715-750)
+                    document.getElementById('scene-market').classList.add('active');
+                    drawDashboardChart();
+                },
+                animate: (t) => {
+                    const progress = t - 680;
+                    if (progress >= 35) {
+                        // Switch to Dashboard
+                        document.getElementById('scene-market').classList.remove('active');
+                        document.getElementById('scene-dashboard').classList.add('active');
+                    }
+                }
+            },
+            {
+                start: 750,
+                end: 800,
+                id: 'scene-outro',
+                badge: 'Scene 8: Connect Today',
+                bengali: 'আজই ওয়াই-চ্যাটঅ্যাপে যোগ দিন এবং যোগাযোগের একটি সম্পূর্ণ নতুন প্রিমিয়াম অভিজ্ঞতা উপভোগ করুন। ধন্যবাদ!',
+                english: 'Join Y-ChatApp today for a modern, fast, and feature-rich communication experience. Thank you!',
+                tech: ['Y-ChatApp v1.0.0', 'Designed for Excellence', 'Dual-Language Subtitles'],
+                setup: () => {
+                    hideAllScenes();
+                    document.getElementById('scene-outro').classList.add('active');
+                },
+                animate: () => {
+                    const cursor = document.getElementById('virtualCursor');
+                    cursor.style.display = 'none';
+                }
+            }
+        ];
+
+        function hideAllScenes() {
+            document.querySelectorAll('.app-scene').forEach((scene) => {
+                scene.classList.remove('active');
+            });
+        }
+
+        // Helper to position cursor over an element
+        function positionCursor(element) {
+            const cursor = document.getElementById('virtualCursor');
+            if (!element) return;
+            
+            // Get element position relative to phone-screen
+            const screen = document.getElementById('phoneScreen');
+            const sRect = screen.getBoundingClientRect();
+            const eRect = element.getBoundingClientRect();
+            
+            const x = (eRect.left - sRect.left) + (eRect.width / 2);
+            const y = (eRect.top - sRect.top) + (eRect.height / 2);
+            
+            cursor.style.left = x + 'px';
+            cursor.style.top = y + 'px';
+        }
+
+        // Helper to append message in Messenger mockup
+        function appendChatMessage(text, sender) {
+            const container = document.getElementById('chatMessages');
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${sender}`;
+            bubble.innerText = text;
+            container.appendChild(bubble);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Live Chat Message Simulator
+        function addLiveChatMessage(name, text, isStreamer) {
+            const panel = document.getElementById('liveChatPanel');
+            if (!panel) return;
+            const bubble = document.createElement('div');
+            bubble.className = 'live-chat-msg';
+            bubble.innerHTML = `
+                <div class="live-chat-avatar" style="${isStreamer ? 'background:#ef4444;' : ''}">${name.charAt(0)}</div>
+                <div class="live-chat-bubble">
+                    <b>${name}</b>
+                    <p>${text}</p>
+                </div>
+            `;
+            panel.appendChild(bubble);
+            panel.scrollTop = panel.scrollHeight;
+        }
+
+        // Heart Floaters Simulator
+        function triggerFloatingHeart() {
+            const container = document.getElementById('liveFloatingEmojis');
+            if (!container) return;
+            const el = document.createElement('div');
+            el.innerText = Math.random() > 0.5 ? '❤️' : '👍';
+            el.style.cssText = 'position:absolute; bottom:0; left:30px; font-size:16px; opacity:1; transition:all 1.2s ease-out; pointer-events:none;';
+            container.appendChild(el);
+
+            setTimeout(() => {
+                el.style.transform = `translate(${Math.random() * 40 - 20}px, -120px) scale(${Math.random() * 0.8 + 0.8})`;
+                el.style.opacity = '0';
+            }, 50);
+
+            setTimeout(() => el.remove(), 1300);
+        }
+
+        // SVG Chart Drawer for Dashboard
+        function drawDashboardChart() {
+            const svg = document.getElementById('dashboardChartSvg');
+            if (!svg) return;
+            svg.innerHTML = ''; // Clear
+            
+            const width = 270;
+            const height = 90;
+            
+            // Draw grid lines
+            for (let i = 0; i <= 3; i++) {
+                const y = 10 + (height - 20) * (i / 3);
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', '10');
+                line.setAttribute('y1', y);
+                line.setAttribute('x2', width - 10);
+                line.setAttribute('y2', y);
+                line.setAttribute('stroke', '#f3f4f6');
+                line.setAttribute('stroke-width', '1');
+                svg.appendChild(line);
+            }
+
+            // Chart data
+            const points = [
+                {x: 20, y: 70},
+                {x: 60, y: 55},
+                {x: 100, y: 65},
+                {x: 140, y: 40},
+                {x: 180, y: 30},
+                {x: 220, y: 45},
+                {x: 250, y: 15}
+            ];
+
+            // Area path
+            let areaPathData = `M ${points[0].x} ${height - 10} `;
+            points.forEach((p) => { areaPathData += `L ${p.x} ${p.y} `; });
+            areaPathData += `L ${points[points.length - 1].x} ${height - 10} Z`;
+
+            const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            area.setAttribute('d', areaPathData);
+            area.setAttribute('fill', 'rgba(147, 51, 234, 0.15)');
+            svg.appendChild(area);
+
+            // Line path
+            let linePathData = `M ${points[0].x} ${points[0].y} `;
+            for (let i = 1; i < points.length; i++) {
+                linePathData += `L ${points[i].x} ${points[i].y} `;
+            }
+            
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            line.setAttribute('d', linePathData);
+            line.setAttribute('fill', 'none');
+            line.setAttribute('stroke', '#9333ea');
+            line.setAttribute('stroke-width', '2.5');
+            svg.appendChild(line);
+
+            // Dots
+            points.forEach((p) => {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', p.x);
+                circle.setAttribute('cy', p.y);
+                circle.setAttribute('r', '4');
+                circle.setAttribute('fill', 'white');
+                circle.setAttribute('stroke', '#9333ea');
+                circle.setAttribute('stroke-width', '1.5');
+                svg.appendChild(circle);
+            });
+        }
+
+
+        // --- 4. Main Player Loop & User Interactivity ---
+        function updatePlayerState() {
+            const currentScene = scenes.find(s => timelineIndex >= s.start && timelineIndex < s.end);
+            
+            if (currentScene) {
+                // Update badge, subtitles, and tech stacks
+                document.getElementById('narratorSceneBadge').innerText = currentScene.badge;
+                document.getElementById('subtitleBengali').innerText = currentScene.bengali;
+                document.getElementById('subtitleEnglish').innerText = currentScene.english;
+                
+                // Tech tags
+                const tagsContainer = document.getElementById('techTagsContainer');
+                tagsContainer.innerHTML = '';
+                currentScene.tech.forEach((t) => {
+                    const span = document.createElement('span');
+                    span.className = 'tech-tag';
+                    span.innerText = t;
+                    tagsContainer.appendChild(span);
+                });
+
+                // Update system description
+                document.getElementById('featureTechDesc').innerText = `Primary stack: ${currentScene.tech.join(', ')}.`;
+
+                // Set up scene if transitioning or initializing
+                if (window.activeSceneId !== currentScene.id) {
+                    window.activeSceneId = currentScene.id;
+                    currentScene.setup();
+                }
+
+                // Call animate callback for inside scene cursors/fields
+                if (currentScene.animate) {
+                    currentScene.animate(timelineIndex);
+                }
+            }
+
+            // Update range slider & timers
+            document.getElementById('progressSlider').value = timelineIndex;
+            
+            // Format time display
+            const seconds = Math.floor(timelineIndex / 10);
+            const deciseconds = timelineIndex % 10;
+            const displayMin = Math.floor(seconds / 60);
+            const displaySec = String(seconds % 60).padStart(2, '0');
+            document.getElementById('timeCurrent').innerText = `${displayMin}:${displaySec}.${deciseconds}`;
+        }
+
+        function play() {
+            if (isPlaying) return;
+            isPlaying = true;
+            document.getElementById('btnPlayPause').innerHTML = '<i class="fa-solid fa-pause"></i>';
+            
+            // Web Audio check
+            if (isMusicPlaying && audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            timer = setInterval(() => {
+                timelineIndex += 1;
+                if (timelineIndex > 800) {
+                    timelineIndex = 0; // Loop or stop
+                    pause();
+                }
+                updatePlayerState();
+            }, 100 / playbackSpeed);
+        }
+
+        function pause() {
+            if (!isPlaying) return;
+            isPlaying = false;
+            document.getElementById('btnPlayPause').innerHTML = '<i class="fa-solid fa-play"></i>';
+            clearInterval(timer);
+        }
+
+        function handlePlayPause() {
+            if (isPlaying) {
+                pause();
+            } else {
+                play();
+            }
+        }
+
+        function handleRestart() {
+            pause();
+            timelineIndex = 0;
+            window.activeSceneId = null;
+            updatePlayerState();
+            play();
+        }
+
+        function handleSliderChange(e) {
+            pause();
+            timelineIndex = parseInt(e.target.value);
+            window.activeSceneId = null;
+            updatePlayerState();
+        }
+
+        // Speed selections
+        document.querySelectorAll('.speed-btn').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                playbackSpeed = parseFloat(btn.dataset.speed);
+                
+                // Recalculate timer if playing
+                if (isPlaying) {
+                    pause();
+                    play();
+                }
+            });
+        });
+
+        // Event Listeners
+        document.getElementById('btnPlayPause').addEventListener('click', handlePlayPause);
+        document.getElementById('btnRestart').addEventListener('click', handleRestart);
+        document.getElementById('progressSlider').addEventListener('input', handleSliderChange);
+        document.getElementById('btnAudioToggle').addEventListener('click', toggleMusic);
+
+        // Recording Instructions modal toggle
+        function toggleInstructions(show) {
+            const modal = document.getElementById('instructionsModal');
+            if (show) {
+                modal.classList.add('active');
+            } else {
+                modal.classList.remove('active');
+            }
+        }
+
+        // Bootstrap the simulator
+        window.activeSceneId = null;
+        updatePlayerState();
+    </script>
+</body>
+</html>

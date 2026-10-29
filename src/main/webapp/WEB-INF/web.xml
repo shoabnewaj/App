@@ -7,6 +7,7 @@
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
+
   <error-page>
     <error-code>404</error-code>
     <location>/WEB-INF/jsp/error404.jsp</location>

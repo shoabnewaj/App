@@ -41,12 +41,203 @@ public class UserWebSocket {
             String receiver = parts[1];
             String content = parts.length > 2 ? parts[2] : "";
 
-            if ("LIVE_CHAT".equalsIgnoreCase(type)) {
-                broadcastToLiveStream(receiver, "LIVE_CHAT|" + sender + "|" + content);
+            if ("CHAT".equalsIgnoreCase(type)) {
+                int generatedId = 0;
+                String textToSave = content;
+                Integer replyToId = null;
+                String replyToText = null;
+
+                // Support JSON payload for quote replies
+                if (content.startsWith("{") && content.contains("\"text\":")) {
+                    try {
+                        com.google.gson.JsonObject obj = com.google.gson.JsonParser.parseString(content).getAsJsonObject();
+                        if (obj.has("text")) textToSave = obj.get("text").getAsString();
+                        if (obj.has("replyId") && !obj.get("replyId").isJsonNull()) replyToId = obj.get("replyId").getAsInt();
+                        if (obj.has("replyText") && !obj.get("replyText").isJsonNull()) replyToText = obj.get("replyText").getAsString();
+                    } catch (Exception ignored) {}
+                }
+
+                // 1. Persist chat message to database
+                try {
+                    generatedId = new ychatapp.model.dao.MessageDAO().saveMessageWithReply(sender, receiver, textToSave, replyToId, replyToText);
+                } catch (Exception ex) {
+                    logger.error("Failed to persist message from {} to {}: {}", sender, receiver, ex.getMessage());
+                }
+
+                // 2. Deliver message with ID in real-time
+                com.google.gson.JsonObject msgPayload = new com.google.gson.JsonObject();
+                msgPayload.addProperty("id", generatedId);
+                msgPayload.addProperty("sender", sender);
+                msgPayload.addProperty("receiver", receiver);
+                msgPayload.addProperty("message", textToSave);
+                msgPayload.addProperty("isRead", false);
+                msgPayload.addProperty("isEdited", false);
+                msgPayload.addProperty("isDeleted", false);
+                if (replyToId != null) msgPayload.addProperty("replyToId", replyToId);
+                if (replyToText != null) msgPayload.addProperty("replyToText", replyToText);
+
+                String payloadJson = msgPayload.toString();
+
+                boolean isReceiverOnline = clients.containsKey(receiver) && !clients.get(receiver).isEmpty();
+                sendMessageToUser(receiver, "CHAT|" + sender + "|" + payloadJson);
+                sendMessageToUser(sender, "CHAT_ACK|" + receiver + "|" + payloadJson);
+
+                final boolean isAiTarget = "Gemini AI".equalsIgnoreCase(receiver) || "gemini".equalsIgnoreCase(receiver);
+                final boolean hasAiTag = textToSave.trim().toLowerCase().startsWith("@gemini") || textToSave.trim().toLowerCase().startsWith("@ai");
+
+                // 3. If receiver is offline, record notification (skip for Gemini AI)
+                if (!isReceiverOnline && !isAiTarget) {
+                    try {
+                        String preview = textToSave.length() > 30 ? textToSave.substring(0, 30) + "..." : textToSave;
+                        new ychatapp.model.dao.NotificationDAO().addNotificationByUsername(receiver, sender + ": " + preview);
+                    } catch (Exception ex) {
+                        logger.error("Failed to record offline notification: {}", ex.getMessage());
+                    }
+                }
+
+                // 4. Handle Direct AI Assistant or @gemini invocation in chat
+                if (isAiTarget || hasAiTag) {
+                    final String rawText = textToSave;
+                    final int promptMsgId = generatedId;
+                    final String chatSender = sender;
+                    final String chatReceiver = receiver;
+
+                    ychatapp.model.bo.GeminiService.runAsync(() -> {
+                        try {
+                            // Send typing indicator from Gemini AI
+                            sendMessageToUser(chatSender, "TYPING|Gemini AI|typing");
+                            if (!isAiTarget && !chatReceiver.equalsIgnoreCase(chatSender)) {
+                                sendMessageToUser(chatReceiver, "TYPING|Gemini AI|typing");
+                            }
+
+                            String promptToAsk = rawText;
+                            if (hasAiTag) {
+                                promptToAsk = rawText.replaceFirst("(?i)^@(gemini|ai)\\s*", "").trim();
+                                if (promptToAsk.isEmpty()) promptToAsk = rawText;
+                            }
+
+                            String aiReply = ychatapp.model.bo.GeminiService.generateResponse(promptToAsk);
+                            if (aiReply == null || aiReply.trim().isEmpty()) {
+                                aiReply = "Sorry, I couldn't generate a response. Please check your Gemini API key or try again.";
+                            }
+
+                            // Save AI response to DB
+                            String targetPartner = isAiTarget ? chatSender : chatReceiver;
+                            int aiId = new ychatapp.model.dao.MessageDAO().saveMessageWithReply(
+                                "Gemini AI", 
+                                isAiTarget ? chatSender : targetPartner, 
+                                aiReply, 
+                                promptMsgId > 0 ? promptMsgId : null, 
+                                rawText
+                            );
+
+                            com.google.gson.JsonObject aiMsgObj = new com.google.gson.JsonObject();
+                            aiMsgObj.addProperty("id", aiId);
+                            aiMsgObj.addProperty("sender", "Gemini AI");
+                            aiMsgObj.addProperty("receiver", targetPartner);
+                            aiMsgObj.addProperty("message", aiReply);
+                            aiMsgObj.addProperty("isRead", false);
+                            aiMsgObj.addProperty("isEdited", false);
+                            aiMsgObj.addProperty("isDeleted", false);
+                            if (promptMsgId > 0) {
+                                aiMsgObj.addProperty("replyToId", promptMsgId);
+                                aiMsgObj.addProperty("replyToText", rawText);
+                            }
+
+                            String aiPayloadStr = aiMsgObj.toString();
+
+                            // Stop typing
+                            sendMessageToUser(chatSender, "TYPING|Gemini AI|stopped");
+                            if (!isAiTarget && !chatReceiver.equalsIgnoreCase(chatSender)) {
+                                sendMessageToUser(chatReceiver, "TYPING|Gemini AI|stopped");
+                            }
+
+                            // Deliver AI response
+                            sendMessageToUser(chatSender, "CHAT|Gemini AI|" + aiPayloadStr);
+                            if (!isAiTarget && !chatReceiver.equalsIgnoreCase(chatSender)) {
+                                sendMessageToUser(chatReceiver, "CHAT|Gemini AI|" + aiPayloadStr);
+                            }
+                        } catch (Exception err) {
+                            logger.error("Error in AI chat async generation: {}", err.getMessage());
+                        }
+                    });
+                }
+            } else if ("EDIT_MSG".equalsIgnoreCase(type)) {
+                try {
+                    com.google.gson.JsonObject obj = com.google.gson.JsonParser.parseString(content).getAsJsonObject();
+                    int msgId = obj.get("id").getAsInt();
+                    String newText = obj.get("text").getAsString();
+                    new ychatapp.model.dao.MessageDAO().editMessage(msgId, sender, newText);
+                    sendMessageToUser(receiver, "EDIT_MSG|" + sender + "|" + content);
+                    sendMessageToUser(sender, "EDIT_MSG_ACK|" + receiver + "|" + content);
+                } catch (Exception ex) {
+                    logger.error("Failed to edit message: {}", ex.getMessage());
+                }
+            } else if ("DELETE_MSG".equalsIgnoreCase(type)) {
+                try {
+                    com.google.gson.JsonObject obj = com.google.gson.JsonParser.parseString(content).getAsJsonObject();
+                    int msgId = obj.get("id").getAsInt();
+                    new ychatapp.model.dao.MessageDAO().deleteMessageForEveryone(msgId, sender);
+                    sendMessageToUser(receiver, "DELETE_MSG|" + sender + "|" + content);
+                    sendMessageToUser(sender, "DELETE_MSG_ACK|" + receiver + "|" + content);
+                } catch (Exception ex) {
+                    logger.error("Failed to delete message: {}", ex.getMessage());
+                }
+            } else if ("REACTION".equalsIgnoreCase(type)) {
+                try {
+                    com.google.gson.JsonObject obj = com.google.gson.JsonParser.parseString(content).getAsJsonObject();
+                    int msgId = obj.get("id").getAsInt();
+                    String reaction = (obj.has("reaction") && !obj.get("reaction").isJsonNull()) ? obj.get("reaction").getAsString() : null;
+                    new ychatapp.model.dao.MessageDAO().updateReaction(msgId, reaction);
+                    sendMessageToUser(receiver, "REACTION|" + sender + "|" + content);
+                    sendMessageToUser(sender, "REACTION_ACK|" + receiver + "|" + content);
+                } catch (Exception ex) {
+                    logger.error("Failed to update reaction: {}", ex.getMessage());
+                }
+            } else if ("TYPING".equalsIgnoreCase(type)) {
+                sendMessageToUser(receiver, "TYPING|" + sender + "|" + content);
+            } else if ("SEEN".equalsIgnoreCase(type)) {
+                try {
+                    new ychatapp.model.dao.MessageDAO().markAsRead(receiver, sender);
+                } catch (Exception ex) {
+                    logger.error("Failed to mark messages as read: {}", ex.getMessage());
+                }
+                sendMessageToUser(receiver, "SEEN|" + sender);
+            } else if ("LIVE_CHAT".equalsIgnoreCase(type)) {
+                LiveManager.LiveStreamInfo live = LiveManager.getStream(receiver);
+                if (live != null && !live.getMutedViewers().contains(sender) && !live.getBlockedViewers().contains(sender)) broadcastToLiveStream(receiver, "LIVE_CHAT|" + receiver + "|" + sender + "|" + content);
             } else if ("LIVE_REACTION".equalsIgnoreCase(type)) {
-                broadcastToLiveStream(receiver, "LIVE_REACTION|" + sender + "|" + content);
+                LiveManager.LiveStreamInfo live = LiveManager.getStream(receiver);
+                if (live != null && !live.getMutedViewers().contains(sender) && !live.getBlockedViewers().contains(sender)) broadcastToLiveStream(receiver, "LIVE_REACTION|" + receiver + "|" + sender + "|" + content);
+            } else if ("LIVE_MODERATE".equalsIgnoreCase(type)) {
+                LiveManager.LiveStreamInfo live = LiveManager.getStream(receiver);
+                if (live != null && sender.equals(receiver)) {
+                    com.google.gson.JsonObject data = com.google.gson.JsonParser.parseString(content).getAsJsonObject();
+                    String target = data.has("target") ? data.get("target").getAsString() : "";
+                    String action = data.has("action") ? data.get("action").getAsString() : "";
+                    if (live.getViewers().contains(target)) {
+                        if ("mute".equals(action)) live.getMutedViewers().add(target);
+                        else if ("unmute".equals(action)) live.getMutedViewers().remove(target);
+                        else if ("block".equals(action)) { live.getBlockedViewers().add(target); live.getViewers().remove(target); sendMessageToUser(target, "LIVE_BLOCKED|" + receiver + "|{}"); sendMessageToUser(receiver, "LIVE_VIEWER_COUNT|" + receiver + "|" + live.getViewers().size()); }
+                    }
+                }
+            } else if ("LIVE_JOIN_REQUEST".equalsIgnoreCase(type)) {
+                LiveManager.LiveStreamInfo live = LiveManager.getStream(receiver);
+                if (live != null && !sender.equals(receiver) && !live.getBlockedViewers().contains(sender)) {
+                    LiveManager.addViewer(receiver, sender);
+                    sendMessageToUser(receiver, "LIVE_VIEWER_COUNT|" + receiver + "|" + live.getViewers().size());
+                    sendMessageToUser(receiver, "LIVE_JOIN_REQUEST|" + sender + "|" + content);
+                    sendMessageToUser(sender, "LIVE_JOINED|" + receiver + "|{}");
+                } else {
+                    sendMessageToUser(sender, "LIVE_ENDED|" + receiver + "|{}");
+                }
+            } else if ("LIVE_LEAVE".equalsIgnoreCase(type)) {
+                LiveManager.removeViewer(receiver, sender);
+                LiveManager.LiveStreamInfo live = LiveManager.getStream(receiver);
+                if (live != null) sendMessageToUser(receiver, "LIVE_VIEWER_COUNT|" + receiver + "|" + live.getViewers().size());
+                sendMessageToUser(receiver, "LIVE_VIEWER_LEFT|" + sender + "|{}");
             } else {
-                // Default fallback: forward all other signals (CHAT, CALL_OFFER, CALL_ANSWER, etc.) to the receiver
+                // Default fallback: forward all other signals (CALL_OFFER, CALL_ANSWER, etc.) to the receiver
                 sendMessageToUser(receiver, type + "|" + sender + "|" + content);
             }
         } catch (Exception e) {
@@ -67,6 +258,7 @@ public class UserWebSocket {
                 LiveManager.endStream(username);
                 for (LiveManager.LiveStreamInfo info : LiveManager.getActiveStreams()) {
                     LiveManager.removeViewer(info.getStreamerUsername(), username);
+                    sendMessageToUser(info.getStreamerUsername(), "LIVE_VIEWER_COUNT|" + info.getStreamerUsername() + "|" + info.getViewers().size());
                 }
                 
                 broadcastOnlineUsers();
@@ -98,6 +290,17 @@ public class UserWebSocket {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                }
+            }
+        }
+    }
+
+    public static void sendToUser(String username, String message) {
+        Set<Session> userSessions = clients.get(username);
+        if (userSessions != null) {
+            for (Session s : userSessions) {
+                if (s.isOpen()) {
+                    try { s.getBasicRemote().sendText(message); } catch (IOException e) { logger.warn("WebSocket send failed: {}", e.getMessage()); }
                 }
             }
         }

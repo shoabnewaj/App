@@ -1,0 +1,10 @@
+package ychatapp.model.dao;
+import java.sql.*;
+public class NotificationPreferenceDAO {
+ private Connection connection() throws Exception { return DBConnection.getConnection(); }
+ private void ensure(Connection c) throws SQLException { try(Statement s=c.createStatement()){s.executeUpdate("CREATE TABLE IF NOT EXISTS notification_preferences(user_id INT NOT NULL, category VARCHAR(30) NOT NULL, enabled TINYINT(1) NOT NULL DEFAULT 1, PRIMARY KEY(user_id,category))");} }
+ public boolean isEnabled(int userId,String category){if(userId<=0)return true;try(Connection c=connection()){ensure(c);try(PreparedStatement p=c.prepareStatement("SELECT enabled FROM notification_preferences WHERE user_id=? AND category=?")){p.setInt(1,userId);p.setString(2,category);try(ResultSet r=p.executeQuery()){return !r.next()||r.getBoolean(1);}}}catch(Exception e){return true;}}
+ public boolean setEnabled(int userId,String category,boolean enabled){if(!category.matches("posts|messages|live|friends"))return false;try(Connection c=connection()){ensure(c);try(PreparedStatement p=c.prepareStatement("INSERT INTO notification_preferences(user_id,category,enabled) VALUES(?,?,?) ON DUPLICATE KEY UPDATE enabled=VALUES(enabled)")){p.setInt(1,userId);p.setString(2,category);p.setBoolean(3,enabled);return p.executeUpdate()>0;}}catch(Exception e){e.printStackTrace();return false;}}
+ public boolean isEnabledForUsername(String username,String category){try(Connection c=connection();PreparedStatement p=c.prepareStatement("SELECT id FROM users WHERE name=?")){p.setString(1,username);try(ResultSet r=p.executeQuery()){return !r.next()||isEnabled(r.getInt(1),category);}}catch(Exception e){return true;}}
+ public String getCategory(String type,String message){String t=(type==null?"":type).toUpperCase();String m=(message==null?"":message).toLowerCase();if(t.contains("LIVE")||m.contains("live"))return "live";if(t.contains("MESSAGE")||m.contains("sent you an image")||m.contains("sent you a message"))return "messages";if(t.contains("FRIEND")||m.contains("friend request"))return "friends";return "posts";}
+}

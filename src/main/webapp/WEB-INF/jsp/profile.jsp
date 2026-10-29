@@ -3,7 +3,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="<%=request.getContextPath()%>/js/notification-badge.js" data-context-path="<%=request.getContextPath()%>" defer></script>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${profileUser.getName()} | Profile</title>
 <link rel="icon" type="image/png" href="<%=request.getContextPath()%>/icons/icon-192.png">
 
@@ -82,15 +84,31 @@
             <nav class="flex items-center gap-8">
                 <a href="UsersPostServlet" class="text-gray-500 hover:text-blue-600 transition-colors text-xl"><i class="fa fa-house"></i></a>
                 <a href="FriendServlet" class="text-gray-500 hover:text-blue-600 transition-colors text-xl"><i class="fa fa-user-group"></i></a>
-                <a href="#" class="text-gray-500 hover:text-blue-600 transition-colors text-xl"><i class="fa fa-video"></i></a>
-                <a href="#" class="text-gray-500 hover:text-blue-600 transition-colors text-xl"><i class="fa fa-shop"></i></a>
+                <a href="VideosServlet" class="text-gray-500 hover:text-blue-600 transition-colors text-xl"><i class="fa fa-video"></i></a>
+                <a href="MarketServlet" class="text-gray-500 hover:text-blue-600 transition-colors text-xl"><i class="fa fa-shop"></i></a>
             </nav>
 
             <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors"><i class="fa fa-bell"></i></div>
+                <c:if test="${sessionScope.isAdmin or ub.isAdmin()}">
+                    <a href="admin" title="Admin Dashboard" class="px-3 py-1.5 bg-gradient-to-r from-rose-500 to-amber-500 text-white rounded-xl text-xs font-bold shadow-md hover:shadow-rose-500/30 hover:scale-105 transition flex items-center gap-1.5 animate-pulse">
+                        <i class="fa-solid fa-user-shield text-sm"></i>
+                        <span class="hidden md:inline">Admin Panel</span>
+                    </a>
+                </c:if>
+                <button id="themeToggleBtn" onclick="toggleThemeMode()" title="Toggle Dark/Light Mode" class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
+                    <i id="themeToggleIcon" class="fa fa-moon text-gray-700"></i>
+                </button>
+                <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors" onclick="location.href='NotificationServlet'"><i class="fa fa-bell"></i></div>
                 <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors" onclick="location.href='UsersLogoutServlet'"><i class="fa fa-right-from-bracket"></i></div>
                 <img src="img/${ub.getProfile_pic()}" class="w-10 h-10 rounded-full border-2 border-blue-500 p-0.5 cursor-pointer hover:scale-105 transition-transform" onclick="location.href='UsersProfileServlet?userId=${ub.getId()}'">
             </div>
+        </div>
+        <div class="sm:hidden mt-2.5">
+            <form action="SearchServlet" method="get" class="flex items-center gap-2 bg-gray-100/90 rounded-full px-3.5 py-2 border border-gray-200/80 shadow-sm w-full">
+                <i class="fa fa-search text-blue-500 text-sm"></i>
+                <input name="query" placeholder="Search Y-Chat..." class="bg-transparent outline-none flex-1 min-w-0 text-sm font-medium text-gray-800 placeholder-gray-400">
+                <button type="submit" class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shrink-0">Search</button>
+            </form>
         </div>
     </header>
 
@@ -98,7 +116,7 @@
     <div id="profile-content-wrapper" class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-10 px-4 pb-10">
         
         <!-- LEFT SIDEBAR -->
-        <aside class="hidden lg:block sticky top-[90px] h-fit space-y-4">
+        <aside class="hidden lg:block sticky top-[90px] max-h-[calc(100vh-105px)] overflow-y-auto custom-scrollbar space-y-4">
             <div class="glass-card p-4 rounded-[2rem] space-y-1 shadow-sm border-white/40">
                 <a href="UsersPostServlet" class="flex items-center gap-4 p-3.5 rounded-2xl hover:bg-blue-50/50 hover:text-blue-600 transition-all group font-bold text-gray-600">
                     <div class="w-10 h-10 bg-blue-100/50 text-blue-600 rounded-xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
@@ -128,7 +146,7 @@
                     <span>Messenger</span>
                 </a>
 
-                <a href="#" class="flex items-center gap-4 p-3.5 rounded-2xl hover:bg-orange-50/50 hover:text-orange-600 transition-all group font-bold text-gray-600">
+                <a href="VideosServlet" class="flex items-center gap-4 p-3.5 rounded-2xl hover:bg-orange-50/50 hover:text-orange-600 transition-all group font-bold text-gray-600">
                     <div class="w-10 h-10 bg-orange-100/50 text-orange-600 rounded-xl flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all shadow-sm">
                         <i class="fa fa-video text-lg"></i>
                     </div>
@@ -143,20 +161,29 @@
                         </div>
                         <span>Discover People</span>
                     </a>
-                    <a href="#" class="flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-100/50 transition-all font-bold text-gray-500 mt-2">
+                    <a href="EventServlet" class="flex items-center gap-4 p-3.5 rounded-2xl hover:bg-gray-100/50 transition-all font-bold text-gray-500 mt-2">
                         <i class="fa fa-calendar-star text-pink-500"></i> Events
                     </a>
+                    <c:if test="${sessionScope.isAdmin or ub.isAdmin()}">
+                        <a href="admin" class="flex items-center gap-4 p-3.5 rounded-2xl bg-gradient-to-r from-rose-500 to-amber-500 text-white shadow-lg shadow-rose-200 hover:shadow-rose-400/50 hover:scale-[1.02] transition-all font-bold group mt-2">
+                            <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                                <i class="fa-solid fa-user-shield text-sm"></i>
+                            </div>
+                            <span>Admin Dashboard</span>
+                        </a>
+                    </c:if>
                 </div>
             </div>
         </aside>
 
         <!-- MIDDLE CONTENT -->
-        <main class="space-y-6">
+        <main class="space-y-6 min-w-0 max-w-full overflow-x-hidden">
             
             <!-- COVER PHOTO -->
             <div class="relative w-full h-[450px] overflow-hidden group rounded-3xl shadow-2xl glass-card !p-0">
                 <img src="${not empty profileUser.getCover_pic() ? 'img/' : ''}${not empty profileUser.getCover_pic() ? profileUser.getCover_pic() : 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2000&auto=format&fit=crop'}"
                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2000&auto=format&fit=crop';"
                      alt="Cover Image">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 
@@ -178,7 +205,8 @@
                 <div class="flex flex-col md:flex-row items-end gap-6">
                     <div class="relative group -mt-20">
                         <img id="previewImg"
-                             src="${not empty profileUser.getProfile_pic() ? 'img/' : ''}${not empty profileUser.getProfile_pic() ? profileUser.getProfile_pic() : 'https://via.placeholder.com/200'}"
+                             src="${not empty profileUser.getProfile_pic() ? 'img/' : ''}${not empty profileUser.getProfile_pic() ? profileUser.getProfile_pic() : 'img/default.png'}"
+                             onerror="this.onerror=null; this.src='img/default.png';"
                              class="w-40 h-40 rounded-3xl object-cover border-8 border-white shadow-2xl transition-transform group-hover:scale-[1.02]">
                         
                         <c:if test="${profileUser.getId() == ub.getId()}">
@@ -194,15 +222,36 @@
                     <div class="flex-1 pb-2">
                         <div class="flex items-center gap-3">
                             <h2 class="text-4xl font-black text-gray-800 tracking-tight">${profileUser.getName()}</h2>
-                            <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-lg" title="Verified Account">
-                                <i class="fa fa-check"></i>
-                            </div>
+                            <c:if test="${profileUser.isVerified()}">
+                                <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-lg" title="Verified Account">
+                                    <i class="fa fa-check"></i>
+                                </div>
+                            </c:if>
                         </div>
-                        <p class="text-gray-500 font-bold flex items-center gap-2 mt-1">
-                            <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-sm">@${profileUser.getName().toLowerCase().replace(' ', '')}</span>
-                            <span class="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
-                            <span class="text-sm">Software Engineer at Y-Tech</span>
-                        </p>
+                        <div class="flex flex-wrap items-center gap-2 mt-2">
+                            <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-xs font-bold">@${profileUser.getName().toLowerCase().replace(' ', '')}</span>
+                            
+                            <c:if test="${not empty profileUser.getGender()}">
+                                <span class="bg-purple-50 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 capitalize shadow-sm border border-purple-100/50">
+                                    <i class="fa ${profileUser.getGender().equalsIgnoreCase('male') ? 'fa-mars text-blue-500' : (profileUser.getGender().equalsIgnoreCase('female') ? 'fa-venus text-pink-500' : 'fa-genderless text-purple-500')}"></i>
+                                    ${profileUser.getGender()}
+                                </span>
+                            </c:if>
+
+                            <c:if test="${not empty profileUser.getCity() || not empty profileUser.getCountry()}">
+                                <span class="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm border border-emerald-100/50">
+                                    <i class="fa fa-location-dot text-emerald-500"></i>
+                                    ${profileUser.getCity()}${(not empty profileUser.getCity() && not empty profileUser.getCountry()) ? ', ' : ''}${profileUser.getCountry()}
+                                </span>
+                            </c:if>
+
+                            <c:if test="${not empty profileUser.getBirthday()}">
+                                <span class="bg-amber-50 text-amber-700 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm border border-amber-100/50">
+                                    <i class="fa fa-cake-candles text-amber-500"></i>
+                                    ${profileUser.getBirthday()}
+                                </span>
+                            </c:if>
+                        </div>
                         
                         <div class="flex flex-wrap gap-3 mt-5">
                             <c:choose>
@@ -210,6 +259,21 @@
                                     <button onclick="location.href='EditProfileServlet'" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-2.5 rounded-xl font-bold shadow-sm transition-all flex items-center gap-2">
                                         <i class="fa fa-pen-to-square"></i> Edit Profile
                                     </button>
+                                    <c:choose>
+                                        <c:when test="${profileUser.isVerified()}">
+                                            <span class="bg-blue-50 text-blue-700 px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 border border-blue-200 shadow-sm text-sm">
+                                                <i class="fa-solid fa-circle-check text-blue-500"></i> Verified Account
+                                            </span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <button onclick="openPaymentModal()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2">
+                                                <i class="fa-solid fa-circle-check"></i> Get Blue Badge (bKash / Nagad)
+                                            </button>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <span class="bg-amber-50 text-amber-800 px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 border border-amber-200 text-sm shadow-sm">
+                                        <i class="fa-solid fa-wallet text-amber-600"></i> Wallet: $${ub.getBalance()}
+                                    </span>
                                 </c:when>
                                 <c:otherwise>
                                     <c:choose>
@@ -248,8 +312,12 @@
                                         </c:otherwise>
                                     </c:choose>
 
-                                    <button onclick="location.href='messages.jsp?userId=${profileUser.getId()}'" class="bg-gray-100 text-gray-800 px-6 py-2.5 rounded-xl font-bold hover:bg-gray-200 transition-all">
+                                    <button onclick="location.href='messages.jsp?userName=${profileUser.getName()}&userId=${profileUser.getId()}'" class="bg-gray-100 text-gray-800 px-6 py-2.5 rounded-xl font-bold hover:bg-gray-200 transition-all">
                                         <i class="fa-brands fa-facebook-messenger mr-2 text-lg"></i> Message
+                                    </button>
+
+                                    <button onclick="openProfileTipModal(${profileUser.getId()}, '${profileUser.getName()}')" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-amber-200 transition-all flex items-center gap-2">
+                                        <i class="fa-solid fa-coins"></i> Send Tip
                                     </button>
                                 </c:otherwise>
                             </c:choose>
@@ -315,12 +383,8 @@
                     <button class="text-blue-600 font-bold text-sm">Filters</button>
                 </div>
 
-                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 rounded-3xl text-center font-black mb-6 shadow-xl shadow-blue-100 flex items-center justify-center gap-3">
-                    <i class="fa fa-database"></i>
-                    <span>Database Results: ${userPosts.size()} Posts Found</span>
-                </div>
-
-                <c:if test="${empty userPosts}">
+                <c:if test="${profileRestricted}"><div class="glass-card p-6 rounded-2xl text-center text-gray-600">This profile is visible to friends only.</div></c:if>
+                <c:if test="${empty userPosts and not profileRestricted}">
                     <div class="glass-card p-20 text-center rounded-3xl border-2 border-dashed border-gray-200">
                         <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
                             <i class="fa fa-feather-pointed text-3xl text-gray-300"></i>
@@ -354,13 +418,13 @@
                         <c:if test="${not empty post.getFile_name()}">
                             <div class="mt-4 rounded-3xl overflow-hidden border border-gray-100 shadow-sm bg-gray-50">
                                 <c:choose>
-                                    <c:when test="${post.getPost_type() == 'video'}">
-                                        <video controls class="w-full max-h-[500px] object-contain">
+                                    <c:when test="${post.getPost_type() == 'video' || post.getFile_name().toLowerCase().endsWith('.webm') || post.getFile_name().toLowerCase().endsWith('.mp4') || post.getFile_name().toLowerCase().endsWith('.mov')}">
+                                        <video controls class="w-full max-h-[500px] object-contain" onerror="this.parentElement.style.display='none'">
                                             <source src="img/${post.getFile_name()}" type="video/mp4">
                                         </video>
                                     </c:when>
                                     <c:otherwise>
-                                        <img src="img/${post.getFile_name()}" class="w-full h-auto max-h-[500px] object-cover hover:scale-[1.01] transition-transform duration-500">
+                                        <img src="img/${post.getFile_name()}" class="w-full h-auto max-h-[500px] object-cover hover:scale-[1.01] transition-transform duration-500" onerror="this.onerror=null; this.src='img/default.png';">
                                     </c:otherwise>
                                 </c:choose>
                             </div>
@@ -577,18 +641,30 @@
                     <!-- Contact Info -->
                     <div class="bg-white/40 p-6 rounded-2xl border border-white/30 space-y-4">
                         <h4 class="font-bold text-gray-700 uppercase tracking-widest text-xs">Contact & Basic Info</h4>
-                        <div class="space-y-3 font-medium">
+                        <div class="space-y-3 font-medium text-sm">
                             <div class="flex items-center gap-3 text-gray-600">
-                                <i class="fa fa-envelope text-gray-400 w-5"></i>
+                                <i class="fa fa-envelope text-blue-500 w-5"></i>
                                 <span>${profileUser.getEmail()}</span>
                             </div>
                             <div class="flex items-center gap-3 text-gray-600">
-                                <i class="fa fa-user-tag text-gray-400 w-5"></i>
+                                <i class="fa fa-user-tag text-purple-500 w-5"></i>
                                 <span>@${profileUser.getName().toLowerCase().replace(' ', '')}</span>
                             </div>
                             <div class="flex items-center gap-3 text-gray-600">
-                                <i class="fa fa-briefcase text-gray-400 w-5"></i>
-                                <span>Software Engineer at Y-Tech</span>
+                                <i class="fa fa-venus-mars text-pink-500 w-5"></i>
+                                <span><strong class="text-gray-700">Gender:</strong> <span class="capitalize">${not empty profileUser.getGender() ? profileUser.getGender() : 'Not specified'}</span></span>
+                            </div>
+                            <div class="flex items-center gap-3 text-gray-600">
+                                <i class="fa fa-cake-candles text-amber-500 w-5"></i>
+                                <span><strong class="text-gray-700">Birthday:</strong> ${not empty profileUser.getBirthday() ? profileUser.getBirthday() : 'Not specified'}</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-gray-600">
+                                <i class="fa fa-city text-indigo-500 w-5"></i>
+                                <span><strong class="text-gray-700">City:</strong> ${not empty profileUser.getCity() ? profileUser.getCity() : 'Not specified'}</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-gray-600">
+                                <i class="fa fa-earth-americas text-emerald-500 w-5"></i>
+                                <span><strong class="text-gray-700">Country:</strong> ${not empty profileUser.getCountry() ? profileUser.getCountry() : 'Not specified'}</span>
                             </div>
                         </div>
                     </div>
@@ -1194,7 +1270,7 @@
 
 
 	<!-- Mobile Bottom Navigation Bar (Visible only on mobile/tablet) -->
-	<nav class="lg:hidden fixed bottom-0 left-0 right-0 h-[65px] bg-white/80 backdrop-blur-md border-t border-white/20 z-[9999] flex justify-around items-center px-4 rounded-t-3xl shadow-2xl">
+	<nav id="mobileBottomNav" class="lg:hidden fixed bottom-0 left-0 right-0 h-[65px] bg-white/95 backdrop-blur-md border-t border-gray-200 z-[99999] flex justify-around items-center px-4 rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.15)]">
 		<a href="UsersPostServlet" class="flex flex-col items-center gap-1 text-gray-500 hover:text-blue-500 transition">
 			<i class="fa fa-house text-xl"></i>
 			<span class="text-[10px] font-bold">Home</span>
@@ -1213,5 +1289,242 @@
 		</a>
 	</nav>
 
+    <!-- Secure Stripe Checkout -->
+    <div id="paymentModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4">
+        <div class="glass-card bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-slide-in text-gray-800">
+            <div class="flex items-center justify-between border-b pb-3">
+                <h3 class="text-lg font-extrabold flex items-center gap-2 text-blue-600">
+                    <i class="fa-solid fa-circle-check text-blue-500 text-xl"></i> Get Verified Blue Badge
+                </h3>
+                <button onclick="closePaymentModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 font-bold transition">笨・/button>
+            </div>
+
+            <div class="bg-blue-50/70 border border-blue-100 p-4 rounded-2xl flex items-center justify-between">
+                <div>
+                    <p class="font-bold text-blue-900 text-sm">Y-Chat Verified Badge</p>
+                    <p class="text-xs text-blue-600 mt-0.5">Lifetime Blue Checkmark Badge</p>
+                </div>
+                <span class="text-xl font-extrabold text-blue-700">$4.99 USD</span>
+            </div>
+
+            <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">Payment is processed securely by Stripe Checkout. Card details are entered on Stripe and never stored by Y-ChatApp.</div>
+
+            <div class="flex items-center gap-3 pt-2">
+                <button type="button" onclick="closePaymentModal()" class="flex-1 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 font-bold text-gray-700 text-sm transition">Cancel</button>
+                <button type="button" onclick="submitPayment()" class="flex-1 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm shadow-lg transition">Continue to Secure Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPaymentMethod = 'bKash';
+
+        function openPaymentModal() {
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+        }
+
+        function selectPayMethod(method) {
+            selectedPaymentMethod = method;
+            document.querySelectorAll('.pay-method-btn').forEach(btn => {
+                btn.classList.remove('border-pink-500', 'bg-pink-50', 'text-pink-700', 'border-orange-500', 'bg-orange-50', 'text-orange-700', 'border-blue-500', 'bg-blue-50', 'text-blue-700');
+                btn.classList.add('border-gray-200', 'text-gray-700');
+            });
+            const selectedBtn = document.getElementById('payBtn' + method);
+            if (selectedBtn) {
+                selectedBtn.classList.remove('border-gray-200', 'text-gray-700');
+                selectedBtn.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-700');
+            }
+        }
+
+        function submitPayment() {
+            const params = new URLSearchParams({action:'checkout',purpose:'BLUE_TICK'});
+            fetch('PaymentServlet',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:params})
+            .then(async res => { const data=await res.json(); if(!res.ok) throw new Error(data.message || 'Secure checkout is unavailable.'); return data; })
+            .then(data => { if(data.checkoutUrl) window.location.assign(data.checkoutUrl); else throw new Error(data.message || 'Could not start checkout.'); })
+            .catch(err => alert(err.message || 'Could not start secure checkout.'));
+        }
+
+        // --- Profile Creator Tip Handlers ---
+        let activeProfileTipMethod = 'WALLET';
+
+        function openProfileTipModal(receiverId, creatorName) {
+            document.getElementById('profileTipReceiverId').value = receiverId;
+            document.getElementById('profileTipCreatorName').innerText = creatorName || 'Creator';
+            document.getElementById('profileTipModal').classList.remove('hidden');
+        }
+
+        function closeProfileTipModal() {
+            document.getElementById('profileTipModal').classList.add('hidden');
+        }
+
+        function selectProfileTipAmount(amt) {
+            document.getElementById('profileTipCustomAmount').value = amt.toFixed(2);
+            document.querySelectorAll('.ptip-chip-btn').forEach(b => {
+                b.classList.remove('border-amber-500', 'bg-amber-500', 'text-white', 'shadow-sm');
+                b.classList.add('border-gray-200', 'bg-gray-100', 'text-gray-700');
+            });
+            const activeBtn = document.getElementById('pTipChip-' + amt);
+            if (activeBtn) {
+                activeBtn.classList.remove('border-gray-200', 'bg-gray-100', 'text-gray-700');
+                activeBtn.classList.add('border-amber-500', 'bg-amber-500', 'text-white', 'shadow-sm');
+            }
+        }
+
+        function selectProfileTipMethod(method) {
+            activeProfileTipMethod = method;
+            ['WALLET', 'BKASH', 'NAGAD', 'CARD'].forEach(m => {
+                const b = document.getElementById('pTipMethodBtn-' + m);
+                if (b) {
+                    if (m === method) {
+                        b.classList.add('border-amber-500', 'bg-amber-50', 'text-amber-700');
+                        b.classList.remove('border-gray-200', 'text-gray-600');
+                    } else {
+                        b.classList.remove('border-amber-500', 'bg-amber-50', 'text-amber-700');
+                        b.classList.add('border-gray-200', 'text-gray-600');
+                    }
+                }
+            });
+        }
+
+        function submitProfileCreatorTip() {
+            const receiverId = document.getElementById('profileTipReceiverId').value;
+            const amount = parseFloat(document.getElementById('profileTipCustomAmount').value);
+            const note = document.getElementById('profileTipNoteInput').value.trim();
+
+            if (!amount || isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid tip amount.');
+                return;
+            }
+
+            const btn = document.getElementById('submitProfileTipBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Sending...';
+
+            const params = new URLSearchParams();
+            params.append('action', 'sendTip');
+            params.append('receiverId', receiverId);
+            params.append('postId', '0');
+            params.append('amount', amount);
+            params.append('paymentMethod', activeProfileTipMethod);
+            params.append('note', note);
+
+            fetch('TipServlet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Send Tip Now</span> <i class="fa-solid fa-paper-plane text-xs"></i>';
+
+                if (data.status === 'success') {
+                    alert(data.message || 'Tip sent successfully!');
+                    closeProfileTipModal();
+                    if (data.newBalance !== undefined) {
+                        const balEl = document.getElementById('profileTipUserBalance');
+                        if (balEl) balEl.innerText = parseFloat(data.newBalance).toFixed(2);
+                    }
+                } else {
+                    alert(data.message || 'Failed to send tip.');
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Send Tip Now</span> <i class="fa-solid fa-paper-plane text-xs"></i>';
+                console.error('Error sending tip:', err);
+                alert('An error occurred while sending tip.');
+            });
+        }
+    </script>
+
+    <!-- ================= PROFILE CREATOR TIP MODAL ================= -->
+    <div id="profileTipModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[9999] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden flex flex-col p-6 animate-in fade-in zoom-in-95 duration-200">
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-md shadow-amber-200 text-lg">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base text-gray-900 leading-tight">Send a Tip</h3>
+                        <p class="text-xs text-gray-500">Support <strong id="profileTipCreatorName" class="text-amber-600">Creator</strong></p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeProfileTipModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <input type="hidden" id="profileTipReceiverId">
+
+            <div class="space-y-4 pt-4">
+                <!-- Quick Preset Chips -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Select Amount</label>
+                    <div class="grid grid-cols-5 gap-2">
+                        <button type="button" onclick="selectProfileTipAmount(1)" id="pTipChip-1" class="ptip-chip-btn py-2 rounded-xl text-xs font-bold border border-gray-200 bg-gray-100 text-gray-700 hover:border-amber-400 transition">$1</button>
+                        <button type="button" onclick="selectProfileTipAmount(3)" id="pTipChip-3" class="ptip-chip-btn py-2 rounded-xl text-xs font-bold border border-gray-200 bg-gray-100 text-gray-700 hover:border-amber-400 transition">$3</button>
+                        <button type="button" onclick="selectProfileTipAmount(5)" id="pTipChip-5" class="ptip-chip-btn py-2 rounded-xl text-xs font-bold border border-amber-500 bg-amber-500 text-white shadow-sm transition">$5</button>
+                        <button type="button" onclick="selectProfileTipAmount(10)" id="pTipChip-10" class="ptip-chip-btn py-2 rounded-xl text-xs font-bold border border-gray-200 bg-gray-100 text-gray-700 hover:border-amber-400 transition">$10</button>
+                        <button type="button" onclick="selectProfileTipAmount(20)" id="pTipChip-20" class="ptip-chip-btn py-2 rounded-xl text-xs font-bold border border-gray-200 bg-gray-100 text-gray-700 hover:border-amber-400 transition">$20</button>
+                    </div>
+                </div>
+
+                <!-- Custom Amount Box -->
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Custom Amount ($)</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 font-extrabold text-gray-400 text-lg">$</span>
+                        <input type="number" id="profileTipCustomAmount" min="1" step="0.5" value="5.00" class="w-full pl-9 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl outline-none font-extrabold text-base text-gray-800 focus:border-amber-500 transition">
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Payment Method</label>
+                        <span class="text-[11px] font-bold text-emerald-600">Wallet Bal: $<span id="profileTipUserBalance">${sessionScope.ub.getBalance()}</span></span>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button type="button" onclick="selectProfileTipMethod('WALLET')" id="pTipMethodBtn-WALLET" class="p-2.5 rounded-xl border-2 border-amber-500 bg-amber-50 text-amber-700 text-[11px] font-bold flex flex-col items-center gap-1 transition">
+                            <i class="fa-solid fa-wallet text-sm"></i>
+                            <span>Wallet</span>
+                        </button>
+                        <button type="button" disabled aria-hidden="true" class="hidden" onclick="selectProfileTipMethod('BKASH')" id="pTipMethodBtn-BKASH" class="p-2.5 rounded-xl border-2 border-gray-200 text-gray-600 text-[11px] font-bold flex flex-col items-center gap-1 transition">
+                            <span class="text-sm">猪</span>
+                            <span>bKash</span>
+                        </button>
+                        <button type="button" disabled aria-hidden="true" class="hidden" onclick="selectProfileTipMethod('NAGAD')" id="pTipMethodBtn-NAGAD" class="p-2.5 rounded-xl border-2 border-gray-200 text-gray-600 text-[11px] font-bold flex flex-col items-center gap-1 transition">
+                            <span class="text-sm">泛</span>
+                            <span>Nagad</span>
+                        </button>
+                        <button type="button" disabled aria-hidden="true" class="hidden" onclick="selectProfileTipMethod('CARD')" id="pTipMethodBtn-CARD" class="p-2.5 rounded-xl border-2 border-gray-200 text-gray-600 text-[11px] font-bold flex flex-col items-center gap-1 transition">
+                            <i class="fa-solid fa-credit-card text-sm"></i>
+                            <span>Card</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Encouraging Note -->
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Personal Message / Note (Optional)</label>
+                    <input type="text" id="profileTipNoteInput" placeholder="Keep up the great work! 脂" maxlength="150" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl outline-none text-xs text-gray-700 focus:border-amber-500 transition">
+                </div>
+
+                <!-- Submit Button -->
+                <button type="button" id="submitProfileTipBtn" onclick="submitProfileCreatorTip()" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold rounded-2xl shadow-lg shadow-amber-200 transition flex items-center justify-center gap-2">
+                    <span>Send Tip Now</span>
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+	<script src="js/theme.js?v=20261029-mobile-fix"></script><script src="js/ychat-pro-features.js?v=20261029-pro"></script>
 </body>
 </html>

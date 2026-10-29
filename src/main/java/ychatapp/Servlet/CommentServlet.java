@@ -60,6 +60,11 @@ public class CommentServlet extends HttpServlet {
         return fallback != null ? fallback.trim() : null;
     }
 
+    protected void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        doPost(req, res);
+    }
+
     protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
@@ -149,6 +154,8 @@ public class CommentServlet extends HttpServlet {
                     e.printStackTrace();
                 }
 
+                ychatapp.model.beans.UsersPost changedPost = new ychatapp.model.dao.PostDAO().getPostById(postId);
+                if (changedPost != null) ychatapp.websocket.PostRealtime.publish(changedPost.getUserId(), postId, "COMMENT", ub.getName());
                 int count = dao.getCommentCount(postId);
 
                 out.write(
@@ -189,6 +196,9 @@ public class CommentServlet extends HttpServlet {
 
                 if ("reply".equalsIgnoreCase(level)) {
                     dao.handleReplyInteraction(targetId, ub.getId(), action);
+                    int changedPostId = dao.getPostIdForReply(targetId);
+                    ychatapp.model.beans.UsersPost changedPost = changedPostId > 0 ? new ychatapp.model.dao.PostDAO().getPostById(changedPostId) : null;
+                    if (changedPost != null) ychatapp.websocket.PostRealtime.publish(changedPost.getUserId(), changedPostId, "REPLY_REACTION", ub.getName());
                     // Get updated total count
                     int c_like = dao.getReplyCount(targetId, "LIKE");
                     int c_love = dao.getReplyCount(targetId, "LOVE");
@@ -211,6 +221,9 @@ public class CommentServlet extends HttpServlet {
                               "\"Dislike\":" + c_dislike + "}}");
                 } else {
                     dao.handleInteraction(targetId, ub.getId(), action);
+                    int changedPostId = dao.getPostIdForComment(targetId);
+                    ychatapp.model.beans.UsersPost changedPost = changedPostId > 0 ? new ychatapp.model.dao.PostDAO().getPostById(changedPostId) : null;
+                    if (changedPost != null) ychatapp.websocket.PostRealtime.publish(changedPost.getUserId(), changedPostId, "COMMENT_REACTION", ub.getName());
                     // Get updated total count
                     int c_like = dao.getCount(targetId, "LIKE");
                     int c_love = dao.getCount(targetId, "LOVE");
@@ -274,6 +287,9 @@ public class CommentServlet extends HttpServlet {
 
                 int commentId = Integer.parseInt(commentIdStr);
                 int newReplyId = dao.addReply(commentId, ub.getId(), text, file_name);
+                int changedPostId = dao.getPostIdForComment(commentId);
+                ychatapp.model.beans.UsersPost changedPost = changedPostId > 0 ? new ychatapp.model.dao.PostDAO().getPostById(changedPostId) : null;
+                if (changedPost != null) ychatapp.websocket.PostRealtime.publish(changedPost.getUserId(), changedPostId, "REPLY", ub.getName());
 
                 // Reply notification
                 try {

@@ -1,0 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Private profile | Y-ChatApp</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="min-h-screen bg-slate-100 flex items-center justify-center p-5"><main class="max-w-md w-full rounded-3xl bg-white shadow-xl p-8 text-center"><div class="mx-auto mb-4 w-14 h-14 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-2xl">🔒</div><h1 class="text-xl font-bold text-slate-800">Profile is private</h1><p class="mt-2 text-sm text-slate-600">You need to be an accepted friend of <strong><c:out value="${profileName}"/></strong> to view this profile.</p><a href="UsersPostServlet" class="mt-6 inline-block rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white">Back to Newsfeed</a></main></body></html>

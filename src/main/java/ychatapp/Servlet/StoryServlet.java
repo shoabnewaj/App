@@ -25,6 +25,62 @@ public class StoryServlet extends HttpServlet {
     private final StoryDAO storyDAO = new StoryDAO();
 
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) 
+            throws ServletException, IOException {
+        
+        res.setContentType("application/json");
+        res.setCharacterEncoding("UTF-8");
+
+        HttpSession session = req.getSession(false);
+        UsersBeans ub = (session != null) ? (UsersBeans) session.getAttribute("ub") : null;
+
+        if (ub == null) {
+            res.getWriter().write("{\"error\": \"not_logged_in\"}");
+            return;
+        }
+
+        String action = req.getParameter("action");
+        String storyIdStr = req.getParameter("storyId");
+
+        if (storyIdStr == null || storyIdStr.isEmpty()) {
+            res.getWriter().write("{\"error\": \"missing_story_id\"}");
+            return;
+        }
+
+        try {
+            int storyId = Integer.parseInt(storyIdStr);
+
+            if ("recordView".equalsIgnoreCase(action)) {
+                if (!storyDAO.canViewStory(storyId, ub.getId())) { res.setStatus(403); res.getWriter().write("{\"success\":false}"); return; }
+                boolean recorded = storyDAO.recordStoryView(storyId, ub.getId());
+                res.getWriter().write("{\"success\": " + recorded + "}");
+                return;
+            } else if ("getViewers".equalsIgnoreCase(action)) {
+                if (!storyDAO.isStoryOwner(storyId, ub.getId())) { res.setStatus(403); res.getWriter().write("[]"); return; }
+                java.util.List<ychatapp.model.beans.StoryViewerBean> viewers = storyDAO.getStoryViewers(storyId);
+                StringBuilder json = new StringBuilder("[");
+                for (int i = 0; i < viewers.size(); i++) {
+                    ychatapp.model.beans.StoryViewerBean v = viewers.get(i);
+                    if (i > 0) json.append(",");
+                    json.append("{")
+                        .append("\"userId\":").append(v.getUserId()).append(",")
+                        .append("\"name\":\"").append(v.getName() != null ? v.getName().replace("\"", "\\\"") : "").append("\",")
+                        .append("\"profilePic\":\"").append(v.getProfilePic() != null ? v.getProfilePic() : "default.png").append("\",")
+                        .append("\"viewedAt\":\"").append(v.getViewedAt() != null ? v.getViewedAt() : "").append("\"")
+                        .append("}");
+                }
+                json.append("]");
+                res.getWriter().write(json.toString());
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        res.getWriter().write("{\"error\": \"unknown_action\"}");
+    }
+
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) 
             throws ServletException, IOException {
         
@@ -38,6 +94,7 @@ public class StoryServlet extends HttpServlet {
         }
 
         String text = req.getParameter("text");
+        String audience = req.getParameter("audience");
         String fileName = null;
 
         try {
@@ -58,7 +115,7 @@ public class StoryServlet extends HttpServlet {
             e.printStackTrace();
         }
 
-        storyDAO.addStory(ub.getId(), fileName, text);
+        storyDAO.addStory(ub.getId(), fileName, text, audience);
         res.sendRedirect("UsersPostServlet");
     }
 }
