@@ -1,4 +1,4 @@
-const CACHE_NAME = "ychat-v3";
+const CACHE_NAME = "ychat-v5";
 
 const urlsToCache = [
   "/",

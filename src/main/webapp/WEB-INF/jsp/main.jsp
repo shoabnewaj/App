@@ -2928,7 +2928,7 @@ header, .navbar {
 				</c:if>
 			</nav>
 
-			<script src="js/theme.js?v=20261029-white-bg"></script><script src="js/ychat-pro-features.js?v=20261029-pro"></script>
+			<script src="js/theme.js?v=20261029-safari-v5"></script><script src="js/ychat-pro-features.js?v=20261029-safari-v5"></script>
 			<!-- Story Viewers Modal -->
 			<div id="storyViewersListModal" class="modal !bg-black/80 z-[100000]">
 				<div
