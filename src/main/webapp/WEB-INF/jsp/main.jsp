@@ -81,20 +81,26 @@ img {
 .react-container {
 	position: relative;
 	display: inline-block;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
 }
 
 .react-box {
 	display: none;
 	position: absolute;
-	bottom: 25px;
+	bottom: 34px;
 	left: -10px;
 	background: white;
-	padding: 5px 12px;
+	padding: 6px 12px;
 	border-radius: 50px;
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
 	z-index: 9999;
 	gap: 10px;
 	animation: pop 0.2s ease-out;
+}
+
+.react-box.react-box-open {
+	display: flex !important;
 }
 
 .react-box::after {
@@ -103,17 +109,23 @@ img {
 	bottom: -15px;
 	left: 0;
 	width: 100%;
-	height: 20px;
+	height: 16px;
+	pointer-events: none;
 }
 
-.react-container:hover .react-box {
-	display: flex;
+@media (hover: hover) and (pointer: fine) {
+	.react-container:hover .react-box {
+		display: flex;
+	}
 }
 
 .react-box span {
 	font-size: 26px;
 	cursor: pointer;
 	transition: transform 0.1s;
+	user-select: none;
+	-webkit-user-select: none;
+	touch-action: manipulation;
 }
 
 .react-box span:hover {
@@ -2291,7 +2303,8 @@ header, .navbar {
       alert('Notification preferences saved to your account.');
     }
     // 5. Submit new post (AJAX)
-    document.getElementById('postForm')?.addEventListener('submit', function(e) {
+    var postFormEl = document.getElementById('postForm');
+    if (postFormEl) postFormEl.addEventListener('submit', function(e) {
         e.preventDefault();
         let formData = new FormData(this);
         formData.append("ajax", "true");
@@ -2315,7 +2328,7 @@ header, .navbar {
                 closeModal();
                 this.reset();
                 removeModalPreview();
-                refreshFeed(); // রিলোড ছাড়াই ফিড আপডেট
+                refreshFeed();
             } else {
                 alert("Post failed!");
             }
@@ -2331,7 +2344,8 @@ header, .navbar {
     });
 
     // 6. Submit Reels (AJAX)
-    document.getElementById('reelForm')?.addEventListener('submit', function(e) {
+    var reelFormEl = document.getElementById('reelForm');
+    if (reelFormEl) reelFormEl.addEventListener('submit', function(e) {
         e.preventDefault();
         let formData = new FormData(this);
         formData.append("ajax", "true");
@@ -2365,14 +2379,16 @@ header, .navbar {
     });
 
     function togglePostMenu(event, postId) {
-        event.stopPropagation();
+        if (event) event.stopPropagation();
         const menu = document.getElementById('post-menu-' + postId);
         const shouldOpen = menu && menu.classList.contains('hidden');
         document.querySelectorAll('[id^="post-menu-"]').forEach(item => item.classList.add('hidden'));
         document.querySelectorAll('button[aria-controls^="post-menu-"]').forEach(button => button.setAttribute('aria-expanded', 'false'));
         if (shouldOpen) {
             menu.classList.remove('hidden');
-            event.currentTarget.setAttribute('aria-expanded', 'true');
+            if (event && event.currentTarget && event.currentTarget.setAttribute) {
+                event.currentTarget.setAttribute('aria-expanded', 'true');
+            }
         }
     }
 
@@ -2384,13 +2400,17 @@ header, .navbar {
     });
 
     function sendHideReport(action, postId, reason) {
-        const formData = new FormData();
-        formData.append('action', action);
-        formData.append('type', 'POST');
-        formData.append('id', postId);
-        if (reason) formData.append('reason', reason);
-        formData.append('details', '');
-        return fetch('ReportHideServlet', { method: 'POST', body: formData }).then(res => {
+        const params = new URLSearchParams();
+        params.append('action', action);
+        params.append('type', 'POST');
+        params.append('id', String(postId));
+        if (reason) params.append('reason', reason);
+        params.append('details', '');
+        return fetch('ReportHideServlet', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: params
+        }).then(res => {
             if (!res.ok) throw new Error('HTTP error ' + res.status);
             return res.json();
         });
@@ -2398,11 +2418,31 @@ header, .navbar {
 
     function hidePost(postId) {
         sendHideReport('hide', postId).then(data => {
-            if (data.success) refreshFeed();
-            else alert(data.message || 'Could not hide this post.');
+            if (data.success) {
+                const card = document.querySelector('[data-post-id="' + postId + '"]');
+                if (card) card.style.display = 'none';
+                refreshFeed();
+            } else {
+                alert(data.message || 'Could not hide this post.');
+            }
         }).catch(err => {
             console.error('Hide post error:', err);
             alert('Could not hide this post. Please try again.');
+        });
+    }
+
+    function markNotInterested(postId) {
+        hidePost(postId);
+    }
+
+    function snoozePost(postId, days) {
+        sendHideReport('hide', postId).then(data => {
+            const card = document.querySelector('[data-post-id="' + postId + '"]');
+            if (card) card.style.display = 'none';
+            alert('Snoozed for ' + (days || 7) + ' days.');
+        }).catch(() => {
+            const card = document.querySelector('[data-post-id="' + postId + '"]');
+            if (card) card.style.display = 'none';
         });
     }
 
@@ -2452,30 +2492,46 @@ header, .navbar {
             const doc = parser.parseFromString(html, 'text/html');
             const newMain = doc.querySelector('main').innerHTML;
             document.querySelector('main').innerHTML = newMain;
-            initTimeAgo(); 
+            initTimeAgo();
+            if (typeof window.enhanceNewsFeedPosts === 'function') {
+                window.enhanceNewsFeedPosts();
+            }
         });
     }
 
     function initTimeAgo() {
-        // 辷ｬ・ｯ辷ｬ・ｦ辷ｬ 辷ｬ繝ｻ・ｦ・ｪ辷ｬ・ｨ辷ｬ・ｾ辷ｬ・ｰ 辷ｬ豁ｩ・ｧ驥托ｽｦ・ｨ辷ｰ繝ｻ辷ｬ貂ｸ・ｦ・ｾ辷ｬ繝ｻ・ｦ・ｮ-辷ｬ髏假ｽｦ莨ｶ・ｧ繝ｻ辷ｬ・ｲ辷ｬ・ｾ辷ｬ繝ｻ・ｦ・ｬ辷ｰ雋｡・ｦ・ｰ辷ｰ繝ｻ・ｦ・ｰ辷ｬ 辷ｬ・･辷ｬ・ｾ辷ｬ豁ｩ・ｧ繝ｻ辷ｬ・､辷ｬ・ｬ辷ｰ繝ｻ辷ｬ髏假ｽｦ邀ｾ・ｦ・ｾ辷ｬ・ｨ辷ｰ繝ｻ辷ｬ豁ｩ・ｦ・ｲ 辷ｬ豁ｩ・ｦ・ｰ辷ｰ竕抵ｽｦ・ｨ
         console.log("Feed Refreshed!");
     }
 
-    // 辷ｰ・ｫ. 辷ｬ・ｪ辷ｰ雋｡・ｦ・ｰ辷ｬ辷ｬ・ｭ辷ｬ辷ｬ繝ｻ辷ｬ髏假ｽｦ・ｬ辷ｬ繝ｻ辷ｬ貂ｸ・ｦ莨ｶ・ｦ・ｲ 辷ｬ・ｫ辷ｬ・ｾ辷ｬ繧ゑｽｦ・ｶ辷ｬ・ｨ
     function showReplyBox(id, targetName) {
         let el = document.getElementById('replyInputContainer-' + id);
         if(el) {
             el.classList.remove('hidden');
             let input = document.getElementById('input-reply-' + id);
-            if(input && targetName) {
-                input.value = "@" + targetName + " ";
+            if(input) {
+                if (targetName) input.value = "@" + targetName + " ";
+                if (input.scrollIntoView) input.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 input.focus();
             }
         }
     }
     function focusCmt(id) { 
         let input = document.getElementById('input-post-' + id);
-        if(input) input.focus(); 
+        if(input) {
+            if (input.scrollIntoView) {
+                try { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+            }
+            input.focus();
+            let wrap = input.parentElement;
+            if (wrap) {
+                wrap.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.45)';
+                wrap.style.borderColor = '#2563eb';
+                setTimeout(function() {
+                    wrap.style.boxShadow = '';
+                    wrap.style.borderColor = '';
+                }, 1500);
+            }
+        }
     }
     function focusFeelingSelector() {
         const select = document.querySelector('#postForm select[name="feeling"]');
@@ -2928,7 +2984,7 @@ header, .navbar {
 				</c:if>
 			</nav>
 
-			<script src="js/theme.js?v=20261029-safari-v5"></script><script src="js/ychat-pro-features.js?v=20261029-safari-v5"></script>
+			<script src="js/theme.js?v=20261029-safari-v6"></script><script src="js/ychat-pro-features.js?v=20261029-safari-v6"></script>
 			<!-- Story Viewers Modal -->
 			<div id="storyViewersListModal" class="modal !bg-black/80 z-[100000]">
 				<div
@@ -3143,7 +3199,8 @@ header, .navbar {
 		if (!modal) return;
 
 		// Extract post data from DOM
-		const postCard = document.getElementById('post-' + postId) || document.getElementById('post-action-btn-' + postId)?.closest('.glass-card');
+		const actionBtnEl = document.getElementById('post-action-btn-' + postId);
+		const postCard = document.getElementById('post-' + postId) || document.querySelector('[data-post-id="' + postId + '"]') || (actionBtnEl ? actionBtnEl.closest('.glass-card') : null);
 		let author = 'Friend';
 		let snippet = 'Post';
 
@@ -3168,14 +3225,17 @@ header, .navbar {
 	}
 
 	function submitDirectShare() {
-		const postId = document.getElementById('repostTargetPostId')?.value;
+		const targetEl = document.getElementById('repostTargetPostId');
+		const postId = targetEl ? targetEl.value : '';
 		if (!postId) return;
 		sendShareRequest(postId, '');
 	}
 
 	function submitQuoteRepost() {
-		const postId = document.getElementById('repostTargetPostId')?.value;
-		const commentary = document.getElementById('repostCommentaryInput')?.value || '';
+		const targetEl = document.getElementById('repostTargetPostId');
+		const cmtEl = document.getElementById('repostCommentaryInput');
+		const postId = targetEl ? targetEl.value : '';
+		const commentary = cmtEl ? cmtEl.value : '';
 		if (!postId) return;
 		sendShareRequest(postId, commentary);
 	}

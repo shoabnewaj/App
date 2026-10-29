@@ -841,24 +841,98 @@
     };
 
     // =========================================================================
-    // 9. NEWS FEED ENHANCEMENTS: 1-CLICK TRANSLATE, QR CARD, GIFTS, STORIES (#6, #7, #8)
+    // 9. NEWS FEED ENHANCEMENTS & SAFARI POST CARD FIXES (#6, #7, #8)
     // =========================================================================
+    function ensurePostCardGlobalsForSafari() {
+        if (typeof window.focusCmt !== 'function') {
+            window.focusCmt = function (id) {
+                var input = document.getElementById('input-post-' + id);
+                if (input) {
+                    if (input.scrollIntoView) {
+                        try { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+                    }
+                    input.focus();
+                }
+            };
+        }
+        if (typeof window.markNotInterested !== 'function') {
+            window.markNotInterested = function (postId) {
+                if (typeof window.hidePost === 'function') {
+                    window.hidePost(postId);
+                } else {
+                    var card = document.querySelector('[data-post-id="' + postId + '"]');
+                    if (card) card.style.display = 'none';
+                    proToast('Post hidden from your feed', 'fa-eye-slash', '#64748b');
+                }
+            };
+        }
+        if (typeof window.snoozePost !== 'function') {
+            window.snoozePost = function (postId, days) {
+                var card = document.querySelector('[data-post-id="' + postId + '"]');
+                if (card) card.style.display = 'none';
+                proToast('Post snoozed for ' + (days || 7) + ' days', 'fa-clock', '#6366f1');
+            };
+        }
+    }
+
     function enhanceNewsFeedPosts() {
-        var posts = document.querySelectorAll('.post-card, [id^="post-"]');
+        ensurePostCardGlobalsForSafari();
+        var posts = document.querySelectorAll('[data-post-id], .post-card');
         var postGifts = getStore(STORAGE_KEYS.POST_GIFTS, {});
 
         posts.forEach(function (postEl, idx) {
             if (!postEl || postEl.dataset.proEnhanced === 'true') return;
-            if (postEl.id && (postEl.id.indexOf('post-action-') === 0 || postEl.id.indexOf('post-comment-') === 0 || postEl.id.indexOf('post-share-') === 0 || postEl.id.indexOf('post-menu-') === 0)) return;
             postEl.dataset.proEnhanced = 'true';
-            var postId = postEl.id || ('pro_post_' + idx);
 
-            var textEl = postEl.querySelector('p.text-gray-800, p.text-sm, .post-content, p');
+            var rawPostId = postEl.getAttribute('data-post-id') || postEl.id || ('pro_post_' + idx);
+            var postId = String(rawPostId).replace(/^post-/, '');
+
+            // Make all clickable elements inside the post card 100% Safari touch-responsive
+            var clickables = postEl.querySelectorAll('[onclick], button, .clickable, .react-box span');
+            clickables.forEach(function (el) {
+                el.style.cursor = 'pointer';
+                el.style.touchAction = 'manipulation';
+                el.style.webkitTapHighlightColor = 'transparent';
+            });
+
+            // Close mobile reaction box when any reaction emoji is tapped
+            var reactSpans = postEl.querySelectorAll('.react-box span');
+            reactSpans.forEach(function (sp) {
+                sp.addEventListener('click', function () {
+                    var rb = sp.closest ? sp.closest('.react-box') : sp.parentElement;
+                    if (rb) rb.classList.remove('react-box-open');
+                });
+            });
+
+            var authorEl = postEl.querySelector('a.font-bold');
+            var authorName = authorEl ? (authorEl.innerText || authorEl.textContent || 'Post Author').trim() : 'Post Author';
+
+            var textEl = postEl.querySelector('p.text-gray-800, p.leading-relaxed, p.text-sm, .post-content');
             var rawText = textEl ? (textEl.innerText || textEl.textContent || '').trim() : '';
 
             var bar = document.createElement('div');
             bar.className = 'ychat-post-pro-bar';
 
+            // 1. Mobile/Safari Reaction Picker Toggle Button
+            var reactBox = postEl.querySelector('.react-box');
+            if (reactBox) {
+                var reactBtn = document.createElement('button');
+                reactBtn.type = 'button';
+                reactBtn.className = 'ychat-post-pro-btn';
+                reactBtn.innerHTML = '😊 Reacts';
+                bindSafariTap(reactBtn, function () {
+                    var isOpen = reactBox.classList.contains('react-box-open');
+                    document.querySelectorAll('.react-box.react-box-open').forEach(function (b) {
+                        b.classList.remove('react-box-open');
+                    });
+                    if (!isOpen) {
+                        reactBox.classList.add('react-box-open');
+                    }
+                });
+                bar.appendChild(reactBtn);
+            }
+
+            // 2. Translate Button
             var transBtn = document.createElement('button');
             transBtn.type = 'button';
             transBtn.className = 'ychat-post-pro-btn';
@@ -868,32 +942,36 @@
             });
             bar.appendChild(transBtn);
 
+            // 3. Gift Button
             var giftBtn = document.createElement('button');
             giftBtn.type = 'button';
             giftBtn.className = 'ychat-post-pro-btn';
             var count = postGifts[postId] || 0;
             giftBtn.innerHTML = '<i class="fa-solid fa-gift" style="color:#ec4899;"></i> Gift <span id="ychat-gift-count-' + postId + '" style="font-weight:900;color:#ec4899;">' + (count > 0 ? count : '') + '</span>';
             bindSafariTap(giftBtn, function () {
-                openSendGiftModal('Post Author', postId);
+                openSendGiftModal(authorName, postId);
             });
             bar.appendChild(giftBtn);
 
+            // 4. Folder / Save Collection Button
             var colBtn = document.createElement('button');
             colBtn.type = 'button';
             colBtn.className = 'ychat-post-pro-btn';
             colBtn.innerHTML = '<i class="fa-solid fa-folder-plus" style="color:#f59e0b;"></i> Folder';
             bindSafariTap(colBtn, function () {
-                openSavedCollectionsModal(postId, (rawText || 'Media Post').slice(0, 60));
+                openSavedCollectionsModal(postId, (rawText || ('Post by ' + authorName)).slice(0, 60));
             });
             bar.appendChild(colBtn);
 
-            var videoOrImg = postEl.querySelector('video source, video, img[src*="img/"]');
+            // 5. Media Download Button (only for post body media, not small avatars)
+            var mediaContainer = postEl.querySelector('.mt-4.rounded-2xl, .post-media-container');
+            var videoOrImg = mediaContainer ? mediaContainer.querySelector('video source, video, img') : postEl.querySelector('video source, video, img.max-h-\\[500px\\]');
             if (videoOrImg) {
                 var mediaSrc = videoOrImg.src || videoOrImg.getAttribute('src') || '';
                 if (mediaSrc && mediaSrc.indexOf('default.png') === -1) {
                     var dlLink = document.createElement('a');
                     dlLink.href = mediaSrc;
-                    dlLink.download = 'ychat-media';
+                    dlLink.download = 'ychat-media-' + postId;
                     dlLink.className = 'ychat-post-pro-btn';
                     dlLink.style.textDecoration = 'none';
                     dlLink.innerHTML = '<i class="fa-solid fa-download" style="color:#10b981;"></i> Download';
@@ -901,9 +979,15 @@
                 }
             }
 
-            postEl.appendChild(bar);
+            var cmtSection = document.getElementById('comment-section-' + postId) || postEl.querySelector('[id^="comment-section-"]');
+            if (cmtSection && cmtSection.parentNode === postEl) {
+                postEl.insertBefore(bar, cmtSection);
+            } else {
+                postEl.appendChild(bar);
+            }
         });
     }
+    window.enhanceNewsFeedPosts = enhanceNewsFeedPosts;
 
     function translateFeedPost(postEl, text) {
         var box = postEl.querySelector('.ychat-feed-trans-box');

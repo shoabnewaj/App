@@ -1525,6 +1525,6 @@
             </div>
         </div>
     </div>
-	<script src="js/theme.js?v=20261029-safari-v5"></script><script src="js/ychat-pro-features.js?v=20261029-safari-v5"></script>
+	<script src="js/theme.js?v=20261029-safari-v6"></script><script src="js/ychat-pro-features.js?v=20261029-safari-v6"></script>
 </body>
 </html>
