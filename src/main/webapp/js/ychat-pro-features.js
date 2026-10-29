@@ -844,6 +844,24 @@
     // 9. NEWS FEED ENHANCEMENTS & SAFARI POST CARD FIXES (#6, #7, #8)
     // =========================================================================
     function ensurePostCardGlobalsForSafari() {
+        if (typeof window.openModal !== 'function') {
+            window.openModal = function () {
+                var modal = document.getElementById('postModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                }
+            };
+        }
+        if (typeof window.openLiveModal !== 'function') {
+            window.openLiveModal = function () {
+                var modal = document.getElementById('liveModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                }
+            };
+        }
         if (typeof window.focusCmt !== 'function') {
             window.focusCmt = function (id) {
                 var input = document.getElementById('input-post-' + id);

@@ -1,25 +1,16 @@
-const CACHE_NAME = "ychat-v6";
+const CACHE_NAME = "ychat-v7";
 
 const urlsToCache = [
-  "/",
   "/manifest.json"
-  // প্রয়োজন হলে এখানে তোমার real page add করো (যেমন /index.jsp)
 ];
 
 // Install → cache basic files
 self.addEventListener("install", event => {
-  console.log("Service Worker installing...");
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
-  );
   self.skipWaiting();
 });
 
 // Activate → clean old cache
 self.addEventListener("activate", event => {
-  console.log("Service Worker activated");
-
   event.waitUntil(
     caches.keys().then(keys => {
       return Promise.all(
@@ -31,26 +22,37 @@ self.addEventListener("activate", event => {
       );
     })
   );
-
   self.clients.claim();
 });
 
-// Fetch → network first, fallback to cache
+// Fetch → network first, NEVER cache POST/PUT/DELETE requests (Safari throws TypeError on cache.put for POST)
 self.addEventListener("fetch", event => {
+  if (event.request.method !== 'GET') {
+    return; // Pass through directly to network
+  }
+
+  const url = new URL(event.request.url);
+  // Do not cache API / Servlet endpoints or dynamic JSP pages
+  if (url.pathname.includes('Servlet') || url.pathname.endsWith('.jsp') || url.search.includes('ajax=true')) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Static assets (css, js, images)
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // cache new request
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME)
-          .then(cache => cache.put(event.request, responseClone));
-
+        if (response && response.status === 200 && response.type === 'basic') {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            try { cache.put(event.request, responseClone); } catch (e) {}
+          });
+        }
         return response;
       })
-      .catch(() => {
-        // offline fallback
-        return caches.match(event.request);
-      })
+      .catch(() => caches.match(event.request))
   );
 });
 

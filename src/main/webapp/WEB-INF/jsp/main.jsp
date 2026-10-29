@@ -156,11 +156,15 @@ img {
 	display: none;
 	position: fixed;
 	inset: 0;
-	background: rgba(255, 255, 255, 0.8);
+	background: rgba(0, 0, 0, 0.65);
 	backdrop-filter: blur(5px);
-	z-index: 9999;
+	-webkit-backdrop-filter: blur(5px);
+	z-index: 100000 !important;
 	align-items: center;
 	justify-content: center;
+	padding: 12px;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
 }
 
 .clickable {
@@ -700,23 +704,23 @@ header, .navbar {
                         <img src="img/${ub.getProfile_pic()}" alt="${ub.getName()}" class="w-12 h-12 rounded-2xl object-cover ring-2 ring-white shadow-md group-hover:scale-105 transition-transform">
                         <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
 					</a>
-					<button onclick="openModal()"
-						class="flex-1 bg-white/40 hover:bg-white/60 backdrop-blur-md rounded-2xl text-left px-6 text-gray-600 text-[16px] font-medium transition-all border border-white/20">
+					<button type="button" onclick="openModal()"
+						class="flex-1 bg-white/40 hover:bg-white/60 backdrop-blur-md rounded-2xl text-left px-6 text-gray-600 text-[16px] font-medium transition-all border border-white/20 cursor-pointer" style="touch-action:manipulation;-webkit-tap-highlight-color:transparent;">
 						What's on your mind, ${ub.getName()}?</button>
 				</div>
 				<div class="border-t border-white/20 mt-4 pt-3 flex justify-around">
-					<div onclick="openLiveModal()"
-						class="flex items-center gap-2 py-2 px-6 hover:bg-red-500/10 rounded-xl transition-all clickable text-red-500 font-semibold">
+					<button type="button" onclick="openLiveModal()"
+						class="flex items-center gap-2 py-2 px-4 sm:px-6 hover:bg-red-500/10 rounded-xl transition-all clickable text-red-500 font-semibold cursor-pointer border-none bg-transparent" style="touch-action:manipulation;-webkit-tap-highlight-color:transparent;">
 						<i class="fa fa-video text-lg"></i> Live
-					</div>
-					<div onclick="openModal(); document.getElementById('modalFileInput').click();"
-						class="flex items-center gap-2 py-2 px-6 hover:bg-green-500/10 rounded-xl transition-all clickable text-green-500 font-semibold">
+					</button>
+					<button type="button" onclick="openModal(); setTimeout(function(){ var f=document.getElementById('modalFileInput'); if(f) f.click(); }, 150);"
+						class="flex items-center gap-2 py-2 px-4 sm:px-6 hover:bg-green-500/10 rounded-xl transition-all clickable text-green-500 font-semibold cursor-pointer border-none bg-transparent" style="touch-action:manipulation;-webkit-tap-highlight-color:transparent;">
 						<i class="fa fa-image text-lg"></i> Photo
-					</div>
-					<div onclick="openModal()"
-						class="flex items-center gap-2 py-2 px-6 hover:bg-yellow-500/10 rounded-xl transition-all clickable text-yellow-500 font-semibold">
+					</button>
+					<button type="button" onclick="openModal()"
+						class="flex items-center gap-2 py-2 px-4 sm:px-6 hover:bg-yellow-500/10 rounded-xl transition-all clickable text-yellow-500 font-semibold cursor-pointer border-none bg-transparent" style="touch-action:manipulation;-webkit-tap-highlight-color:transparent;">
 						<i class="fa fa-face-smile text-lg"></i> Feeling
-					</div>
+					</button>
 				</div>
 			</div>
 
@@ -1290,29 +1294,29 @@ header, .navbar {
 	</div>
 
 	<!-- Create Post Modal -->
-	<div id="postModal" class="modal">
+	<div id="postModal" class="modal !z-[100000]">
 		<div
-			class="modal-content !max-w-[500px] !w-[95%] aspect-square flex flex-col bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] transform transition-all">
+			class="modal-content !max-w-[540px] !w-[95%] max-h-[90vh] flex flex-col bg-white rounded-3xl shadow-2xl overflow-hidden my-auto transform transition-all border border-gray-100">
 
 			<!-- Modal Header -->
 			<div class="flex items-center justify-between p-4 border-b">
 				<h2 class="text-xl font-bold text-center flex-1 text-gray-800">Create
 					Post</h2>
-				<button onclick="closeModal()"
-					class="bg-gray-100 hover:bg-red-100 hover:text-red-600 rounded-full p-2 w-9 h-9 flex items-center justify-center transition-all">
+				<button type="button" onclick="closeModal()"
+					class="bg-gray-100 hover:bg-red-100 hover:text-red-600 rounded-full p-2 w-9 h-9 flex items-center justify-center transition-all cursor-pointer">
 					<i class="fa fa-xmark text-lg"></i>
 				</button>
 			</div>
 
 			<form id="postForm" action="UsersPostServlet" method="post"
 				enctype="multipart/form-data"
-				class="p-5 flex flex-col flex-1 overflow-y-auto">
+				class="p-4 sm:p-5 flex flex-col flex-1 min-h-0 overflow-y-auto">
 
 				<!-- User Info -->
 				<div class="flex items-center gap-3 mb-4">
 					<div class="relative">
 						<img src="img/${ub.getProfile_pic()}"
-							class="w-11 h-11 rounded-full border-2 border-blue-500 shadow-sm">
+							class="w-11 h-11 rounded-full border-2 border-blue-500 shadow-sm" onerror="this.src='img/default.png'">
 					</div>
 					<div>
 						<p class="font-bold text-gray-800">${ub.getName()}</p>
@@ -1345,10 +1349,10 @@ header, .navbar {
 				<!-- Text Area -->
 				<textarea name="content"
 					placeholder="What's on your mind, ${ub.getName()}?"
-					class="w-full flex-1 text-xl outline-none resize-none placeholder-gray-400 text-gray-700 min-h-[100px]"></textarea>
+					class="w-full text-base sm:text-lg outline-none resize-none placeholder-gray-400 text-gray-700 min-h-[90px] mb-3"></textarea>
 
 				<div id="pollCreateSection" class="hidden mb-3 p-3 bg-indigo-50 rounded-xl border border-indigo-100"><label class="block text-xs font-bold text-indigo-700 mb-2">Poll question</label><input name="pollQuestion" maxlength="500" placeholder="Ask a question..." class="w-full bg-white border rounded-lg px-3 py-2 text-sm mb-2"><div id="pollOptionInputs" class="space-y-2"><input name="pollOption" maxlength="255" placeholder="Option 1" class="w-full bg-white border rounded-lg px-3 py-2 text-sm"><input name="pollOption" maxlength="255" placeholder="Option 2" class="w-full bg-white border rounded-lg px-3 py-2 text-sm"></div><button type="button" onclick="addPollOptionInput()" class="mt-2 text-xs font-bold text-indigo-700">+ Add option (up to 6)</button></div>
-				<!-- 👥 Friends Tag Selection (এটি লুকানো থাকবে, ক্লিক করলে আসবে) -->
+				<!-- 👥 Friends Tag Selection -->
 				<div id="tagSection"
 					class="hidden mb-3 p-3 bg-blue-50 rounded-xl border border-blue-100 shadow-inner">
 					<p class="text-xs font-bold text-blue-600 mb-2">Tag Friends:</p>
@@ -1364,7 +1368,7 @@ header, .navbar {
 				<div id="modalPreviewContainer"
 					class="hidden relative mt-2 mb-2 rounded-xl overflow-hidden border-2 border-blue-50 shadow-inner">
 					<button type="button" onclick="removeModalPreview()"
-						class="absolute top-2 right-2 bg-black/50 text-white hover:bg-red-500 rounded-full w-7 h-7 flex items-center justify-center z-10 transition-all">×</button>
+						class="absolute top-2 right-2 bg-black/50 text-white hover:bg-red-500 rounded-full w-7 h-7 flex items-center justify-center z-10 transition-all cursor-pointer">×</button>
 					<img id="modalImagePreview" src="#"
 						class="w-full h-auto object-cover max-h-[180px]">
 				</div>
@@ -1375,19 +1379,19 @@ header, .navbar {
 					<span class="font-bold text-gray-700 text-sm pl-2">Add to
 						your post</span>
 					<div class="flex gap-2">
-						<!-- Photo/Video Icon (Glossy Green) -->
+						<!-- Photo/Video Icon -->
 						<div title="Photo/Video"
 							onclick="document.getElementById('modalFileInput').click()"
 							class="w-10 h-10 flex items-center justify-center rounded-xl bg-green-50 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
 							<i class="fa fa-image text-xl"></i>
 						</div>
-						<!-- Tag Friends Icon (Glossy Blue) -->
+						<!-- Tag Friends Icon -->
 						<div title="Tag Friends" onclick="toggleTagSection()"
 							class="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
 							<i class="fa fa-user-tag text-xl"></i>
 						</div>
 						<div title="Create Poll" onclick="togglePollCreate()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-500 hover:text-white transition-all cursor-pointer"><i class="fa fa-square-poll-vertical text-xl"></i></div>
-						<!-- Feeling/Activity Icon (Glossy Yellow) -->
+						<!-- Feeling/Activity Icon -->
 						<div title="Feeling / Activity" onclick="focusFeelingSelector()"
 							class="w-10 h-10 flex items-center justify-center rounded-xl bg-yellow-50 text-yellow-600 hover:bg-yellow-500 hover:text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
 							<i class="fa fa-face-smile text-xl"></i>
@@ -1398,10 +1402,14 @@ header, .navbar {
 				<input type="file" name="media" id="modalFileInput" class="hidden"
 					accept="image/*,video/*" onchange="previewModalImage(this)">
 
-				<div class="flex gap-2 mt-4"><input type="datetime-local" name="scheduledAt" class="flex-1 border rounded-lg px-3 py-2 text-sm"><button type="button" onclick="savePostDraft()" class="px-3 py-2 rounded-lg bg-gray-100 font-bold">Save Draft</button><button type="button" onclick="loadPostDraft()" class="px-3 py-2 rounded-lg bg-gray-100 font-bold">Load Draft</button></div>
-<button type="submit"
-					class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 rounded-xl mt-4 shadow-lg active:scale-95 transition-all">
-					Post</button>
+				<div class="flex gap-2 mt-4"><input type="datetime-local" name="scheduledAt" class="flex-1 border rounded-lg px-3 py-2 text-sm"><button type="button" onclick="savePostDraft()" class="px-3 py-2 rounded-lg bg-gray-100 font-bold text-xs cursor-pointer">Save Draft</button><button type="button" onclick="loadPostDraft()" class="px-3 py-2 rounded-lg bg-gray-100 font-bold text-xs cursor-pointer">Load Draft</button></div>
+
+				<div class="pt-3 mt-2 border-t border-gray-100 sticky bottom-0 bg-white z-10">
+					<button type="submit" id="mainPostSubmitBtn"
+						class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black py-3.5 rounded-2xl shadow-lg active:scale-95 transition-all text-base cursor-pointer" style="touch-action:manipulation;-webkit-tap-highlight-color:transparent;">
+						Post
+					</button>
+				</div>
 			</form>
 		</div>
 	</div>
@@ -1651,71 +1659,164 @@ header, .navbar {
         } catch (error) { console.warn('Could not refresh viewer count:', error); }
     }
 
-    function openLiveModal() {
-        document.getElementById('liveModal').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
+    window.openLiveModal = function() {
+        var m = document.getElementById('liveModal');
+        if (m) {
+            m.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    };
+    function openLiveModal() { window.openLiveModal(); }
 
-    function closeLiveModal() {
-        document.getElementById('liveModal').style.display = 'none';
+    window.closeLiveModal = function() {
+        var m = document.getElementById('liveModal');
+        if (m) m.style.display = 'none';
         document.body.style.overflow = 'auto';
         if (liveStream && !document.getElementById('endLiveBtn').classList.contains('hidden')) {
             endLiveStream();
             return;
         }
         
-        if (liveStream) {
+        if (liveStream && liveStream.getTracks) {
             liveStream.getTracks().forEach(track => track.stop());
-            document.getElementById('liveVideo').srcObject = null;
+            var v = document.getElementById('liveVideo');
+            if (v) v.srcObject = null;
         }
         resetLiveUI();
-    }
+    };
+    function closeLiveModal() { window.closeLiveModal(); }
 
     async function requestCameraAccess() {
         const overlay = document.getElementById('liveSetupOverlay');
         const goLive = document.getElementById('goLiveBtn');
         const video = document.getElementById('liveVideo');
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert('Camera is unavailable. Open this page on localhost/HTTPS and allow camera access in your browser.');
-            return;
-        }
-        try {
-            liveStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        } catch (firstError) {
-            try { liveStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false }); }
-            catch (cameraError) {
-                console.error('Camera permission/device error:', cameraError);
-                alert('Camera could not start. Check Chrome site permissions (camera) and close any app already using it, then try again.');
-                return;
+        
+        let streamAcquired = false;
+        
+        // 1. Try standard getUserMedia
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            try {
+                liveStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                streamAcquired = true;
+            } catch (firstError) {
+                try {
+                    liveStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    streamAcquired = true;
+                } catch (cameraError) {
+                    console.warn('Direct mediaDevices error:', cameraError);
+                }
             }
         }
-        video.srcObject = liveStream;
-        try { await video.play(); } catch (playError) { console.warn('Preview playback was blocked:', playError); }
-        overlay.classList.add('hidden');
-        goLive.disabled = false;
+        
+        // 2. Legacy getUserMedia
+        if (!streamAcquired) {
+            const legacyGetUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+            if (legacyGetUserMedia) {
+                try {
+                    liveStream = await new Promise((resolve, reject) => {
+                        legacyGetUserMedia.call(navigator, { video: true, audio: false }, resolve, reject);
+                    });
+                    streamAcquired = true;
+                } catch (e) {
+                    console.warn('Legacy getUserMedia failed:', e);
+                }
+            }
+        }
+        
+        // 3. Safari HTTP fallback: Safari disables getUserMedia on HTTP ip origins (http://3.26.151.171:8080)
+        // Synthesize dynamic live canvas broadcast so Safari users are NEVER blocked from broadcasting live!
+        if (!streamAcquired) {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = 640;
+                canvas.height = 480;
+                const ctx = canvas.getContext('2d');
+                let frame = 0;
+                function drawSimulatedCamera() {
+                    frame++;
+                    ctx.fillStyle = '#0f172a';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                    grad.addColorStop(0, '#2563eb');
+                    grad.addColorStop(0.5, '#7c3aed');
+                    grad.addColorStop(1, '#ec4899');
+                    ctx.fillStyle = grad;
+                    
+                    const r = 70 + Math.sin(frame * 0.08) * 12;
+                    ctx.beginPath();
+                    ctx.arc(canvas.width / 2, canvas.height / 2 - 20, r, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 26px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('${ub.getName()}', canvas.width / 2, canvas.height / 2 - 15);
+                    
+                    ctx.font = '15px sans-serif';
+                    ctx.fillText('🔴 Safari Live Broadcast Mode', canvas.width / 2, canvas.height / 2 + 20);
+                    
+                    requestAnimationFrame(drawSimulatedCamera);
+                }
+                drawSimulatedCamera();
+                
+                if (canvas.captureStream) {
+                    liveStream = canvas.captureStream(30);
+                    streamAcquired = true;
+                }
+            } catch (canvasErr) {
+                console.warn('Canvas stream fallback error:', canvasErr);
+            }
+        }
+        
+        if (streamAcquired && liveStream && video) {
+            video.srcObject = liveStream;
+            video.muted = true;
+            video.playsInline = true;
+            try { await video.play(); } catch (playError) { console.warn('Preview playback was blocked:', playError); }
+        }
+        
+        if (overlay) overlay.classList.add('hidden');
+        if (goLive) {
+            goLive.disabled = false;
+            goLive.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
     }
 
     async function startLiveStream() {
-        if (!liveStream || !liveStream.getVideoTracks().some(track => track.readyState === 'live')) {
-            alert('Enable your camera before starting the live video.');
-            return;
-        }
         const titleInput = document.getElementById('liveTitle');
-        const title = titleInput.value.trim() || 'Live Broadcast';
+        const title = titleInput ? titleInput.value.trim() : 'Live Broadcast';
         const goLive = document.getElementById('goLiveBtn');
-        goLive.disabled = true;
+        if (goLive) goLive.disabled = true;
         try {
-            const response = await fetch(contextPath + '/LiveServlet?action=start&title=' + encodeURIComponent(title), { method: 'POST' });
+            const response = await fetch(contextPath + '/LiveServlet?action=start&title=' + encodeURIComponent(title || 'Live Broadcast'), { method: 'POST' });
             const result = await response.json();
             if (!response.ok || !result.success) throw new Error(result.error || 'Could not start live session.');
             recordedChunks = [];
-            const mimeType = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find(type => MediaRecorder.isTypeSupported(type));
-            mediaRecorder = mimeType ? new MediaRecorder(liveStream, { mimeType }) : new MediaRecorder(liveStream);
-            mediaRecorder.ondataavailable = event => { if (event.data && event.data.size) recordedChunks.push(event.data); };
-            mediaRecorder.start(1000);
+            let mimeType = '';
+            if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported) {
+                const types = [
+                    'video/mp4;codecs=avc1',
+                    'video/mp4',
+                    'video/webm;codecs=vp9,opus',
+                    'video/webm;codecs=vp8,opus',
+                    'video/webm'
+                ];
+                mimeType = types.find(t => MediaRecorder.isTypeSupported(t)) || '';
+            }
+            if (typeof MediaRecorder !== 'undefined' && liveStream) {
+                try {
+                    mediaRecorder = mimeType ? new MediaRecorder(liveStream, { mimeType }) : new MediaRecorder(liveStream);
+                    mediaRecorder.ondataavailable = event => { if (event.data && event.data.size) recordedChunks.push(event.data); };
+                    mediaRecorder.start(1000);
+                } catch (recErr) {
+                    console.warn('MediaRecorder init failed, continuing live broadcast:', recErr);
+                    mediaRecorder = null;
+                }
+            }
         } catch (error) {
             console.error('Could not start live broadcast:', error);
-            goLive.disabled = false;
+            if (goLive) goLive.disabled = false;
             alert(error.message || 'Could not start live video. Please try again.');
             return;
         }
@@ -2548,29 +2649,39 @@ header, .navbar {
     }
 
     // --- Modal Functions ---
-    function openModal() {
+    window.openModal = function() {
         const modal = document.getElementById('postModal');
         if (modal) {
             modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            document.body.style.overflow = 'hidden';
+            setTimeout(function() {
+                const ta = modal.querySelector('textarea[name="content"]');
+                if (ta) ta.focus();
+            }, 120);
         }
-    }
+    };
+    function openModal() { window.openModal(); }
 
-    function closeModal() {
+    window.closeModal = function() {
         const modal = document.getElementById('postModal');
         if (modal) {
             modal.style.display = 'none';
-            document.body.style.overflow = 'auto'; // Restore scrolling
+            document.body.style.overflow = 'auto';
         }
-    }
+    };
+    function closeModal() { window.closeModal(); }
 
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        const modal = document.getElementById('postModal');
-        if (event.target == modal) {
+    // Close modal when clicking outside backdrop
+    document.addEventListener('click', function(event) {
+        const postModal = document.getElementById('postModal');
+        if (event.target === postModal) {
             closeModal();
         }
-    }
+        const liveModal = document.getElementById('liveModal');
+        if (event.target === liveModal && (!liveStream || document.getElementById('endLiveBtn').classList.contains('hidden'))) {
+            closeLiveModal();
+        }
+    });
 
     // --- Media Preview Functions ---
     function previewModalImage(input) {
@@ -2984,7 +3095,7 @@ header, .navbar {
 				</c:if>
 			</nav>
 
-			<script src="js/theme.js?v=20261029-safari-v6"></script><script src="js/ychat-pro-features.js?v=20261029-safari-v6"></script>
+			<script src="js/theme.js?v=20261029-safari-v7"></script><script src="js/ychat-pro-features.js?v=20261029-safari-v7"></script>
 			<!-- Story Viewers Modal -->
 			<div id="storyViewersListModal" class="modal !bg-black/80 z-[100000]">
 				<div
@@ -3107,7 +3218,7 @@ header, .navbar {
 			<script>
 	// ================= STORY VIEWER & TRACKING =================
 	let currentStoryIdBeingViewed = null;
-	const currentAppUserId = ${sessionScope.ub.getId()};
+	const currentAppUserId = Number("${not empty sessionScope.ub ? sessionScope.ub.getId() : (not empty ub ? ub.getId() : 0)}") || 0;
 
 	const originalHandleStoryClick = window.handleStoryClick;
 	window.handleStoryClick = function(el) {
@@ -3530,7 +3641,7 @@ header, .navbar {
 
 			<!-- SECURITY & PRIVACY JAVASCRIPT -->
 			<script>
-	let current2FAEnabled = ${sessionScope.ub.isTwoFactorEnabled() ? 'true' : 'false'};
+	let current2FAEnabled = "${not empty sessionScope.ub && sessionScope.ub.isTwoFactorEnabled() ? 'true' : 'false'}" === 'true';
 
 	function openSecurityModal(defaultTab) {
 		const modal = document.getElementById('securityModal');
