@@ -879,30 +879,30 @@ header, .navbar {
 					</div>
 
 					<!-- Action Buttons -->
-					<div class="flex justify-around py-1.5">
-						<div class="react-container flex-1">
-							<div id="post-action-btn-${post.getId()}" onclick="handleAJAXReact(${post.getId()}, 'Like', 'post', event)" class="flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 transition-all cursor-pointer font-bold text-gray-600">
-								<span id="post-action-btn-content-${post.getId()}" class="flex items-center justify-center gap-2">
+					<div class="flex justify-around py-1.5 border-t border-gray-100/60 mt-1">
+						<div class="react-container flex-1 relative">
+							<button type="button" id="post-action-btn-${post.getId()}" onclick="handleAJAXReact(${post.getId()}, 'Like', 'post', event)" class="w-full flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 active:scale-95 transition-all cursor-pointer font-bold text-gray-600 bg-transparent border-0" style="touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
+								<span id="post-action-btn-content-${post.getId()}" class="flex items-center justify-center gap-2 pointer-events-none">
 									<i class="fa-regular fa-thumbs-up"></i> Like
 								</span>
-							</div>
+							</button>
 							<div class="react-box glass-card !p-2 !rounded-full">
-								<span title="Like" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Like', 'post', event)">👍</span>
-								<span title="Love" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Love', 'post', event)">❤️</span>
-								<span title="Care" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Care', 'post', event)">🥰</span>
-								<span title="Haha" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Haha', 'post', event)">😆</span>
-								<span title="Wow" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Wow', 'post', event)">😮</span>
-								<span title="Sad" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Sad', 'post', event)">😢</span>
-								<span title="Angry" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Angry', 'post', event)">😡</span>
-								<span title="Dislike" class="hover:scale-125 transition" onclick="handleAJAXReact(${post.getId()}, 'Dislike', 'post', event)">👎</span>
+								<span title="Like" class="hover:scale-125 transition cursor-pointer select-none" onclick="handleAJAXReact(${post.getId()}, 'Like', 'post', event)">👍</span>
+								<span title="Love" class="hover:scale-125 transition cursor-pointer select-none" onclick="handleAJAXReact(${post.getId()}, 'Love', 'post', event)">❤️</span>
+								<span title="Care" class="hover:scale-125 transition cursor-pointer select-none" onclick="handleAJAXReact(${post.getId()}, 'Care', 'post', event)">🥰</span>
+								<span title="Haha" class="hover:scale-125 transition cursor-pointer select-none" onclick="handleAJAXReact(${post.getId()}, 'Haha', 'post', event)">😆</span>
+								<span title="Wow" class="hover:scale-125 transition cursor-pointer select-none" onclick="handleAJAXReact(${post.getId()}, 'Wow', 'post', event)">😮</span>
+								<span title="Sad" class="hover:scale-125 transition cursor-pointer select-none" onclick="handleAJAXReact(${post.getId()}, 'Sad', 'post', event)">😢</span>
+								<span title="Angry" class="hover:scale-125 transition cursor-pointer select-none" onclick="handleAJAXReact(${post.getId()}, 'Angry', 'post', event)">😡</span>
+								<span title="Dislike" class="hover:scale-125 transition cursor-pointer select-none" onclick="handleAJAXReact(${post.getId()}, 'Dislike', 'post', event)">👎</span>
 							</div>
 						</div>
-						<div onclick="focusCmt(${post.getId()})" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 transition-all cursor-pointer font-bold text-gray-600">
+						<button type="button" onclick="focusCmt(${post.getId()})" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 active:scale-95 transition-all cursor-pointer font-bold text-gray-600 bg-transparent border-0" style="touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
 							<i class="fa-regular fa-comment"></i> Comment
-						</div>
-						<div onclick="shareAJAX(${post.getId()})" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 transition-all cursor-pointer font-bold text-gray-600">
+						</button>
+						<button type="button" onclick="shareAJAX(${post.getId()})" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 active:scale-95 transition-all cursor-pointer font-bold text-gray-600 bg-transparent border-0" style="touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
 							<i class="fa-solid fa-share"></i> Share
-						</div>
+						</button>
 					</div>
 
 					<!-- Comment Section -->
@@ -1198,7 +1198,7 @@ header, .navbar {
 	</div>
 
 	<!-- Features (Saved/Memories) Modal -->
-	<div id="featuresModal" class="modal !bg-black/85 z-[9999]">
+	<div id="featuresModal" class="modal !bg-black/85 z-[9999]" style="display: none;">
 		<div class="modal-content !max-w-[700px] !w-[95%] !bg-[#18191A] rounded-3xl shadow-2xl overflow-hidden border border-gray-700 p-0">
 			<!-- Header -->
 			<div class="flex items-center justify-between p-5 border-b border-gray-700">
@@ -1215,7 +1215,7 @@ header, .navbar {
 	</div>
 
 	<!-- Create Story Modal -->
-	<div id="storyModal" class="modal">
+	<div id="storyModal" class="modal" style="display: none;">
 		<div class="modal-content !max-w-[450px] !w-[95%] bg-white rounded-2xl shadow-2xl p-0 overflow-hidden">
 			<div class="flex items-center justify-between p-4 border-b">
 				<h2 class="text-xl font-bold text-gray-800">Create Story</h2>
@@ -1252,7 +1252,7 @@ header, .navbar {
 	</div>
 
 	<!-- Story Viewer Modal -->
-	<div id="storyViewerModal" class="modal !bg-black/95">
+	<div id="storyViewerModal" class="modal !bg-black/95" style="display: none;">
 		<div class="relative w-full h-full flex items-center justify-center">
 			<button onclick="closeStoryViewer()" class="absolute top-6 right-6 text-white text-3xl z-50 hover:scale-110 transition">
 				<i class="fa fa-times"></i>
@@ -1294,7 +1294,7 @@ header, .navbar {
 	</div>
 
 	<!-- Create Post Modal -->
-	<div id="postModal" class="modal !z-[100000]">
+	<div id="postModal" class="modal !z-[100000]" style="display: none;">
 		<div
 			class="modal-content !max-w-[540px] !w-[95%] max-h-[90vh] flex flex-col bg-white rounded-3xl shadow-2xl overflow-hidden my-auto transform transition-all border border-gray-100">
 
@@ -1415,7 +1415,7 @@ header, .navbar {
 	</div>
 
 	<!-- Live Video Modal -->
-	<div id="liveModal" class="modal z-[10000]">
+	<div id="liveModal" class="modal z-[10000]" style="display: none;">
 		<div class="modal-content !max-w-[800px] !w-[95%] bg-black text-white rounded-2xl shadow-2xl p-0 overflow-hidden flex flex-col md:flex-row h-[80vh]">
 			<!-- Video Section -->
 			<div id="liveVideoContainer" class="flex-1 relative bg-gray-900 flex flex-col justify-center items-center overflow-hidden">
@@ -1490,7 +1490,7 @@ header, .navbar {
 	</div>
 
 	<!-- Create Reel Modal -->
-	<div id="reelModal" class="modal">
+	<div id="reelModal" class="modal" style="display: none;">
 		<div class="modal-content !max-w-[450px] !w-[95%] bg-white rounded-2xl shadow-2xl p-0 overflow-hidden">
 			<div class="flex items-center justify-between p-4 border-b">
 				<h2 class="text-xl font-bold">Create Reel</h2>
@@ -1515,7 +1515,7 @@ header, .navbar {
 	</div>
 
 	<!-- Reel Viewer Modal -->
-	<div id="reelViewer" class="modal !bg-black/95">
+	<div id="reelViewer" class="modal !bg-black/95" style="display: none;">
 		<div class="relative w-full h-full flex items-center justify-center">
 			<button onclick="closeReelViewer()" class="absolute top-6 right-6 text-white text-4xl z-50">×</button>
 			<div class="h-[90vh] aspect-[9/16] bg-black rounded-2xl overflow-hidden relative shadow-2xl">
@@ -2080,9 +2080,13 @@ header, .navbar {
     // ১. ৮টি রিঅ্যাকশন হ্যান্ডলার (পোস্ট, কমেন্ট, রিপ্লাই সবার জন্য)
     function handleAJAXReact(id, type, level, event) {
         // Prevent click bubbling to parent elements
-        if (event) event.stopPropagation();
+        if (event) {
+            event.stopPropagation();
+            if (event.preventDefault && event.type !== 'touchend') event.preventDefault();
+        }
+        document.querySelectorAll('.react-box-open').forEach(b => b.classList.remove('react-box-open'));
 
-        let targetUrl = (level === 'post') ? ('${pageContext.request.contextPath}/InteractionServlet') : ('${pageContext.request.contextPath}/CommentServlet');
+        let targetUrl = (level === 'post') ? 'InteractionServlet' : 'CommentServlet';
         
         // FormData ব্যবহার করতে হবে কারণ উভয় Servlet-এ @MultipartConfig আছে
         // @MultipartConfig থাকলে URLSearchParams দিয়ে পাঠানো data getParameter() এ পাওয়া যায় না
@@ -2168,6 +2172,33 @@ header, .navbar {
         })
         .catch(err => console.error('Reaction Error:', err));
     }
+
+    // Safari / Mobile Touch long-press & click support for reaction tray
+    document.addEventListener('touchstart', function(e) {
+        const btn = e.target.closest('[id^="post-action-btn-"]');
+        if (btn) {
+            btn._touchTimer = setTimeout(function() {
+                const container = btn.closest('.react-container');
+                const box = container ? container.querySelector('.react-box') : null;
+                if (box) {
+                    document.querySelectorAll('.react-box-open').forEach(b => b.classList.remove('react-box-open'));
+                    box.classList.add('react-box-open');
+                }
+            }, 350);
+        }
+    }, { passive: true });
+    document.addEventListener('touchend', function(e) {
+        const btn = e.target.closest('[id^="post-action-btn-"]');
+        if (btn && btn._touchTimer) {
+            clearTimeout(btn._touchTimer);
+            btn._touchTimer = null;
+        }
+    }, { passive: true });
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.react-container')) {
+            document.querySelectorAll('.react-box-open').forEach(b => b.classList.remove('react-box-open'));
+        }
+    });
 
     function submitCommentAJAX(postId) {
         let input = document.getElementById('input-post-' + postId);
@@ -3095,9 +3126,9 @@ header, .navbar {
 				</c:if>
 			</nav>
 
-			<script src="js/theme.js?v=20261029-safari-v7"></script><script src="js/ychat-pro-features.js?v=20261029-safari-v7"></script>
+			<script src="js/theme.js?v=20261029-safari-v8"></script><script src="js/ychat-pro-features.js?v=20261029-safari-v8"></script>
 			<!-- Story Viewers Modal -->
-			<div id="storyViewersListModal" class="modal !bg-black/80 z-[100000]">
+			<div id="storyViewersListModal" class="modal !bg-black/80 z-[100000]" style="display: none;">
 				<div
 					class="modal-content !max-w-[420px] !w-[92%] !bg-white rounded-3xl shadow-2xl overflow-hidden p-0 border border-gray-200">
 					<div
@@ -3119,7 +3150,7 @@ header, .navbar {
 			</div>
 
 			<!-- Repost / Quote Post Modal -->
-			<div id="repostModal" class="modal !bg-black/75 z-[9999]">
+			<div id="repostModal" class="modal !bg-black/75 z-[9999]" style="display: none;">
 				<div
 					class="modal-content !max-w-[500px] !w-[92%] !bg-white rounded-3xl shadow-2xl overflow-hidden p-0 border border-gray-200">
 					<div
@@ -3167,7 +3198,7 @@ header, .navbar {
 			</div>
 
 			<!-- Animated GIF Picker Modal -->
-			<div id="gifPickerModal" class="modal !bg-black/70 z-[100000]">
+			<div id="gifPickerModal" class="modal !bg-black/70 z-[100000]" style="display: none;">
 				<div
 					class="modal-content !max-w-[460px] !w-[92%] !bg-white rounded-3xl shadow-2xl overflow-hidden p-0 border border-gray-200">
 					<div
@@ -3449,7 +3480,7 @@ header, .navbar {
 
 			<!-- ================= SECURITY & PRIVACY MODAL ================= -->
 			<div id="securityModal"
-				class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[9999] hidden flex items-center justify-center p-4">
+				class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[9999] hidden items-center justify-center p-4" style="display: none !important;">
 				<div
 					class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[88vh] animate-in fade-in zoom-in-95 duration-200">
 					<!-- Modal Header -->
@@ -3646,6 +3677,7 @@ header, .navbar {
 	function openSecurityModal(defaultTab) {
 		const modal = document.getElementById('securityModal');
 		if (modal) {
+			modal.style.setProperty('display', 'flex', 'important');
 			modal.classList.remove('hidden');
 			switchSecurityTab(defaultTab || '2fa');
 		}
@@ -3653,7 +3685,10 @@ header, .navbar {
 
 	function closeSecurityModal() {
 		const modal = document.getElementById('securityModal');
-		if (modal) modal.classList.add('hidden');
+		if (modal) {
+			modal.style.setProperty('display', 'none', 'important');
+			modal.classList.add('hidden');
+		}
 	}
 
 	function switchSecurityTab(tab) {
@@ -3946,12 +3981,16 @@ header, .navbar {
 		document.getElementById('tipCreatorName').textContent = creatorName || 'Creator';
 		document.getElementById('tipCustomAmount').value = selectedTipAmt;
 		selectTipMethod('WALLET');
+		modal.style.setProperty('display', 'flex', 'important');
 		modal.classList.remove('hidden');
 	}
 
 	function closeTipModal() {
 		const modal = document.getElementById('tipModal');
-		if (modal) modal.classList.add('hidden');
+		if (modal) {
+			modal.style.setProperty('display', 'none', 'important');
+			modal.classList.add('hidden');
+		}
 	}
 
 	function selectTipAmount(amt) {
@@ -4039,6 +4078,7 @@ header, .navbar {
 	function openCreatorStatsModal() {
 		const modal = document.getElementById('creatorStatsModal');
 		if (modal) {
+			modal.style.setProperty('display', 'flex', 'important');
 			modal.classList.remove('hidden');
 			loadCreatorStats();
 		}
@@ -4046,7 +4086,10 @@ header, .navbar {
 
 	function closeCreatorStatsModal() {
 		const modal = document.getElementById('creatorStatsModal');
-		if (modal) modal.classList.add('hidden');
+		if (modal) {
+			modal.style.setProperty('display', 'none', 'important');
+			modal.classList.add('hidden');
+		}
 	}
 
 	function loadCreatorStats() {
@@ -4132,7 +4175,7 @@ header, .navbar {
 
 			<!-- ================= CREATOR TIP MODAL ================= -->
 			<div id="tipModal"
-				class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[9999] hidden flex items-center justify-center p-4">
+				class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[9999] hidden items-center justify-center p-4" style="display: none !important;">
 				<div
 					class="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden flex flex-col p-6 animate-in fade-in zoom-in-95 duration-200">
 					<!-- Header -->
@@ -4254,7 +4297,7 @@ header, .navbar {
 
 			<!-- ================= CREATOR STATS & WALLET MODAL ================= -->
 			<div id="creatorStatsModal"
-				class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[9999] hidden flex items-center justify-center p-4">
+				class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[9999] hidden items-center justify-center p-4" style="display: none !important;">
 				<div
 					class="bg-white rounded-3xl max-w-xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
 					<!-- Header -->

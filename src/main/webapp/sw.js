@@ -1,4 +1,4 @@
-const CACHE_NAME = "ychat-v7";
+const CACHE_NAME = "ychat-v8";
 
 const urlsToCache = [
   "/manifest.json"
