@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="ychatapp.model.beans.UsersBeans" %>
 <%@ page import="ychatapp.model.dao.UsersDAO" %>
 <%@ page import="java.util.List" %>
@@ -3334,7 +3334,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             fetchBlockedUsers();
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+                navigator.serviceWorker.getRegistrations().then(regs => { for (let r of regs) r.unregister(); }); if ('caches' in window) { caches.keys().then(keys => { for (let k of keys) caches.delete(k); }); }
             }
             if ('Notification' in window && Notification.permission === 'default') {
                 Notification.requestPermission();

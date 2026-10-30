@@ -244,7 +244,9 @@
                 closeProModal();
             };
         }
+        var modalOpenedAt = Date.now();
         overlay.onclick = function (e) {
+            if (Date.now() - modalOpenedAt < 450) return;
             if (e.target === overlay) closeProModal();
         };
 
@@ -263,41 +265,16 @@
     // Helper to bind Safari-reliable tap & click to any button
     function bindSafariTap(el, fn) {
         if (!el || typeof fn !== 'function') return;
-        var startX = 0;
-        var startY = 0;
         var lastTriggered = 0;
-
-        var trigger = function (e) {
-            var now = Date.now();
-            if (now - lastTriggered < 350) return;
-            lastTriggered = now;
-            if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
-            fn(e);
-        };
-
-        el.addEventListener('touchstart', function (e) {
-            if (e.touches && e.touches.length === 1) {
-                startX = e.touches[0].clientX;
-                startY = e.touches[0].clientY;
-            }
-        }, { passive: true });
-
-        el.addEventListener('touchend', function (e) {
-            if (e.changedTouches && e.changedTouches.length === 1) {
-                var dx = Math.abs(e.changedTouches[0].clientX - startX);
-                var dy = Math.abs(e.changedTouches[0].clientY - startY);
-                if (dx < 12 && dy < 12) {
-                    // preventDefault removed for Safari smooth scrolling
-                    trigger(e);
-                }
-            }
-        }, { passive: true });
-
+        el.style.touchAction = 'manipulation';
+        el.style.cursor = 'pointer';
         el.addEventListener('click', function (e) {
-            trigger(e);
+            var now = Date.now();
+            if (now - lastTriggered < 400) return;
+            lastTriggered = now;
+            fn(e);
         });
     }
-
     // =========================================================================
     // 4. RINGTONE & NOTIFICATION SOUND SYNTHESIZER (#18)
     // =========================================================================

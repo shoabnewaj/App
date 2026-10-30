@@ -6,9 +6,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(regs) {
+                for (var i = 0; i < regs.length; i++) regs[i].unregister();
+            }).catch(function() {});
+        }
+        if ('caches' in window) {
+            caches.keys().then(function(keys) {
+                for (var i = 0; i < keys.length; i++) caches.delete(keys[i]);
+            }).catch(function() {});
+        }
+    </script>
     <script src="<%=request.getContextPath()%>/js/notification-badge.js" data-context-path="<%=request.getContextPath()%>" defer></script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
 <title>Y-ChatApp | Newsfeed</title>
 <link rel="icon" type="image/png"
 	href="<%=request.getContextPath()%>/icons/icon-192.png">
@@ -46,8 +58,12 @@ body {
 }
 @media screen and (max-width: 768px) { input, textarea, select { font-size: 16px !important; } }
 * { -webkit-tap-highlight-color: transparent; }
+* { -webkit-tap-highlight-color: transparent !important; touch-action: pan-x pan-y !important; }
+html, body { -webkit-text-size-adjust: 100% !important; touch-action: pan-x pan-y !important; }
+input, textarea, select { font-size: 16px !important; }
 .glass-card {
-	touch-action: manipulation;
+	touch-action: pan-x pan-y !important;
+	-webkit-backdrop-filter: blur(12px) !important;
 	background: rgba(255, 255, 255, 0.7) !important;
 	backdrop-filter: blur(12px) !important;
 	border: 1px solid rgba(255, 255, 255, 0.3) !important;
@@ -846,7 +862,7 @@ header, .navbar {
 										<video src="img/${post.getFile_name()}" controls class="w-full max-h-[500px] object-contain bg-black"></video>
 									</c:when>
 									<c:otherwise>
-										<img src="img/${post.getFile_name()}" class="w-full max-h-[500px] object-cover hover:scale-[1.01] transition-transform duration-700">
+										<img src="img/${post.getFile_name()}" class="w-full max-h-[500px] object-cover md:hover:scale-[1.01] transition-transform duration-700">
 									</c:otherwise>
 								</c:choose>
 							</div>
@@ -1662,7 +1678,7 @@ header, .navbar {
         } catch (error) { console.warn('Could not refresh viewer count:', error); }
     }
 
-    window.openLiveModal = function() {
+    window.openLiveModal = function() { window.lastModalOpenedTime = Date.now();
         var m = document.getElementById('liveModal');
         if (m) {
             m.style.display = 'flex';
@@ -2712,7 +2728,7 @@ header, .navbar {
     }
 
     // --- Modal Functions ---
-    window.openModal = function() {
+    window.openModal = function() { window.lastModalOpenedTime = Date.now();
         const modal = document.getElementById('postModal');
         if (modal) {
             modal.style.display = 'flex';
@@ -2734,8 +2750,9 @@ header, .navbar {
     };
     function closeModal() { window.closeModal(); }
 
-    // Close modal when clicking outside backdrop
+    // Close modal when clicking outside backdrop (guarded against iOS Safari 300ms synthetic ghost click)
     document.addEventListener('click', function(event) {
+        if (typeof lastModalOpenedTime !== 'undefined' && (Date.now() - lastModalOpenedTime < 450)) return;
         const postModal = document.getElementById('postModal');
         if (event.target === postModal) {
             closeModal();
@@ -3158,7 +3175,7 @@ header, .navbar {
 				</c:if>
 			</nav>
 
-			<script src="js/theme.js?v=20261030-safari-v10"></script><script src="js/ychat-pro-features.js?v=20261030-safari-v10"></script>
+			<script src="js/theme.js?v=20261030-safari-v12"></script><script src="js/ychat-pro-features.js?v=20261030-safari-v12"></script>
 			<!-- Story Viewers Modal -->
 			<div id="storyViewersListModal" class="modal !bg-black/80 z-[100000]" style="display: none;">
 				<div
@@ -3994,12 +4011,30 @@ header, .navbar {
 		}
 	}
 
-	// Register Service Worker on load
+	// Service Worker cleaner & iOS Safari gesture auto-zoom suppressor
 	if ('serviceWorker' in navigator) {
-		window.addEventListener('load', () => {
-			navigator.serviceWorker.register('sw.js').catch(err => console.log('SW register failed', err));
-		});
+		navigator.serviceWorker.getRegistrations().then(regs => {
+			for (let r of regs) r.unregister();
+		}).catch(() => {});
 	}
+	if ('caches' in window) {
+		caches.keys().then(keys => {
+			for (let k of keys) caches.delete(k);
+		}).catch(() => {});
+	}
+	(function() {
+		var lastTouch = 0;
+		document.addEventListener('touchend', function(e) {
+			var now = Date.now();
+			if (now - lastTouch <= 300) {
+				e.preventDefault();
+			}
+			lastTouch = now;
+		}, { passive: false });
+		document.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
+		document.addEventListener('gesturechange', function(e) { e.preventDefault(); }, { passive: false });
+		document.addEventListener('gestureend', function(e) { e.preventDefault(); }, { passive: false });
+	})();
 
 	// ================= CREATOR TIP & DONATION SYSTEM =================
 	let currentTipMethod = 'WALLET';
