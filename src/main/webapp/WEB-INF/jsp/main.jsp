@@ -392,7 +392,7 @@ header, .navbar {
 			<!-- Profile Link -->
 			<a href="UsersProfileServlet?userId=${sessionScope.userId}"
 				class="flex items-center gap-2 p-1 hover:bg-gray-100 rounded-full clickable border border-transparent hover:border-gray-200 transition">
-				<img src="img/${ub.getProfile_pic()}" class="w-9 h-9 rounded-full border"
+				<img src="img/${not empty ub.getProfile_pic() ? ub.getProfile_pic() : 'default.png'}" onerror="this.src='img/default.png'" class="w-9 h-9 rounded-full border object-cover"
 				width="45Px"> <span>${ub.getName()}</span>
 			</a>
 
@@ -462,7 +462,7 @@ header, .navbar {
 				<div onclick="location.href='UsersProfileServlet?userId=${sessionScope.userId}'"
 					class="flex items-center gap-3 p-3 rounded-xl hover:bg-white hover:shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300 cursor-pointer group">
 					<div class="relative">
-						<img src="img/${ub.getProfile_pic()}" alt="${ub.getName()}" class="w-10 h-10 rounded-full border-2 border-blue-500 shadow-md">
+						<img src="img/${not empty ub.getProfile_pic() ? ub.getProfile_pic() : 'default.png'}" onerror="this.src='img/default.png'" alt="${ub.getName()}" class="w-10 h-10 rounded-full border-2 border-blue-500 shadow-md object-cover">
 						<div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
 					</div>
 					<span class="font-bold text-gray-700 group-hover:text-blue-600">${ub.getName()}</span>
@@ -719,7 +719,7 @@ header, .navbar {
 			<div class="glass-card p-5 rounded-3xl">
 				<div class="flex gap-4">
 					<a href="UsersProfileServlet?userId=${sessionScope.userId}" class="group relative"> 
-                        <img src="img/${ub.getProfile_pic()}" alt="${ub.getName()}" class="w-12 h-12 rounded-2xl object-cover ring-2 ring-white shadow-md group-hover:scale-105 transition-transform">
+                        <img src="img/${not empty ub.getProfile_pic() ? ub.getProfile_pic() : 'default.png'}" onerror="this.src='img/default.png'" alt="${ub.getName()}" class="w-12 h-12 rounded-2xl object-cover ring-2 ring-white shadow-md group-hover:scale-105 transition-transform">
                         <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
 					</a>
 					<button type="button" onclick="openModal()"
@@ -811,7 +811,7 @@ header, .navbar {
 					<div class="flex justify-between">
 						<div class="flex gap-3">
 							<img onclick="location.href='UsersProfileServlet?userId=${post.getUserId()}'"
-								src="img/${post.getProfile_pic()}" class="w-10 h-10 rounded-full clickable" width="30Px">
+								src="img/${not empty post.getProfile_pic() ? post.getProfile_pic() : 'default.png'}" onerror="this.src='img/default.png'" class="w-10 h-10 rounded-full clickable object-cover" width="30Px">
 							<div>
 								<a href="UsersProfileServlet?userId=${post.getUserId()}" class="font-bold clickable group-hover/post:text-blue-600 transition-colors">${post.getName()}</a>
 								<c:if test="${not empty post.getFeeling()}">
@@ -861,7 +861,7 @@ header, .navbar {
 										<video src="img/${post.getFile_name()}" controls class="w-full max-h-[500px] object-contain bg-black"></video>
 									</c:when>
 									<c:otherwise>
-										<img src="img/${post.getFile_name()}" class="w-full max-h-[500px] object-cover md:hover:scale-[1.01] transition-transform duration-700">
+										<img src="img/${post.getFile_name()}" onerror="this.onerror=null;this.parentElement.style.display='none';" class="w-full max-h-[500px] object-cover md:hover:scale-[1.01] transition-transform duration-700">
 									</c:otherwise>
 								</c:choose>
 							</div>
@@ -929,7 +929,7 @@ header, .navbar {
 							<c:forEach var="cmt" items="${post.getComments()}">
 								<div class="flex flex-col gap-2 group/cmt mb-4">
 									<div class="flex gap-2">
-										<img src="img/${cmt.getProfilePic()}" class="w-8 h-8 rounded-full border shadow-sm cursor-pointer" onclick="location.href='UsersProfileServlet?userId=${cmt.getUserId()}'">
+										<img src="img/${not empty cmt.getProfilePic() ? cmt.getProfilePic() : 'default.png'}" onerror="this.src='img/default.png'" class="w-8 h-8 rounded-full border shadow-sm cursor-pointer object-cover" onclick="location.href='UsersProfileServlet?userId=${cmt.getUserId()}'">
 										<div class="flex flex-col flex-1">
 											<div class="bg-white/50 px-4 py-2 rounded-2xl shadow-sm inline-block max-w-fit">
 												<p class="font-bold text-[13px] hover:underline cursor-pointer" onclick="location.href='UsersProfileServlet?userId=${cmt.getUserId()}'">${cmt.getName()}</p>
@@ -974,7 +974,7 @@ header, .navbar {
 												<c:forEach var="reply" items="${cmt.getReplies()}">
 													<div class="comment-level-2 mb-2 flex gap-2">
 														<a href="UsersProfileServlet?userId=${reply.getUserId()}">
-															<img src="img/${reply.getProfilePic()}" class="w-7 h-7 rounded-full border shadow-sm">
+															<img src="img/${not empty reply.getProfilePic() ? reply.getProfilePic() : 'default.png'}" onerror="this.src='img/default.png'" class="w-7 h-7 rounded-full border shadow-sm object-cover">
 														</a>
 														<div class="flex flex-col flex-1">
 															<div class="bg-white/40 px-3 py-1.5 rounded-2xl inline-block max-w-fit shadow-sm">
@@ -1022,7 +1022,7 @@ header, .navbar {
 											<!-- Reply Input Box -->
 											<div id="replyInputContainer-${cmt.getId()}" class="hidden mt-2 ml-10 relative">
 												<div class="flex gap-2">
-													<img src="img/${ub.getProfile_pic()}" class="w-7 h-7 rounded-full border shadow-sm" width="28px">
+													<img src="img/${not empty ub.getProfile_pic() ? ub.getProfile_pic() : 'default.png'}" onerror="this.src='img/default.png'" class="w-7 h-7 rounded-full border shadow-sm object-cover" width="28px">
 													<div class="flex-1 bg-white/40 backdrop-blur-sm rounded-2xl px-3 py-1.5 flex items-center border border-white/20">
 														<input type="text" id="input-reply-${cmt.getId()}" placeholder="Write a reply..." class="bg-transparent outline-none flex-1 text-[12px] font-medium"
 															onkeydown="if(event.key === 'Enter') submitReplyAJAX('${cmt.getId()}')">
@@ -1058,7 +1058,7 @@ header, .navbar {
 						</div>
 						<!-- Comment Input -->
 						<form onsubmit="event.preventDefault(); submitCommentAJAX(${post.getId()});" class="flex gap-2 mt-4 items-center relative">
-							<img src="img/${ub.getProfile_pic()}" class="w-8 h-8 rounded-full border shadow-sm" width="30Px">
+							<img src="img/${not empty ub.getProfile_pic() ? ub.getProfile_pic() : 'default.png'}" onerror="this.src='img/default.png'" class="w-8 h-8 rounded-full border shadow-sm object-cover" width="30Px">
 							<div class="flex-1 bg-white/40 backdrop-blur-sm rounded-2xl px-4 py-2 flex items-center gap-2 border border-white/30 focus-within:ring-2 ring-blue-500/20 transition-all">
 								<input id="input-post-${post.getId()}" class="bg-transparent outline-none flex-1 text-sm font-medium" placeholder="Write a comment...">
 								<div class="flex items-center gap-1.5 text-gray-400">
