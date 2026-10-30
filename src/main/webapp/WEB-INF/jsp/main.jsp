@@ -8,7 +8,7 @@
 <head>
     <script src="<%=request.getContextPath()%>/js/notification-badge.js" data-context-path="<%=request.getContextPath()%>" defer></script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Y-ChatApp | Newsfeed</title>
 <link rel="icon" type="image/png"
 	href="<%=request.getContextPath()%>/icons/icon-192.png">
@@ -44,7 +44,10 @@ body {
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+@media screen and (max-width: 768px) { input, textarea, select { font-size: 16px !important; } }
+* { -webkit-tap-highlight-color: transparent; }
 .glass-card {
+	touch-action: manipulation;
 	background: rgba(255, 255, 255, 0.7) !important;
 	backdrop-filter: blur(12px) !important;
 	border: 1px solid rgba(255, 255, 255, 0.3) !important;
@@ -789,7 +792,7 @@ header, .navbar {
 
 			<!-- POSTS LIST -->
 			<c:forEach var="post" items="${postList}">
-				<div class="glass-card rounded-3xl p-6 mb-6 hover:shadow-2xl transition-all duration-500 group/post" data-post-id="${post.getId()}">
+				<div class="glass-card rounded-3xl p-6 mb-6 md:hover:shadow-xl transition-shadow duration-300 group/post" data-post-id="${post.getId()}">
 					<div class="flex justify-between">
 						<div class="flex gap-3">
 							<img onclick="location.href='UsersProfileServlet?userId=${post.getUserId()}'"
@@ -881,7 +884,7 @@ header, .navbar {
 					<!-- Action Buttons -->
 					<div class="flex justify-around py-1.5 border-t border-gray-100/60 mt-1">
 						<div class="react-container flex-1 relative">
-							<button type="button" id="post-action-btn-${post.getId()}" onclick="handleAJAXReact(${post.getId()}, 'Like', 'post', event)" class="w-full flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 active:scale-95 transition-all cursor-pointer font-bold text-gray-600 bg-transparent border-0" style="touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
+							<button type="button" id="post-action-btn-${post.getId()}" onclick="handleAJAXReact(${post.getId()}, 'Like', 'post', event)" class="w-full flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 active:opacity-70 transition-opacity cursor-pointer font-bold text-gray-600 bg-transparent border-0" style="touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
 								<span id="post-action-btn-content-${post.getId()}" class="flex items-center justify-center gap-2 pointer-events-none">
 									<i class="fa-regular fa-thumbs-up"></i> Like
 								</span>
@@ -897,10 +900,10 @@ header, .navbar {
 								<span title="Dislike" class="hover:scale-125 transition cursor-pointer select-none" onclick="handleAJAXReact(${post.getId()}, 'Dislike', 'post', event)">👎</span>
 							</div>
 						</div>
-						<button type="button" onclick="focusCmt(${post.getId()})" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 active:scale-95 transition-all cursor-pointer font-bold text-gray-600 bg-transparent border-0" style="touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
+						<button type="button" onclick="focusCmt(${post.getId()})" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 active:opacity-70 transition-opacity cursor-pointer font-bold text-gray-600 bg-transparent border-0" style="touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
 							<i class="fa-regular fa-comment"></i> Comment
 						</button>
-						<button type="button" onclick="shareAJAX(${post.getId()})" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 active:scale-95 transition-all cursor-pointer font-bold text-gray-600 bg-transparent border-0" style="touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
+						<button type="button" onclick="shareAJAX(${post.getId()})" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl hover:bg-white/50 active:opacity-70 transition-opacity cursor-pointer font-bold text-gray-600 bg-transparent border-0" style="touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
 							<i class="fa-solid fa-share"></i> Share
 						</button>
 					</div>
@@ -2682,9 +2685,6 @@ header, .navbar {
     function focusCmt(id) { 
         let input = document.getElementById('input-post-' + id);
         if(input) {
-            if (input.scrollIntoView) {
-                try { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
-            }
             input.focus();
             let wrap = input.parentElement;
             if (wrap) {
@@ -3158,7 +3158,7 @@ header, .navbar {
 				</c:if>
 			</nav>
 
-			<script src="js/theme.js?v=20261030-safari-v9"></script><script src="js/ychat-pro-features.js?v=20261030-safari-v9"></script>
+			<script src="js/theme.js?v=20261030-safari-v10"></script><script src="js/ychat-pro-features.js?v=20261030-safari-v10"></script>
 			<!-- Story Viewers Modal -->
 			<div id="storyViewersListModal" class="modal !bg-black/80 z-[100000]" style="display: none;">
 				<div

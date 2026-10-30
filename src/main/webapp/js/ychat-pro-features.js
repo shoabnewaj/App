@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Y-ChatApp Pro Features Suite (Modular, Non-Destructive Enhancer - 100% Safari/iOS/macOS Compatible)
  * Adds 18+ interactive features across News Feed, Stories, Reels, Messenger, Calls & Profile
  * without modifying or breaking any existing functionality.
@@ -287,11 +287,11 @@
                 var dx = Math.abs(e.changedTouches[0].clientX - startX);
                 var dy = Math.abs(e.changedTouches[0].clientY - startY);
                 if (dx < 12 && dy < 12) {
-                    if (e.cancelable) e.preventDefault();
+                    // preventDefault removed for Safari smooth scrolling
                     trigger(e);
                 }
             }
-        }, { passive: false });
+        }, { passive: true });
 
         el.addEventListener('click', function (e) {
             trigger(e);
@@ -867,7 +867,7 @@
                 var input = document.getElementById('input-post-' + id);
                 if (input) {
                     if (input.scrollIntoView) {
-                        try { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+                        // smooth scroll removed to avoid Safari keyboard freeze
                     }
                     input.focus();
                 }
