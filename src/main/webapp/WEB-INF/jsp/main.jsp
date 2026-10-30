@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%-- <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> --%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions"%>
@@ -1672,6 +1672,14 @@ header, .navbar {
         var m = document.getElementById('liveModal');
         if (m) m.style.display = 'none';
         document.body.style.overflow = 'auto';
+        window.liveCanvasAnimActive = false;
+        var c = document.getElementById('liveFallbackCanvas');
+        if (c) c.style.display = 'none';
+        var v = document.getElementById('liveVideo');
+        if (v) {
+            v.style.display = 'block';
+            if (v.srcObject) v.srcObject = null;
+        }
         if (liveStream && !document.getElementById('endLiveBtn').classList.contains('hidden')) {
             endLiveStream();
             return;
@@ -1679,8 +1687,6 @@ header, .navbar {
         
         if (liveStream && liveStream.getTracks) {
             liveStream.getTracks().forEach(track => track.stop());
-            var v = document.getElementById('liveVideo');
-            if (v) v.srcObject = null;
         }
         resetLiveUI();
     };
@@ -1727,12 +1733,22 @@ header, .navbar {
         // Synthesize dynamic live canvas broadcast so Safari users are NEVER blocked from broadcasting live!
         if (!streamAcquired) {
             try {
-                const canvas = document.createElement('canvas');
+                let canvas = document.getElementById('liveFallbackCanvas');
+                if (!canvas) {
+                    canvas = document.createElement('canvas');
+                    canvas.id = 'liveFallbackCanvas';
+                    canvas.className = 'w-full h-full object-cover absolute inset-0 z-0';
+                    video.parentElement.insertBefore(canvas, video);
+                }
+                canvas.style.display = 'block';
+                video.style.display = 'none';
                 canvas.width = 640;
                 canvas.height = 480;
                 const ctx = canvas.getContext('2d');
                 let frame = 0;
+                window.liveCanvasAnimActive = true;
                 function drawSimulatedCamera() {
+                    if (!window.liveCanvasAnimActive) return;
                     frame++;
                     ctx.fillStyle = '#0f172a';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1749,31 +1765,40 @@ header, .navbar {
                     ctx.fill();
                     
                     ctx.fillStyle = '#ffffff';
-                    ctx.font = 'bold 26px sans-serif';
+                    ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
                     ctx.textAlign = 'center';
                     ctx.fillText('${ub.getName()}', canvas.width / 2, canvas.height / 2 - 15);
                     
-                    ctx.font = '15px sans-serif';
+                    ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                    ctx.fillStyle = '#38bdf8';
                     ctx.fillText('🔴 Safari Live Broadcast Mode', canvas.width / 2, canvas.height / 2 + 20);
                     
                     requestAnimationFrame(drawSimulatedCamera);
                 }
                 drawSimulatedCamera();
                 
-                if (canvas.captureStream) {
-                    liveStream = canvas.captureStream(30);
-                    streamAcquired = true;
-                }
+                try {
+                    if (canvas.captureStream) {
+                        liveStream = canvas.captureStream(30);
+                    } else if (canvas.webkitCaptureStream) {
+                        liveStream = canvas.webkitCaptureStream(30);
+                    }
+                } catch(e) {}
             } catch (canvasErr) {
                 console.warn('Canvas stream fallback error:', canvasErr);
             }
-        }
-        
-        if (streamAcquired && liveStream && video) {
-            video.srcObject = liveStream;
-            video.muted = true;
-            video.playsInline = true;
-            try { await video.play(); } catch (playError) { console.warn('Preview playback was blocked:', playError); }
+        } else {
+            video.style.display = 'block';
+            const c = document.getElementById('liveFallbackCanvas');
+            if (c) c.style.display = 'none';
+            if (liveStream && video) {
+                video.srcObject = liveStream;
+                video.muted = true;
+                video.playsInline = true;
+                video.setAttribute('playsinline', 'true');
+                video.setAttribute('webkit-playsinline', 'true');
+                try { await video.play(); } catch (playError) { console.warn('Preview playback was blocked:', playError); }
+            }
         }
         
         if (overlay) overlay.classList.add('hidden');
@@ -2080,9 +2105,8 @@ header, .navbar {
     // ১. ৮টি রিঅ্যাকশন হ্যান্ডলার (পোস্ট, কমেন্ট, রিপ্লাই সবার জন্য)
     function handleAJAXReact(id, type, level, event) {
         // Prevent click bubbling to parent elements
-        if (event) {
+        if (event && event.stopPropagation) {
             event.stopPropagation();
-            if (event.preventDefault && event.type !== 'touchend') event.preventDefault();
         }
         document.querySelectorAll('.react-box-open').forEach(b => b.classList.remove('react-box-open'));
 
@@ -2172,6 +2196,7 @@ header, .navbar {
         })
         .catch(err => console.error('Reaction Error:', err));
     }
+    window.handleAJAXReact = handleAJAXReact;
 
     // Safari / Mobile Touch long-press & click support for reaction tray
     document.addEventListener('touchstart', function(e) {
@@ -2511,7 +2536,7 @@ header, .navbar {
     });
 
     function togglePostMenu(event, postId) {
-        if (event) event.stopPropagation();
+        if (event && event.stopPropagation) event.stopPropagation();
         const menu = document.getElementById('post-menu-' + postId);
         const shouldOpen = menu && menu.classList.contains('hidden');
         document.querySelectorAll('[id^="post-menu-"]').forEach(item => item.classList.add('hidden'));
@@ -2523,6 +2548,13 @@ header, .navbar {
             }
         }
     }
+    window.togglePostMenu = togglePostMenu;
+    window.toggleSavePost = toggleSavePost;
+    window.deletePost = deletePost;
+    window.hidePost = hidePost;
+    window.reportPost = reportPost;
+    window.focusCmt = focusCmt;
+    window.shareAJAX = shareAJAX;
 
     document.addEventListener('click', function(event) {
         if (!event.target.closest('[id^="post-menu-"]') && !event.target.closest('button[aria-controls^="post-menu-"]')) {
@@ -3126,7 +3158,7 @@ header, .navbar {
 				</c:if>
 			</nav>
 
-			<script src="js/theme.js?v=20261029-safari-v8"></script><script src="js/ychat-pro-features.js?v=20261029-safari-v8"></script>
+			<script src="js/theme.js?v=20261030-safari-v9"></script><script src="js/ychat-pro-features.js?v=20261030-safari-v9"></script>
 			<!-- Story Viewers Modal -->
 			<div id="storyViewersListModal" class="modal !bg-black/80 z-[100000]" style="display: none;">
 				<div

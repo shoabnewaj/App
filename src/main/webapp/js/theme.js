@@ -709,10 +709,7 @@ function initInstantSearch() {
         }
 
         debounceTimeout = setTimeout(() => {
-            const derivedContext = window.location.pathname.split('/')[1];
-            const contextPath = window.location.pathname.startsWith('/' + derivedContext) ? '/' + derivedContext : '';
-
-            fetch(`${contextPath}/SearchServlet?query=${encodeURIComponent(query)}&ajax=true`)
+            fetch(`SearchServlet?query=${encodeURIComponent(query)}&ajax=true`)
             .then(res => res.json())
             .then(data => {
                 dropdown.innerHTML = '';
@@ -1196,26 +1193,40 @@ function initAudioSelectorAndParser() {
         }, 300);
     }
 
-    document.getElementById('closeAudioSelectorBtn').onclick = closeAudioSelector;
-    document.getElementById('audioSearch').oninput = renderTracks;
+    var closeAudioBtn = document.getElementById('closeAudioSelectorBtn');
+    if (closeAudioBtn) closeAudioBtn.onclick = closeAudioSelector;
+    var audioSearchInp = document.getElementById('audioSearch');
+    if (audioSearchInp) audioSearchInp.oninput = renderTracks;
 
-    document.getElementById('tabQuran').onclick = function() {
-        currentTab = 'quran';
-        this.style.borderColor = '#a855f7';
-        this.style.color = '#a855f7';
-        document.getElementById('tabMusic').style.borderColor = 'transparent';
-        document.getElementById('tabMusic').style.color = '#64748b';
-        renderTracks();
-    };
+    var tabQ = document.getElementById('tabQuran');
+    if (tabQ) {
+        tabQ.onclick = function() {
+            currentTab = 'quran';
+            this.style.borderColor = '#a855f7';
+            this.style.color = '#a855f7';
+            var tm = document.getElementById('tabMusic');
+            if (tm) {
+                tm.style.borderColor = 'transparent';
+                tm.style.color = '#64748b';
+            }
+            renderTracks();
+        };
+    }
 
-    document.getElementById('tabMusic').onclick = function() {
-        currentTab = 'music';
-        this.style.borderColor = '#a855f7';
-        this.style.color = '#a855f7';
-        document.getElementById('tabQuran').style.borderColor = 'transparent';
-        document.getElementById('tabQuran').style.color = '#64748b';
-        renderTracks();
-    };
+    var tabM = document.getElementById('tabMusic');
+    if (tabM) {
+        tabM.onclick = function() {
+            currentTab = 'music';
+            this.style.borderColor = '#a855f7';
+            this.style.color = '#a855f7';
+            var tq = document.getElementById('tabQuran');
+            if (tq) {
+                tq.style.borderColor = 'transparent';
+                tq.style.color = '#64748b';
+            }
+            renderTracks();
+        };
+    }
 
     window.removeSelectedAudio = function(context) {
         const formId = context + 'Form';
@@ -1365,123 +1376,92 @@ window.pauseAllOtherAudio = function(exceptElement) {
     }
 };
 
-// Post actions: Save, Delete, Hide, Report
-window.toggleSavePost = function(postId, btn) {
-    let isSaved = btn.innerText.includes("Unsave");
-    let action = isSaved ? "UNSAVE" : "SAVE";
-    
-    const derivedContext = window.location.pathname.split('/')[1];
-    const contextPath = window.location.pathname.startsWith('/' + derivedContext) ? '/' + derivedContext : '';
-
-    fetch(`${contextPath}/FeaturesServlet?action=${action}&postId=${postId}`, { method: 'POST' })
-    .then(res => res.json())
-    .then(data => {
-        if(data.success) {
-            if(action === "SAVE") {
-                btn.innerHTML = '<i class="fa fa-bookmark"></i> Unsave Post';
-                alert("Post Saved successfully!");
+// Post actions: Save, Delete, Hide, Report (Fallback wrappers - safe & relative)
+if (typeof window.toggleSavePost !== 'function') {
+    window.toggleSavePost = function(postId, btn) {
+        let isSaved = btn.innerText.includes("Unsave");
+        let action = isSaved ? "UNSAVE" : "SAVE";
+        fetch('FeaturesServlet?action=' + action + '&postId=' + postId, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                if(action === "SAVE") {
+                    btn.innerHTML = '<i class="fa fa-bookmark"></i> Unsave Post';
+                    alert("Post Saved successfully!");
+                } else {
+                    btn.innerHTML = '<i class="fa fa-bookmark"></i> Save Post';
+                    alert("Post Unsaved successfully!");
+                }
             } else {
-                btn.innerHTML = '<i class="fa fa-bookmark"></i> Save Post';
-                alert("Post Unsaved successfully!");
+                alert("Action failed!");
             }
-        } else {
-            alert("Action failed!");
-        }
-    })
-    .catch(err => {
-        console.error("Save error:", err);
-        alert("Error processing request");
-    });
-};
+        })
+        .catch(err => {
+            console.error("Save error:", err);
+            alert("Error processing request");
+        });
+    };
+}
 
-window.deletePost = function(postId) {
-    if(!confirm("Are you sure you want to delete this post?")) return;
-    
-    const derivedContext = window.location.pathname.split('/')[1];
-    const contextPath = window.location.pathname.startsWith('/' + derivedContext) ? '/' + derivedContext : '';
-
-    let formData = new FormData();
-    formData.append("action", "DELETE");
-    formData.append("postId", postId);
-    formData.append("ajax", "true");
-
-    fetch(`${contextPath}/UsersPostServlet?ajax=true`, { method: 'POST', body: formData })
-    .then(res => {
-        if (!res.ok) throw new Error("HTTP error " + res.status);
-        return res.json();
-    })
-    .then(data => {
-        if(data.success) {
-            alert("Post deleted successfully!");
-            if (typeof refreshFeed === 'function') {
-                refreshFeed();
+if (typeof window.deletePost !== 'function') {
+    window.deletePost = function(postId) {
+        if(!confirm("Are you sure you want to delete this post?")) return;
+        let formData = new FormData();
+        formData.append("action", "DELETE");
+        formData.append("postId", postId);
+        formData.append("ajax", "true");
+        fetch('UsersPostServlet?ajax=true', { method: 'POST', body: formData })
+        .then(res => {
+            if (!res.ok) throw new Error("HTTP error " + res.status);
+            return res.json();
+        })
+        .then(data => {
+            if(data.success) {
+                alert("Post deleted successfully!");
+                if (typeof refreshFeed === 'function') {
+                    refreshFeed();
+                } else {
+                    window.location.reload();
+                }
             } else {
-                window.location.reload();
+                alert("Failed to delete post.");
             }
-        } else {
-            alert("Failed to delete post.");
+        })
+        .catch(err => {
+            console.error("Delete error: ", err);
+            window.location.reload();
+        });
+    };
+}
+
+if (typeof window.hidePost !== 'function') {
+    window.hidePost = function(postId) {
+        if (typeof sendHideReport === 'function') {
+            sendHideReport('hide', postId);
+            return;
         }
-    })
-    .catch(err => {
-        console.error("Delete error: ", err);
-        window.location.reload();
-    });
-};
-
-window.hidePost = function(postId) {
-    if(!confirm("Are you sure you want to hide this post? It will not be shown to you anymore.")) return;
-    
-    const derivedContext = window.location.pathname.split('/')[1];
-    const contextPath = window.location.pathname.startsWith('/' + derivedContext) ? '/' + derivedContext : '';
-
-    fetch(`${contextPath}/ReportHideServlet?action=hide&type=POST&id=${postId}`, { method: 'POST' })
-    .then(res => res.json())
-    .then(data => {
-        if(data.success) {
-            alert("Post hidden successfully!");
-            if (typeof refreshFeed === 'function') {
-                refreshFeed();
-            } else {
-                window.location.reload();
+        fetch('ReportHideServlet?action=hide&type=POST&id=' + postId, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                const card = document.querySelector('[data-post-id="' + postId + '"]');
+                if (card) card.style.display = 'none';
             }
-        } else {
-            alert("Failed to hide post: " + (data.message || ''));
-        }
-    })
-    .catch(err => {
-        console.error("Hide error: ", err);
-        alert("Error hiding post");
-    });
-};
+        });
+    };
+}
 
-window.reportPost = function(postId) {
-    const reason = prompt("Why are you reporting this post? (e.g. Inappropriate content, Spam, Harassment)");
-    if (reason === null) return;
-    if (reason.trim() === "") {
-        alert("Please provide a reason to report.");
-        return;
-    }
-
-    const details = prompt("Please provide additional details (optional):");
-    if (details === null) return;
-
-    const derivedContext = window.location.pathname.split('/')[1];
-    const contextPath = window.location.pathname.startsWith('/' + derivedContext) ? '/' + derivedContext : '';
-
-    fetch(`${contextPath}/ReportHideServlet?action=report&type=POST&id=${postId}&reason=${encodeURIComponent(reason)}&details=${encodeURIComponent(details)}`, { method: 'POST' })
-    .then(res => res.json())
-    .then(data => {
-        if(data.success) {
-            alert("Thank you for your report. We will review it shortly.");
-        } else {
-            alert("Failed to report post: " + (data.message || ''));
-        }
-    })
-    .catch(err => {
-        console.error("Report error: ", err);
-        alert("Error reporting post");
-    });
-};
+if (typeof window.reportPost !== 'function') {
+    window.reportPost = function(postId) {
+        const reason = prompt("Why are you reporting this post?");
+        if (!reason || !reason.trim()) return;
+        fetch('ReportHideServlet?action=report&type=POST&id=' + postId + '&reason=' + encodeURIComponent(reason.trim()), { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.success ? 'Report submitted. Thank you.' : 'Failed to submit report.');
+        });
+    };
+}
 
 // Global Toast Notification System
 window.showToast = function(message, type = 'info') {
@@ -1960,15 +1940,3 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedLang = localStorage.getItem('ychat_lang') || 'en';
     window.changeAppLanguage(savedLang);
 });
-
-
-
-// Load Y-ChatApp Pro Features Suite non-destructively
-(function() {
-    if (document.getElementById('ychat-pro-features-script')) return;
-    var s = document.createElement('script');
-    s.id = 'ychat-pro-features-script';
-    s.src = 'js/ychat-pro-features.js?v=' + Date.now();
-    s.defer = true;
-    (document.body || document.head || document.documentElement).appendChild(s);
-})();
