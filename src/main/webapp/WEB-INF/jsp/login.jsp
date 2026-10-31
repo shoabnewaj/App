@@ -6,10 +6,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Y-ChatApp</title>
+    <!-- PWA & Mobile Web App Meta Tags -->
+    <link rel="manifest" href="<%=request.getContextPath()%>/manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="<%=request.getContextPath()%>/icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="<%=request.getContextPath()%>/icons/icon-512.png">
+    <link rel="apple-touch-icon" href="<%=request.getContextPath()%>/icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="<%=request.getContextPath()%>/icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="<%=request.getContextPath()%>/icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="<%=request.getContextPath()%>/icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="<%=request.getContextPath()%>/icons/icon-512.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Y-ChatApp">
+    <meta name="application-name" content="Y-ChatApp">
+    <meta name="theme-color" content="#1877f2">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" type="image/png" href="<%=request.getContextPath()%>/icons/icon-192.png">
-    <title>Login | Y-ChatApp</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; }
@@ -77,6 +90,7 @@
                         <div class="relative group">
                             <i class="fa fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
                             <input type="email" name="email" id="email" placeholder="name@company.com" required
+                                autocomplete="username email"
                                 value="${not empty savedEmail ? savedEmail : ''}"
                                 class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-slate-700">
                         </div>
@@ -87,13 +101,14 @@
                         <div class="relative group">
                             <i class="fa fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
                             <input type="password" name="pass" id="pass" placeholder="••••••••" required
+                                autocomplete="current-password"
                                 class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-slate-700">
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between py-2">
                         <label class="flex items-center gap-2 cursor-pointer group">
-                            <input type="checkbox" name="remember" ${not empty savedEmail ? 'checked' : ''} class="w-5 h-5 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500 transition-all cursor-pointer">
+                            <input type="checkbox" name="remember" id="remember" ${not empty savedEmail or not empty cookie.rem_token ? 'checked' : 'checked'} class="w-5 h-5 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500 transition-all cursor-pointer">
                             <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">Remember me</span>
                         </label>
                         <a href="ForgotPasswordServlet" class="text-sm font-semibold text-blue-600 hover:text-blue-700">Forgot password?</a>

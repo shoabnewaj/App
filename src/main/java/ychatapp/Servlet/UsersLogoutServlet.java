@@ -26,7 +26,7 @@ public class UsersLogoutServlet extends HttpServlet {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 		    for (Cookie c : cookies) {
-		        if ("rem_email".equals(c.getName()) || "rem_pass".equals(c.getName())) {
+		        if ("rem_email".equals(c.getName()) || "rem_pass".equals(c.getName()) || "rem_token".equals(c.getName())) {
 		            Cookie c1 = new Cookie(c.getName(), "");
 		            c1.setMaxAge(0);
 		            c1.setPath("/");
@@ -43,7 +43,7 @@ public class UsersLogoutServlet extends HttpServlet {
 		    }
 		}
 
-		// session を破棄する
+		// session を破棄
 		HttpSession session = request.getSession(false);
 		if (session != null) {
 		    session.invalidate();
